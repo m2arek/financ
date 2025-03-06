@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v92</title>
+  <title>FRH PRO formulaire  - v93</title>
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -273,13 +273,7 @@
         </div>
 
         <label for="address">Adresse :</label>
-        <input
-          type="text"
-          id="address"
-          name="address"
-          placeholder="Entrez une adresse"
-          required
-        />
+        <input type="text" id="address" name="address" placeholder="Entrez une adresse" required />
         <button type="button" id="addressSearchBtn">Rechercher</button>
 
         <button type="button" id="toggleDrawingButton">Activer le dessin (main levée)</button>
@@ -292,13 +286,10 @@
 
         <div class="form-section">
           <h3>Données irradiation</h3>
-
           <label for="latitudeIrr">Latitude :</label>
           <input type="text" id="latitudeIrr" name="latitudeIrr" readonly />
-
           <label for="longitudeIrr">Longitude :</label>
           <input type="text" id="longitudeIrr" name="longitudeIrr" readonly />
-
           <label for="orientationIrr">Orientation :</label>
           <select id="orientationIrr" name="orientationIrr">
             <option value="0">SUD (0°)</option>
@@ -307,25 +298,15 @@
             <option value="-45">SUD-EST (-45°)</option>
             <option value="45">SUD-OUEST (45°)</option>
           </select>
-
           <label for="orientation">Orientation (vrai angle °) :</label>
           <input type="text" id="orientation" name="orientation" readonly />
-
           <label for="angleIrr">Angle (°) :</label>
-          <input
-            type="number"
-            id="angleIrr"
-            name="angleIrr"
-            value="35"
-          />
-
+          <input type="number" id="angleIrr" name="angleIrr" value="35" />
           <label for="productible">Productible :</label>
           <input type="text" id="productible" name="productible" placeholder="kWh/kWc/an" readonly/>
-
           <!-- Nouveau champ Territoire (détecté auto) -->
           <label for="territory">Territoire détecté :</label>
           <input type="text" id="territory" name="territory" disabled />
-
           <button type="button" id="calculateIrrButton">Calculer le productible</button>
         </div>
       </div><!-- fin tab1 -->
@@ -338,28 +319,18 @@
         </div>
         <div class="form-section">
           <h3>Potentiel de production</h3>
-
           <label for="exclusionPercent">% surface exclusion :</label>
-          <input
-            type="number"
-            id="exclusionPercent"
-            name="exclusionPercent"
-            value="0"
-          />
-
+          <input type="number" id="exclusionPercent" name="exclusionPercent" value="0" />
           <label for="puissancePanneau">Puissance du panneau :</label>
           <select id="puissancePanneau" name="puissancePanneau">
             <option value="420" selected>420 Wc</option>
             <option value="440">440 Wc</option>
             <option value="500">500 Wc</option>
           </select>
-
           <label for="nombrePVMax">Nombre de PV max :</label>
           <input type="text" id="nombrePVMax" name="nombrePVMax" readonly />
-
           <label for="puissanceMaxPV">Puissance max PV (kWc) :</label>
           <input type="text" id="puissanceMaxPV" name="puissanceMaxPV" readonly />
-
           <label for="productionInstall">Production en kWh de l'installation :</label>
           <input type="text" id="productionInstall" name="productionInstall" readonly />
         </div>
@@ -397,36 +368,24 @@
           <h3>Informations sur la société</h3>
           <label for="Adresse">Adresse entrée :</label>
           <input type="text" id="Adresse" name="Adresse" readonly />
-
           <label for="companyName">Société :</label>
           <input type="text" id="companyName" name="companyName"/>
-
           <label for="activity">Activité :</label>
           <input type="text" id="activity" name="activity"/>
-
           <label for="Nom">Nom :</label>
           <input type="text" id="Nom" name="Nom"/>
-
           <label for="Prénom">Prénom :</label>
           <input type="text" id="Prénom" name="Prénom"/>
-
           <label for="Statut">Statut :</label>
           <input type="text" id="Statut" name="Statut"/>
-
           <label for="Propietaire/Locataire">Propietaire/Locataire :</label>
           <select id="Propietaire/Locataire" name="Propietaire/Locataire">
             <option value="" disabled selected>indiquer si propietaire ou locataire</option>
             <option value="Proprietaire">Proprietaire</option>
             <option value="Locataire">Locataire</option>
           </select>
-
           <label for="Annees presence">Annees presence :</label>
-          <input
-            type="text"
-            id="Annees presence"
-            name="Annees presence"
-            placeholder="Entrez le nombre d'Annees de presence"
-          />
+          <input type="text" id="Annees presence" name="Annees presence" placeholder="Entrez le nombre d'Annees de presence" />
         </div>
       </div><!-- fin tab4 -->
 
@@ -438,21 +397,14 @@
         </div>
         <div class="form-section">
           <h3>Informations sur la toiture</h3>
-
           <label for="Surface toiture">Surface toiture (m²) :</label>
-          <input
-            type="number"
-            id="Surface toiture"
-            name="Surface toiture"
-          />
-
+          <input type="number" id="Surface toiture" name="Surface toiture" />
           <label for="Partage sa toiture">Partage sa toiture? :</label>
           <select id="Partage sa toiture" name="Partage sa toiture">
             <option value="" disabled selected>indiquer si la toiture est partagee</option>
             <option value="Oui">Oui</option>
             <option value="Non">Non</option>
           </select>
-
           <label for="Type de toiture">Type de toiture :</label>
           <select id="Type de toiture" name="Type de toiture">
             <option value="" disabled selected>Choisissez un Type de toiture</option>
@@ -460,14 +412,8 @@
             <option value="1 pente">1 pente</option>
             <option value="Toit plat">Toit plat</option>
           </select>
-
           <label for="Pente toiture">Pente toiture (°) :</label>
-          <input
-            type="number"
-            id="Pente toiture"
-            name="Pente toiture"
-          />
-
+          <input type="number" id="Pente toiture" name="Pente toiture" />
           <label for="Type de couverture">Type de couverture :</label>
           <select id="Type de couverture" name="Type de couverture">
             <option value="" disabled selected>Choisissez un type de couverture</option>
@@ -476,21 +422,18 @@
             <option value="Tuiles">Tuiles</option>
             <option value="Béton">Béton</option>
           </select>
-
           <label for="Type de charpente">Type de charpente :</label>
           <select id="Type de charpente" name="Type de charpente">
             <option value="" disabled selected>Choisissez un type de charpente</option>
             <option value="Metallique">Métallique</option>
             <option value="Bois">Bois</option>
           </select>
-
           <label for="Translucides">Présence de translucides :</label>
           <select id="Translucides" name="Translucides">
             <option value="" disabled selected>Presence de translucides</option>
             <option value="Oui">Oui</option>
             <option value="Non">Non</option>
           </select>
-
           <label for="Couvrir Translucides">Couvrir Translucides :</label>
           <select id="Couvrir Translucides" name="Couvrir Translucides">
             <option value="" disabled selected>Couvrir Translucides</option>
@@ -523,7 +466,6 @@
             <label><input type="checkbox" name="moisConges[]" value="Novembre" />Novembre</label>
             <label><input type="checkbox" name="moisConges[]" value="Décembre" />Décembre</label>
           </div>
-
           <h4>Jours de congés</h4>
           <div class="checkbox-grid">
             <label><input type="checkbox" name="joursConges[]" value="Lundi" />Lundi</label>
@@ -534,19 +476,12 @@
             <label><input type="checkbox" name="joursConges[]" value="Samedi" />Samedi</label>
             <label><input type="checkbox" name="joursConges[]" value="Dimanche" />Dimanche</label>
           </div>
-
           <label for="heureDebut">Heure début travail :</label>
           <input type="time" id="heureDebut" name="heureDebut" />
-
           <label for="heureFin">Heure fin :</label>
           <input type="time" id="heureFin" name="heureFin" />
-
           <label for="Puissance compteur">Puissance compteur (Kva) :</label>
-          <input
-            type="number"
-            id="Puissance compteur"
-            name="Puissance compteur"
-          />
+          <input type="number" id="Puissance compteur" name="Puissance compteur" />
         </div>
       </div><!-- fin tab6 -->
 
@@ -589,61 +524,31 @@
         </div>
         <div class="form-section">
           <h3>Préconisation</h3>
-
           <label for="annualPriceIncrease">Augmentation annuelle du prix de l'électricité (%):</label>
-          <input
-            type="number"
-            step="0.1"
-            id="annualPriceIncrease"
-            name="annualPriceIncrease"
-            value="5"
-          />
-
+          <input type="number" step="0.1" id="annualPriceIncrease" name="annualPriceIncrease" value="5" />
           <!-- Le tarif rachat n'est plus un input "manuel", mais "disabled" pour affichage --> 
           <label for="tarifRachat">Tarif de rachat du surplus (€/kWh) :</label>
-          <input
-            type="number"
-            step="0.0001"
-            id="tarifRachat"
-            name="tarifRachat"
-            value="0.0761"
-            disabled
-          />
-
+          <input type="number" step="0.0001" id="tarifRachat" name="tarifRachat" value="0.0761" disabled />
           <label for="ratioDiurne">Ratio diurne (%) :</label>
-          <input
-            type="number"
-            id="ratioDiurne"
-            name="ratioDiurne"
-            value="60"
-            min="0"
-            max="100"
-          />
-
+          <input type="number" id="ratioDiurne" name="ratioDiurne" value="60" min="0" max="100" />
           <label>
             <input type="checkbox" id="showKwhColumns" name="showKwhColumns" />
             Kwh visible
           </label>
-
-          <button type="button" id="calculatePreconisation">
-            Calculer la préconisation
-          </button>
-
+          <button type="button" id="calculatePreconisation">Calculer la préconisation</button>
           <h4>Détails par mois (année 1)</h4>
           <!-- Tableau réagencé pour le scénario standard -->
           <table id="preconisationMonthlyTable"></table>
-
           <h4>Graphique (Détails par mois)</h4>
           <canvas id="monthlyBarChart" width="600" height="300"></canvas>
-
           <h4>Projection sur 20 ans</h4>
           <table id="preconisationTable">
             <thead>
               <tr>
                 <th>Année</th>
-                <th>Facture Sans PV</th>
+                <th>Facture Sans Centrale</th>
                 <th>Économies Autoconso</th>
-                <th>Facture Avec PV</th>
+                <th>Facture Avec Centrale</th>
                 <th>Gains Revente</th>
                 <th>Prime (année 2)</th>
                 <th>Total Économies</th>
@@ -663,7 +568,6 @@
               </tr>
             </tfoot>
           </table>
-
           <div id="preconisationSummary" style="margin-top:10px;">
             <p><strong>Puissance préconisée :</strong> <span id="puissanceReco">-</span> kWc</p>
             <p><strong>Coût de l'installation :</strong> <span id="coutInstallation">-</span> €</p>
@@ -684,34 +588,22 @@
         </div>
         <div class="form-section">
           <h3>Préconisation Sélection</h3>
-
           <label for="forcedPower">Installation choisie (kWc) :</label>
-          <input
-            type="number"
-            id="forcedPower"
-            name="forcedPower"
-            value="10"
-            min="1"
-          />
-          <button type="button" id="applyForcedPreconisationBtn">
-            Calculer la préconisation choisie
-          </button>
-
+          <input type="number" id="forcedPower" name="forcedPower" value="10" min="1" />
+          <button type="button" id="applyForcedPreconisationBtn">Calculer la préconisation choisie</button>
           <h4>Détails par mois (année 1) - Sélection</h4>
           <!-- Tableau réagencé pour le scénario "Sélection" -->
           <table id="preconisationMonthlyTableForced"></table>
-
           <h4>Graphique (Détails par mois) - Sélection</h4>
           <canvas id="monthlyBarChartForced" width="600" height="300"></canvas>
-
           <h4>Projection sur 20 ans - Sélection</h4>
           <table id="preconisationTableForced">
             <thead>
               <tr>
                 <th>Année</th>
-                <th>Facture Sans PV</th>
+                <th>Facture Sans Centrale</th>
                 <th>Économies Autoconso</th>
-                <th>Facture Avec PV</th>
+                <th>Facture Avec Centrale</th>
                 <th>Gains Revente</th>
                 <th>Prime (année 2)</th>
                 <th>Total Économies</th>
@@ -731,7 +623,6 @@
               </tr>
             </tfoot>
           </table>
-
           <div id="preconisationSummaryForced" style="margin-top:10px;">
             <p><strong>Puissance préconisée (Sélection) :</strong> <span id="puissanceRecoForced">-</span> kWc</p>
             <p><strong>Coût de l'installation (Sélection) :</strong> <span id="coutInstallationForced">-</span> €</p>
@@ -753,37 +644,18 @@
         <div class="form-section">
           <h3>RDV</h3>
           <label for="rdvDate">Date du RDV :</label>
-          <!-- Champ de type text pour activer le calendrier Flatpickr -->
           <input type="text" id="rdvDate" name="rdvDate" placeholder="Choisissez une date" />
-  
           <label for="rdvTime">Heure du RDV :</label>
           <input type="time" id="rdvTime" name="rdvTime" />
         </div>
         <div class="form-section">
           <h3>Commentaires</h3>
           <label for="comments">Commentaires :</label>
-          <textarea
-            id="comments"
-            name="comments"
-            placeholder="Entrez vos commentaires"
-          ></textarea>
+          <textarea id="comments" name="comments" placeholder="Entrez vos commentaires"></textarea>
         </div>
-           <!-- Exemple : Input file caché ou non + label cliquable -->
-        <input 
-          type="file" 
-          id="mapCaptureFile" 
-          accept="image/png, image/jpeg" 
-          style="display:none;"
-        />
-        <label 
-          for="mapCaptureFile" 
-          style="cursor:pointer; color:blue; text-decoration:underline;"
-        >
-          Sélectionner la capture
-        </label>
-
+        <input type="file" id="mapCaptureFile" accept="image/png, image/jpeg" style="display:none;" />
+        <label for="mapCaptureFile" style="cursor:pointer; color:blue; text-decoration:underline;">Sélectionner la capture</label>
         <br/><br/>
-        <!-- Boutons PDF + gestion JSON -->
         <div style="margin-bottom:15px;">
           <button type="button" id="exportPDFBtn">Exporter en PDF</button>
           <button type="button" id="saveToFile">Télécharger les données</button>
@@ -800,35 +672,35 @@
         </div>
         <div class="form-section">
           <h3>Charges photovoltaïques courantes</h3>
-          <label for="assurance_dommages">Assurance dommages et RCP :</label>
-          <input type="text" id="assurance_dommages" name="assurance_dommages" value="0.20%" />
-          <label for="assurance_perte">Assurance perte d'exploitation :</label>
-          <input type="text" id="assurance_perte" name="assurance_perte" value="0.30%" />
-          <label for="cout_maintenance">Coût maintenance préventive/curative/nettoyage :</label>
-          <input type="text" id="cout_maintenance" name="cout_maintenance" value="5.97 €/kWc" />
+          <label for="assurance_dommages">Assurance dommages et RCP % :</label>
+          <input type="text" id="assurance_dommages" name="assurance_dommages" value="0.20" />
+          <label for="assurance_perte">Assurance perte d'exploitation % :</label>
+          <input type="text" id="assurance_perte" name="assurance_perte" value="0.30" />
+          <label for="cout_maintenance">Coût maintenance préventive/curative/nettoyage (€/kWc) :</label>
+          <input type="text" id="cout_maintenance" name="cout_maintenance" value="5.97" />
         </div>
         <div class="form-section">
           <h3>Evolution liée au vieillissement de la centrale</h3>
-          <label for="cout_reparations">Coût réparations courantes :</label>
-          <input type="text" id="cout_reparations" name="cout_reparations" value="0.19%" />
+          <label for="cout_reparations">Coût réparations courantes % :</label>
+          <input type="text" id="cout_reparations" name="cout_reparations" value="0.19" />
           <label for="cout_changement_onduleurs">Coût changement onduleurs :</label>
           <input type="text" id="cout_changement_onduleurs" name="cout_changement_onduleurs" value="" placeholder="Saisir valeur" />
-          <label for="perte_puissance">Perte puissance annuelle des panneaux :</label>
-          <input type="text" id="perte_puissance" name="perte_puissance" value="0.60%" />
+          <label for="perte_puissance">Perte puissance annuelle des panneaux % :</label>
+          <input type="text" id="perte_puissance" name="perte_puissance" value="0.60" />
         </div>
         <div class="form-section">
           <h3>Paramètres financiers généraux</h3>
-          <label for="inflation_estimee">Inflation estimée :</label>
-          <input type="text" id="inflation_estimee" name="inflation_estimee" value="2.00%/an" />
-          <label for="taux_emprunt">Taux emprunt :</label>
-          <input type="text" id="taux_emprunt" name="taux_emprunt" value="2.00%" />
+          <label for="inflation_estimee">Inflation estimée (%/an) :</label>
+          <input type="text" id="inflation_estimee" name="inflation_estimee" value="2.00" />
+          <label for="taux_emprunt">Taux emprunt % :</label>
+          <input type="text" id="taux_emprunt" name="taux_emprunt" value="2.00" />
           <label for="duree_pret">Durée prêt en années :</label>
           <input type="number" id="duree_pret" name="duree_pret" value="" placeholder="Saisir durée" />
           <label for="taux_autofinancement">Taux autofinancement :</label>
           <input type="text" id="taux_autofinancement" name="taux_autofinancement" value="" placeholder="Saisir taux" />
           <label for="index_leasing">Index du leasing :</label>
           <input type="text" id="index_leasing" name="index_leasing" value="1.837" />
-          <label for="duree_leasing">Durée du leasing :</label>
+          <label for="duree_leasing">Durée du leasing (mois) :</label>
           <input type="number" id="duree_leasing" name="duree_leasing" value="72" />
         </div>
       </div><!-- fin tab11 -->
@@ -852,10 +724,7 @@
       evt.currentTarget.classList.add("activeTab");
 
       if (tabId === 'tab1') {
-        // On redonne le bon size à la map
-        setTimeout(() => {
-          map.invalidateSize();
-        }, 300);
+        setTimeout(() => { map.invalidateSize(); }, 300);
       }
     }
 
@@ -863,8 +732,6 @@
      *  VARIABLES GLOBALES & DONNÉES PRIMES INTÉGRÉES
      ***************************************************/
     let monthlyProductionData = [];
-
-    // On intègre directement le JSON dans une variable :
     const primeTarifsData = {
       "France Metropolitaine": {
         "tarif_rachat": [
@@ -917,10 +784,10 @@
     };
 
     function detectTerritoryFromZip(cpStr) {
-      if(!cpStr || cpStr.length<2) return "France Metropolitaine";
-      let prefix2= cpStr.substring(0,2); 
-      if(prefix2==="20") return "Corse";
-      if(prefix2==="97") return "Reunion";
+      if(!cpStr || cpStr.length < 2) return "France Metropolitaine";
+      let prefix2 = cpStr.substring(0,2); 
+      if(prefix2 === "20") return "Corse";
+      if(prefix2 === "97") return "Reunion";
       return "France Metropolitaine";
     }
 
@@ -928,44 +795,20 @@
      *  INITIALISATION PAGE
      ***************************************************/
     window.addEventListener("load", function() {
-      // Ouvre le premier onglet par défaut
       const firstTabButton = document.querySelector(".tabNav button");
-      if (firstTabButton) {
-        firstTabButton.click();
-      }
-
-      // === CRÉATION DYNAMIQUE DU TABLEAU DE CONSOMMATION MENSUELLE (onglet 7) ===
+      if (firstTabButton) { firstTabButton.click(); }
       const consumptionTableBody = document.getElementById("consumptionTableBody");
-      const months = [
-        "Janvier","Février","Mars","Avril","Mai","Juin",
-        "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
-      ];
-      // On insère les rangées juste avant la ligne "Totaux annuels"
-      const lastRow = consumptionTableBody.querySelector("tr"); // le <tr> de "Total annuel"
-
+      const months = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+      const lastRow = consumptionTableBody.querySelector("tr");
       months.forEach((month, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${month}</td>
           <td>
-            <input
-              type="number"
-              id="euros_${index}"
-              name="euros_${index}"
-              placeholder="€"
-              style="width: 90%;"
-              oninput="calculateCost(${index})"
-            />
+            <input type="number" id="euros_${index}" name="euros_${index}" placeholder="€" style="width: 90%;" oninput="calculateCost(${index})" />
           </td>
           <td>
-            <input
-              type="number"
-              id="kwh_${index}"
-              name="kwh_${index}"
-              placeholder="kWh"
-              style="width: 90%;"
-              oninput="calculateCost(${index})"
-            />
+            <input type="number" id="kwh_${index}" name="kwh_${index}" placeholder="kWh" style="width: 90%;" oninput="calculateCost(${index})" />
           </td>
           <td id="costPerKwh_${index}">-</td>
         `;
@@ -983,7 +826,6 @@
       attribution: "© Google",
     });
     tileLayer.addTo(map);
-
     let searchMarker = null;
 
     /***************************************************
@@ -992,26 +834,20 @@
     const drawingCanvas = document.getElementById("drawingCanvas");
     const ctx = drawingCanvas.getContext("2d");
     const AdresseField = document.getElementById("Adresse");
-
     let drawing = false;
     let drawingEnabled = false;
-
     const toggleDrawingButton = document.getElementById("toggleDrawingButton");
     toggleDrawingButton.addEventListener("click", () => {
       drawingEnabled = !drawingEnabled;
       drawingCanvas.style.pointerEvents = drawingEnabled ? "auto" : "none";
-      toggleDrawingButton.textContent = drawingEnabled
-        ? "Désactiver le dessin"
-        : "Activer le dessin (main levée)";
+      toggleDrawingButton.textContent = drawingEnabled ? "Désactiver le dessin" : "Activer le dessin (main levée)";
     });
-
     function resizeCanvas() {
       drawingCanvas.width = drawingCanvas.offsetWidth;
       drawingCanvas.height = drawingCanvas.offsetHeight;
     }
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
-
     drawingCanvas.addEventListener("mousedown", (event) => {
       if (!drawingEnabled) return;
       drawing = true;
@@ -1031,7 +867,6 @@
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.strokeStyle = "red";
-
       const rect = drawingCanvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -1044,7 +879,6 @@
      ***************************************************/
     const drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
-
     const drawControl = new L.Control.Draw({
       draw: {
         marker: false,
@@ -1058,7 +892,6 @@
         featureGroup: drawnItems
       }
     });
-
     let measureActive = false;
     const measureButton = document.getElementById("toggleMeasureButton");
     measureButton.addEventListener("click", () => {
@@ -1071,34 +904,26 @@
         measureButton.textContent = "Mesurer une surface";
       }
     });
-
     function computeBearing(lat1, lng1, lat2, lng2) {
       const toRad = (val) => val * Math.PI / 180;
       const toDeg = (val) => val * 180 / Math.PI;
       const dLon = toRad(lng2 - lng1);
       const y = Math.sin(dLon) * Math.cos(toRad(lat2));
-      const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2))
-        - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+      const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
       let brng = Math.atan2(y, x);
       brng = toDeg(brng);
       return (brng + 360) % 360;
     }
-
     map.on(L.Draw.Event.CREATED, function (e) {
       const layer = e.layer;
       drawnItems.addLayer(layer);
-
       if (e.layerType === "polygon" || e.layerType === "rectangle") {
         let latLngs = layer.getLatLngs();
-        if (Array.isArray(latLngs[0])) {
-          latLngs = latLngs[0];
-        }
+        if (Array.isArray(latLngs[0])) { latLngs = latLngs[0]; }
         const area = L.GeometryUtil.geodesicArea(latLngs);
         const areaInt = Math.round(area);
-
         alert(`Surface mesurée : ${areaInt.toLocaleString('fr-FR')} m²`);
         document.getElementById("Surface toiture").value = areaInt;
-
         updateProductionPotential();
       } else if (e.layerType === "polyline") {
         const latLngs = layer.getLatLngs();
@@ -1109,13 +934,10 @@
         const first = latLngs[0];
         const last = latLngs[latLngs.length - 1];
         const angle = computeBearing(first.lat, first.lng, last.lat, last.lng);
-
         let aspectVal = angle - 180;
         aspectVal = (aspectVal + 180 + 360) % 360 - 180;
-
         document.getElementById("orientationIrr").value = aspectVal.toFixed(1);
         document.getElementById("orientation").value = aspectVal.toFixed(1);
-
         alert(`Orientation déterminée: ${aspectVal.toFixed(1)}° (0 = Sud)`);
         drawnItems.removeLayer(layer);
       }
@@ -1126,47 +948,36 @@
      ***************************************************/
     const addressSearchBtn = document.getElementById("addressSearchBtn");
     addressSearchBtn.addEventListener("click", searchAddress);
-
     function searchAddress() {
       const address = document.getElementById("address").value;
       if(!address) return;
       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
         .then(r => r.json())
         .then(data => {
-          if(data.length>0){
-            const { lat, lon, display_name }= data[0];
-            map.setView([lat, lon],18);
-            AdresseField.value= address;
-
-            if(searchMarker){
-              map.removeLayer(searchMarker);
-            }
-            searchMarker= L.marker([lat, lon]).addTo(map);
+          if(data.length > 0){
+            const { lat, lon, display_name } = data[0];
+            map.setView([lat, lon], 18);
+            AdresseField.value = address;
+            if(searchMarker){ map.removeLayer(searchMarker); }
+            searchMarker = L.marker([lat, lon]).addTo(map);
             searchMarker.bindPopup(`Adresse trouvée : ${address}`).openPopup();
-
-            document.getElementById("latitudeIrr").value= lat;
-            document.getElementById("longitudeIrr").value= lon;
-
-            // Cherchons code postal
-            let foundCP= null;
+            document.getElementById("latitudeIrr").value = lat;
+            document.getElementById("longitudeIrr").value = lon;
+            let foundCP = null;
             if(data[0].address && data[0].address.postcode){
-              foundCP= data[0].address.postcode;
+              foundCP = data[0].address.postcode;
             } else {
-              const patternCP= /\b(\d{4,5})\b/;
-              let match= display_name.match(patternCP);
-              if(match) foundCP= match[1];
+              const patternCP = /\b(\d{4,5})\b/;
+              let match = display_name.match(patternCP);
+              if(match) foundCP = match[1];
             }
-
             if(foundCP){
-              const territoryValue= detectTerritoryFromZip(foundCP);
-              document.getElementById("territory").value= territoryValue;
+              const territoryValue = detectTerritoryFromZip(foundCP);
+              document.getElementById("territory").value = territoryValue;
             } else {
-              document.getElementById("territory").value= "France Metropolitaine";
+              document.getElementById("territory").value = "France Metropolitaine";
             }
-
-          } else {
-            alert("Adresse introuvable.");
-          }
+          } else { alert("Adresse introuvable."); }
         })
         .catch(err => {
           console.error("Erreur recherche adresse:", err);
@@ -1178,38 +989,33 @@
      * 3B) CALCUL PRODUCTIBLE (API PVGIS)
      ***************************************************/
     async function getProductible(lat, lon, aspectValue){
-      const angleValue= parseFloat(document.getElementById("angleIrr").value)||35;
-      const originalUrl= `https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?outputformat=basic&lat=${lat}&lon=${lon}&raddatabase=PVGIS-SARAH2&peakpower=1&loss=14&pvtechchoice=crystSi&angle=${angleValue}&aspect=${aspectValue}&usehorizon=1`;
-
-      // Proxy si besoin (sinon vous pouvez appeler l'URL direct)
-      const proxyUrl= `https://corsproxy.io/?key=a32495b2&url=${encodeURIComponent(originalUrl)}`;
-
+      const angleValue = parseFloat(document.getElementById("angleIrr").value) || 35;
+      const originalUrl = `https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?outputformat=basic&lat=${lat}&lon=${lon}&raddatabase=PVGIS-SARAH2&peakpower=1&loss=14&pvtechchoice=crystSi&angle=${angleValue}&aspect=${aspectValue}&usehorizon=1`;
+      const proxyUrl = `https://corsproxy.io/?key=a32495b2&url=${encodeURIComponent(originalUrl)}`;
       try {
-        const response= await fetch(proxyUrl);
+        const response = await fetch(proxyUrl);
         if(!response.ok) return null;
-        const text= await response.text();
-        const lines= text.split("\n");
-
-        let yearProduction= null;
-        let tempMonthly= [];
-
+        const text = await response.text();
+        const lines = text.split("\n");
+        let yearProduction = null;
+        let tempMonthly = [];
         for(let line of lines){
-          let cleanLine= line.trim();
+          let cleanLine = line.trim();
           if(!cleanLine) continue;
           if(cleanLine.includes("Year")){
-            const parts= cleanLine.split("\t").map(s=>s.trim());
-            yearProduction= parseFloat(parts[1]);
+            const parts = cleanLine.split("\t").map(s => s.trim());
+            yearProduction = parseFloat(parts[1]);
           }
           else if(/^\d+\s/.test(cleanLine)){
-            const parts= cleanLine.split("\t").map(s=>s.trim());
-            if(parts.length>=3){
-              const monthNumber= parseInt(parts[0],10);
-              const E_mValue= parseFloat(parts[2]);
+            const parts = cleanLine.split("\t").map(s => s.trim());
+            if(parts.length >= 3){
+              const monthNumber = parseInt(parts[0], 10);
+              const E_mValue = parseFloat(parts[2]);
               tempMonthly.push({month: monthNumber, E_m: E_mValue});
             }
           }
         }
-        monthlyProductionData= tempMonthly;
+        monthlyProductionData = tempMonthly;
         return {yearProduction, monthlyProduction: tempMonthly};
       } catch(e){
         console.error(e);
@@ -1217,40 +1023,36 @@
       }
     }
 
-    const calculateIrrButton= document.getElementById("calculateIrrButton");
-    calculateIrrButton.addEventListener("click", async()=>{
-      const lat= parseFloat(document.getElementById("latitudeIrr").value);
-      const lon= parseFloat(document.getElementById("longitudeIrr").value);
-      const aspectValue= parseFloat(document.getElementById("orientation").value);
-      if(isNaN(lat)||isNaN(lon)){
+    const calculateIrrButton = document.getElementById("calculateIrrButton");
+    calculateIrrButton.addEventListener("click", async () => {
+      const lat = parseFloat(document.getElementById("latitudeIrr").value);
+      const lon = parseFloat(document.getElementById("longitudeIrr").value);
+      const aspectValue = parseFloat(document.getElementById("orientation").value);
+      if(isNaN(lat) || isNaN(lon)){
         alert("Veuillez d'abord renseigner la latitude et la longitude.");
         return;
       }
-      const result= await getProductible(lat,lon,aspectValue);
-      if(result && result.yearProduction!==null){
-        document.getElementById("productible").value= result.yearProduction.toLocaleString('fr-FR');
+      const result = await getProductible(lat, lon, aspectValue);
+      if(result && result.yearProduction !== null){
+        document.getElementById("productible").value = result.yearProduction.toLocaleString('fr-FR');
         fillMonthlyProductionTable(result.monthlyProduction);
-      }
-      else {
+      } else {
         alert("Impossible de récupérer le productible. Vérifiez la connexion ou les données.");
       }
       updateProductionPotential();
     });
 
     function fillMonthlyProductionTable(monthlyData){
-      const tableBody= document.querySelector("#monthlyProductionTable tbody");
-      tableBody.innerHTML="";
-      const moisNoms= ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-
-      monthlyData.forEach(item=>{
-        const row= document.createElement("tr");
-        const monthCell= document.createElement("td");
-        const productionCell= document.createElement("td");
-        const idx= item.month-1;
-
-        monthCell.textContent= (idx>=0 && idx<12)? moisNoms[idx]: `Mois ${item.month}`;
-        productionCell.textContent= item.E_m?.toLocaleString('fr-FR')|| "-";
-
+      const tableBody = document.querySelector("#monthlyProductionTable tbody");
+      tableBody.innerHTML = "";
+      const moisNoms = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+      monthlyData.forEach(item => {
+        const row = document.createElement("tr");
+        const monthCell = document.createElement("td");
+        const productionCell = document.createElement("td");
+        const idx = item.month - 1;
+        monthCell.textContent = (idx >= 0 && idx < 12) ? moisNoms[idx] : `Mois ${item.month}`;
+        productionCell.textContent = item.E_m?.toLocaleString('fr-FR') || "-";
         row.appendChild(monthCell);
         row.appendChild(productionCell);
         tableBody.appendChild(row);
@@ -1261,36 +1063,30 @@
      * 3C) CALCUL "POTENTIEL DE PRODUCTION"
      ***************************************************/
     function updateProductionPotential(){
-      const surfaceStr= (document.getElementById("Surface toiture").value||"")
-        .replace(/\s/g,"").replace(/\./g,"").replace(/,/g,".");
-      const exclStr= document.getElementById("exclusionPercent").value||"0";
-      const panelPowerStr= document.getElementById("puissancePanneau").value||"420";
-      const productibleStr= (document.getElementById("productible").value||"")
-        .replace(/\s/g,"").replace(/\./g,"").replace(/,/g,".");
-
-      const surface= parseFloat(surfaceStr)||0;
-      const exclusionPercent= parseFloat(exclStr)||0;
-      const panelPower= parseFloat(panelPowerStr)||420;
-      const productibleVal= parseFloat(productibleStr)||0;
-
-      const surfaceUtile= surface*(1-(exclusionPercent/100));
-      const nbPanels= Math.floor(surfaceUtile/2); // hypothèse 1 panneau=2m²
-      const puissanceMaxW= nbPanels* panelPower;
-      const puissanceMaxKW= Math.round(puissanceMaxW/1000);
-
-      const production= Math.round(puissanceMaxKW* productibleVal);
-
-      document.getElementById("nombrePVMax").value= nbPanels.toLocaleString('fr-FR');
-      document.getElementById("puissanceMaxPV").value= puissanceMaxKW.toLocaleString('fr-FR');
-      document.getElementById("productionInstall").value= production.toLocaleString('fr-FR');
+      const surfaceStr = (document.getElementById("Surface toiture").value || "")
+        .replace(/\s/g, "").replace(/\./g, "").replace(/,/g, ".");
+      const exclStr = document.getElementById("exclusionPercent").value || "0";
+      const panelPowerStr = document.getElementById("puissancePanneau").value || "420";
+      const productibleStr = (document.getElementById("productible").value || "")
+        .replace(/\s/g, "").replace(/\./g, "").replace(/,/g, ".");
+      const surface = parseFloat(surfaceStr) || 0;
+      const exclusionPercent = parseFloat(exclStr) || 0;
+      const panelPower = parseFloat(panelPowerStr) || 420;
+      const productibleVal = parseFloat(productibleStr) || 0;
+      const surfaceUtile = surface * (1 - (exclusionPercent/100));
+      const nbPanels = Math.floor(surfaceUtile / 2);
+      const puissanceMaxW = nbPanels * panelPower;
+      const puissanceMaxKW = Math.round(puissanceMaxW / 1000);
+      const production = Math.round(puissanceMaxKW * productibleVal);
+      document.getElementById("nombrePVMax").value = nbPanels.toLocaleString('fr-FR');
+      document.getElementById("puissanceMaxPV").value = puissanceMaxKW.toLocaleString('fr-FR');
+      document.getElementById("productionInstall").value = production.toLocaleString('fr-FR');
     }
 
-    // Ecouteurs
-    const surfaceInput= document.getElementById("Surface toiture");
-    const exclInput= document.getElementById("exclusionPercent");
-    const panelSelect= document.getElementById("puissancePanneau");
-    const productibleInput= document.getElementById("productible");
-
+    const surfaceInput = document.getElementById("Surface toiture");
+    const exclInput = document.getElementById("exclusionPercent");
+    const panelSelect = document.getElementById("puissancePanneau");
+    const productibleInput = document.getElementById("productible");
     surfaceInput.addEventListener("input", updateProductionPotential);
     exclInput.addEventListener("input", updateProductionPotential);
     panelSelect.addEventListener("change", updateProductionPotential);
@@ -1299,88 +1095,50 @@
     /***************************************************
      * PARTIE : EXPORT PDF AVEC CAPTURE CARTE
      ***************************************************/
-
-    // 1) On cible l'input file (capture de carte) + le bouton export
     const mapCaptureFileInput = document.getElementById("mapCaptureFile");
-    const exportPDFBtn        = document.getElementById("exportPDFBtn");
-
-    // Variables globales pour stocker le dataURL et le format (PNG/JPEG)
-    let mapCaptureDataURL   = null;
-    let mapCaptureFormat    = null;
-
-    // 2) Lecture du fichier image (capture) dès qu'il est sélectionné
+    const exportPDFBtn = document.getElementById("exportPDFBtn");
+    let mapCaptureDataURL = null;
+    let mapCaptureFormat = null;
     mapCaptureFileInput.addEventListener("change", (event) => {
       const file = event.target.files[0];
-      if (!file) {
-        mapCaptureDataURL = null;
-        mapCaptureFormat  = null;
-        return;
-      }
-
+      if (!file) { mapCaptureDataURL = null; mapCaptureFormat = null; return; }
       const reader = new FileReader();
       reader.onload = (e) => {
-        mapCaptureDataURL = e.target.result; // "data:image/...;base64,..."
-
-        // Déterminer le format à partir du type MIME du fichier
-        if (file.type.toLowerCase().includes("jpeg")) {
-          mapCaptureFormat = "JPEG";
-        } else if (file.type.toLowerCase().includes("png")) {
-          mapCaptureFormat = "PNG";
-        } else {
-          mapCaptureFormat = "PNG"; // par défaut
-        }
-
+        mapCaptureDataURL = e.target.result;
+        if (file.type.toLowerCase().includes("jpeg")) { mapCaptureFormat = "JPEG"; }
+        else if (file.type.toLowerCase().includes("png")) { mapCaptureFormat = "PNG"; }
+        else { mapCaptureFormat = "PNG"; }
         alert("Capture de carte sélectionnée !");
       };
       reader.readAsDataURL(file);
     });
-
-    // 3) Au clic sur le bouton PDF, on lance l'export
     exportPDFBtn.addEventListener("click", exportStudyReportPDF);
-
-    /***************************************************
-     * FONCTION : exportStudyReportPDF
-     ***************************************************/
     async function exportStudyReportPDF(){
       try {
-        // Vérifier si la capture de la carte est sélectionnée
         if (!mapCaptureDataURL) {
           alert("Veuillez sélectionner la capture de la carte avant de générer le PDF.");
           return;
         }
-
-        // (A) Retirer/másquer le drawingCanvas pour éviter le tainting
         const drawingCanvas = document.getElementById("drawingCanvas");
         let drawingCanvasParent = null;
         if (drawingCanvas) {
           drawingCanvasParent = drawingCanvas.parentNode;
           drawingCanvasParent.removeChild(drawingCanvas);
         }
-
-        // (B) Création du PDF
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF("p", "mm", "a4");
         const pageWidth = pdf.internal.pageSize.getWidth();
-
-        /************* PAGE 1 : EN-TÊTE, LOGO, TITRE, CARTE, INFOS CLIENT *************/
-        // En-tête coloré
         pdf.setFillColor(0, 92, 160);
         pdf.rect(0, 0, pageWidth, 25, "F");
-
-        // Logo agrandi (30x30 mm) et centré verticalement dans l'en-tête
         const frhProLogoUrl = "https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png";
         const frhProLogo = new Image();
         frhProLogo.crossOrigin = "Anonymous";
         frhProLogo.src = frhProLogoUrl;
         await new Promise((resolve) => { frhProLogo.onload = resolve; });
         pdf.addImage(frhProLogo, "PNG", 10, 5, 30, 30);
-
-        // Titre "FRH PRO" centré dans l'en-tête
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(22);
         pdf.text("FRH PRO", pageWidth / 2, 17, { align: "center" });
-
-        // Sous-titre avec le titre du rapport et nom du client, centré
         pdf.setTextColor(0, 0, 0);
         pdf.setFontSize(16);
         const companyName = document.getElementById("companyName")?.value || "";
@@ -1388,8 +1146,6 @@
         const titleLines = pdf.splitTextToSize(mainTitle, pageWidth - 20);
         pdf.text(titleLines, pageWidth / 2, 40, { align: "center" });
         let yPos = 50;
-
-        // Affichage de l'image de la carte (centrée horizontalement avec marges de 15 mm)
         const imgTemp = new Image();
         imgTemp.src = mapCaptureDataURL;
         await new Promise((resolve) => { imgTemp.onload = resolve; });
@@ -1398,8 +1154,6 @@
         const pdfHeight = pdfWidth * ratio;
         pdf.addImage(mapCaptureDataURL, mapCaptureFormat, 15, yPos, pdfWidth, pdfHeight);
         yPos += pdfHeight + 10;
-
-        // Affichage des informations client (alignées à gauche)
         pdf.setFontSize(12);
         const addressVal = document.getElementById("address")?.value || "";
         const latVal = document.getElementById("latitudeIrr")?.value || "";
@@ -1411,276 +1165,191 @@
         yPos += 6;
         pdf.text(`Coordonnées : lat=${latVal}, lon=${lonVal}`, 15, yPos);
         yPos += 6;
-        // Formatage du productible avec toLocaleString("fr-FR")
         pdf.text(`Productible : ${parseFloat(productibleVal).toLocaleString("fr-FR")} kWh/kWc/an`, 15, yPos);
         yPos += 10;
-
-
-        // (C) Choix du scénario
         let scenarioChoice = prompt(
           "Choisir la préconisation à utiliser dans le rapport\n" +
           "'1' => Préconisation standard\n" +
           "'2' => Préconisation Sélection"
         );
-        if(!scenarioChoice) return; // Annulation
+        if(!scenarioChoice) return;
         scenarioChoice = scenarioChoice.trim();
-
-      /*******************************************************
-       * Selon le choix, on définit les IDs pour le tableau mensuel,
-       * le canvas du graphique et le tableau de projection 20 ans
-       *******************************************************/
-    let monthlyTableId, monthlyChartId, twentyYearsId;
-    let puissanceId, coutInstId, primeId, coutReelId, gainSansId, gainAvecId, roiId;
-
-    if (scenarioChoice === "2") {
-      // Scénario "Sélection"
-      monthlyTableId   = "preconisationMonthlyTableForced";
-      monthlyChartId   = "monthlyBarChartForced";
-      twentyYearsId    = "preconisationTableForced";
-      puissanceId      = "puissanceRecoForced";
-      coutInstId       = "coutInstallationForced";
-      primeId          = "primeValueForced";
-      coutReelId       = "coutReelInstallationForced";
-      gainSansId       = "gainSansInvForced";
-      gainAvecId       = "gainAvecInvForced";
-      roiId            = "roiResultForced";
-    } else {
-      // Par défaut, scénario "standard" (1)
-      monthlyTableId   = "preconisationMonthlyTable";
-      monthlyChartId   = "monthlyBarChart";
-      twentyYearsId    = "preconisationTable";
-      puissanceId      = "puissanceReco";
-      coutInstId       = "coutInstallation";
-      primeId          = "primeValue";
-      coutReelId       = "coutReelInstallation";
-      gainSansId       = "gainSansInv";
-      gainAvecId       = "gainAvecInv";
-      roiId            = "roiResult";
-    }
-
-    await page2_TableauEtGraphique(pdf, scenarioChoice);
-
-        
-        /*******************************************************
-         * FONCTION : dessiner un diagramme en barres vectoriel
-         *******************************************************/
-    function drawVectorBarChart(pdf, chartX, chartY, chartWidth, chartHeight,
-                                moisLabels, consoData, autoData, revData) {
-      // 1) Trouve la valeur max
-      const allValues = [...consoData, ...autoData, ...revData];
-      const maxValue = Math.max(...allValues, 0);
-      if (maxValue <= 0) {
-        pdf.setFontSize(12);
-        pdf.text("Pas de données valides pour tracer le graphique.", chartX, chartY + 10);
-        return;
-      }
-
-      // 2) Nombre de lignes de quadrillage
-      const nbGridLines = 5;
-      const stepValue   = maxValue / nbGridLines;
-      const stepHeight  = chartHeight / nbGridLines;
-
-      // Couleur du quadrillage
-      pdf.setDrawColor(200, 200, 200);
-      pdf.setLineWidth(0.2);
-
-      // 3) Quadrillage horizontal + labels Y
-      pdf.setFontSize(8);
-      for (let i = 0; i <= nbGridLines; i++) {
-        const y = chartY + chartHeight - i * stepHeight; 
-        pdf.line(chartX, y, chartX + chartWidth, y);
-        const val = i * stepValue;
-        const labelStr = Math.round(val).toLocaleString() + " kWh";
-        pdf.text(labelStr, chartX - 2, y, { align: "right" });
-      }
-
-      // 4) Barres
-      const nbMois     = moisLabels.length;
-      const groupWidth = chartWidth / nbMois;
-      const barWidth   = groupWidth / 3;
-
-      const colorConso = [255, 159, 159];
-      const colorAuto  = [159, 235, 159];
-      const colorRev   = [159, 189, 255];
-
-      pdf.setFontSize(7);
-      for (let i = 0; i < nbMois; i++) {
-        const baseX = chartX + i * groupWidth;
-        const baseY = chartY + chartHeight;
-
-        const hConso = (consoData[i] / maxValue) * chartHeight;
-        pdf.setFillColor(...colorConso);
-        pdf.rect(baseX, baseY - hConso, barWidth, hConso, "F");
-
-        const hAuto = (autoData[i] / maxValue) * chartHeight;
-        pdf.setFillColor(...colorAuto);
-        pdf.rect(baseX + barWidth, baseY - hAuto, barWidth, hAuto, "F");
-
-        const hRev = (revData[i] / maxValue) * chartHeight;
-        pdf.setFillColor(...colorRev);
-        pdf.rect(baseX + 2 * barWidth, baseY - hRev, barWidth, hRev, "F");
-
-        pdf.setTextColor(0, 0, 0);
-        pdf.text(moisLabels[i], baseX + barWidth, baseY + 3, { align: "center" });
-      }
-
-      pdf.setFontSize(9);
-      pdf.text("kWh", chartX + 2, chartY + 5);
-    }
-
-    /*******************************************************
-     * EXEMPLE : PAGE 2 AVEC TABLEAU + GRAPHIQUE
-     *******************************************************/
-    async function page2_TableauEtGraphique(pdf, scenarioChoice) {
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.setTextColor(40, 40, 40);
-      pdf.text("Détails par mois (année 1)", 10, 15);
-
-      let nextY = 20;
-
-      let monthlyTableId;
-      if (scenarioChoice === "2") {
-        monthlyTableId = "preconisationMonthlyTableForced";
-      } else {
-        monthlyTableId = "preconisationMonthlyTable";
-      }
-
-      const monthlyTableEl = document.getElementById(monthlyTableId);
-      if (monthlyTableEl) {
-        pdf.autoTable({
-          html: monthlyTableEl,
-          startY: nextY,
-          styles: {
-            fontSize: 8,
-            cellPadding: 2
-          },
-          headStyles: {
-            fillColor: [0, 92, 160],
-            textColor: 255,
-            fontSize: 9
-          }
-        });
-        const lastAutoTable = pdf.lastAutoTable;
-        if (lastAutoTable) {
-          nextY = lastAutoTable.finalY + 10;
+        let monthlyTableId, monthlyChartId, twentyYearsId;
+        let puissanceId, coutInstId, primeId, coutReelId, gainSansId, gainAvecId, roiId;
+        if (scenarioChoice === "2") {
+          monthlyTableId   = "preconisationMonthlyTableForced";
+          monthlyChartId   = "monthlyBarChartForced";
+          twentyYearsId    = "preconisationTableForced";
+          puissanceId      = "puissanceRecoForced";
+          coutInstId       = "coutInstallationForced";
+          primeId          = "primeValueForced";
+          coutReelId       = "coutReelInstallationForced";
+          gainSansId       = "gainSansInvForced";
+          gainAvecId       = "gainAvecInvForced";
+          roiId            = "roiResultForced";
+        } else {
+          monthlyTableId   = "preconisationMonthlyTable";
+          monthlyChartId   = "monthlyBarChart";
+          twentyYearsId    = "preconisationTable";
+          puissanceId      = "puissanceReco";
+          coutInstId       = "coutInstallation";
+          primeId          = "primeValue";
+          coutReelId       = "coutReelInstallation";
+          gainSansId       = "gainSansInv";
+          gainAvecId       = "gainAvecInv";
+          roiId            = "roiResult";
         }
-      } else {
-        pdf.setFontSize(12);
-        pdf.text("Aucun tableau mensuel trouvé.", 10, 25);
-        nextY = 35;
-      }
-
-      const moisLabels = [];
-      const consoData  = [];
-      const autoData   = [];
-      const revData    = [];
-
-      if (monthlyTableEl) {
-        const rows = monthlyTableEl.querySelectorAll("tbody tr");
-        rows.forEach((tr) => {
-          const tds = tr.querySelectorAll("td");
-          if (tds.length >= 5) {
-            const moisTxt = tds[0].textContent.trim();
-            const cVal    = parseFloat(tds[1].textContent) || 0; 
-            const aVal    = parseFloat(tds[3].textContent) || 0;
-            const rVal    = parseFloat(tds[4].textContent) || 0;
-            moisLabels.push(moisTxt);
-            consoData.push(cVal);
-            autoData.push(aVal);
-            revData.push(rVal);
+        await page2_TableauEtGraphique(pdf, scenarioChoice);
+        function drawVectorBarChart(pdf, chartX, chartY, chartWidth, chartHeight, moisLabels, consoData, autoData, revData) {
+          const allValues = [...consoData, ...autoData, ...revData];
+          const maxValue = Math.max(...allValues, 0);
+          if (maxValue <= 0) {
+            pdf.setFontSize(12);
+            pdf.text("Pas de données valides pour tracer le graphique.", chartX, chartY + 10);
+            return;
           }
-        });
-      }
-
-      pdf.setFontSize(14);
-      pdf.text("Graphique (Détails par mois)", 10, nextY);
-      nextY += 10;
-
-      drawVectorBarChart(pdf, 15, nextY, 170, 70, moisLabels, consoData, autoData, revData);
-
-      nextY += 80 + 15; 
-    }
-
-    /*******************************************************
-     * PAGE 3 : PROJECTION 20 ANS + CHIFFRES CLÉS
-     *******************************************************/
-    pdf.addPage();
-    pdf.setFontSize(14);
-    pdf.setTextColor(40, 40, 40);
-    pdf.text("Projection sur 20 ans", 10, 15);
-
-    let nextY3 = 20;
-    const twentyTableEl = document.getElementById(twentyYearsId);
-    if (twentyTableEl) {
-      // Réagencement : Facture Avec PV placée après Économies Autoconso
-      pdf.autoTable({
-        html: twentyTableEl,
-        startY: nextY3,
-        styles: {
-          fontSize: 8,
-          cellPadding: 2
-        },
-        headStyles: {
-          fillColor: [22, 160, 133],
-          textColor: 255,
-          fontSize: 9
+          const nbGridLines = 5;
+          const stepValue = maxValue / nbGridLines;
+          const stepHeight = chartHeight / nbGridLines;
+          pdf.setDrawColor(200, 200, 200);
+          pdf.setLineWidth(0.2);
+          pdf.setFontSize(8);
+          for (let i = 0; i <= nbGridLines; i++) {
+            const y = chartY + chartHeight - i * stepHeight; 
+            pdf.line(chartX, y, chartX + chartWidth, y);
+            const val = i * stepValue;
+            const labelStr = Math.round(val).toLocaleString() + " kWh";
+            pdf.text(labelStr, chartX - 2, y, { align: "right" });
+          }
+          const nbMois = moisLabels.length;
+          const groupWidth = chartWidth / nbMois;
+          const barWidth = groupWidth / 3;
+          const colorConso = [255, 159, 159];
+          const colorAuto = [159, 235, 159];
+          const colorRev = [159, 189, 255];
+          pdf.setFontSize(7);
+          for (let i = 0; i < nbMois; i++) {
+            const baseX = chartX + i * groupWidth;
+            const baseY = chartY + chartHeight;
+            const hConso = (consoData[i] / maxValue) * chartHeight;
+            pdf.setFillColor(...colorConso);
+            pdf.rect(baseX, baseY - hConso, barWidth, hConso, "F");
+            const hAuto = (autoData[i] / maxValue) * chartHeight;
+            pdf.setFillColor(...colorAuto);
+            pdf.rect(baseX + barWidth, baseY - hAuto, barWidth, hAuto, "F");
+            const hRev = (revData[i] / maxValue) * chartHeight;
+            pdf.setFillColor(...colorRev);
+            pdf.rect(baseX + 2 * barWidth, baseY - hRev, barWidth, hRev, "F");
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(moisLabels[i], baseX + barWidth, baseY + 3, { align: "center" });
+          }
+          pdf.setFontSize(9);
+          pdf.text("kWh", chartX + 2, chartY + 5);
         }
-      });
-      const lastAuto = pdf.lastAutoTable;
-      if (lastAuto) {
-        nextY3 = lastAuto.finalY + 10;
-      }
-    } else {
-      pdf.setFontSize(12);
-      pdf.text("Aucun tableau de projection trouvé.", 10, nextY3 + 5);
-      nextY3 += 15;
-    }
-
-    pdf.setFontSize(14);
-    pdf.text("Chiffres Clés", 10, nextY3);
-    nextY3 += 8;
-    pdf.setFontSize(12);
-
-    const pReco   = document.getElementById(puissanceId)?.textContent || "-";
-    const cInst   = document.getElementById(coutInstId)?.textContent || "-";
-    const cPrime  = document.getElementById(primeId)?.textContent || "-";
-    const cReel   = document.getElementById(coutReelId)?.textContent || "-";
-    const gSans   = document.getElementById(gainSansId)?.textContent || "-";
-    const gAvec   = document.getElementById(gainAvecId)?.textContent || "-";
-    const roiVal  = document.getElementById(roiId)?.textContent || "-";
-
-    pdf.text(`Puissance préconisée : ${pReco} kWc`, 10, nextY3); nextY3+=6;
-    pdf.text(`Coût de l'installation : ${cInst} €`, 10, nextY3); nextY3+=6;
-    pdf.text(`Prime : ${cPrime} €`, 10, nextY3); nextY3+=6;
-    pdf.text(`Coût réel de l'installation : ${cReel} €`, 10, nextY3); nextY3+=6;
-    pdf.text(`Gain total (sans inv.) : ${gSans} €`, 10, nextY3); nextY3+=6;
-    pdf.text(`Gain total (avec inv.) : ${gAvec} €`, 10, nextY3); nextY3+=6;
-    pdf.text(`ROI (années) : ${roiVal}`, 10, nextY3);
-    nextY3 += 12;
-
-    pdf.setFontSize(12);
-    const finalText = 
-      "Ce projet photovoltaïque vous apporte des bénéfices financiers tout " +
-      "en valorisant votre toiture et en participant à la transition énergétique. " +
-      "Grâce à une expertise FRH PRO, vous bénéficiez d'un accompagnement complet " +
-      "et de conseils personnalisés pour optimiser votre retour sur investissement.\n\n" +
-      "L'autoconsommation et la revente du surplus vous permettent de réduire vos " +
-      "factures d'électricité et de profiter d'une source de revenu durable.";
-    const finalLines = pdf.splitTextToSize(finalText, 180);
-    pdf.text(finalLines, 10, nextY3);
-    nextY3 += 20;
-       
+        async function page2_TableauEtGraphique(pdf, scenarioChoice) {
+          pdf.addPage();
+          pdf.setFontSize(14);
+          pdf.setTextColor(40, 40, 40);
+          pdf.text("Détails par mois (année 1)", 10, 15);
+          let nextY = 20;
+          let monthlyTableId;
+          if (scenarioChoice === "2") { monthlyTableId = "preconisationMonthlyTableForced"; }
+          else { monthlyTableId = "preconisationMonthlyTable"; }
+          const monthlyTableEl = document.getElementById(monthlyTableId);
+          if (monthlyTableEl) {
+            pdf.autoTable({
+              html: monthlyTableEl,
+              startY: nextY,
+              styles: { fontSize: 8, cellPadding: 2 },
+              headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 9 }
+            });
+            const lastAutoTable = pdf.lastAutoTable;
+            if (lastAutoTable) { nextY = lastAutoTable.finalY + 10; }
+          } else {
+            pdf.setFontSize(12);
+            pdf.text("Aucun tableau mensuel trouvé.", 10, 25);
+            nextY = 35;
+          }
+          const moisLabels = [];
+          const consoData = [];
+          const autoData = [];
+          const revData = [];
+          if (monthlyTableEl) {
+            const rows = monthlyTableEl.querySelectorAll("tbody tr");
+            rows.forEach((tr) => {
+              const tds = tr.querySelectorAll("td");
+              if (tds.length >= 5) {
+                const moisTxt = tds[0].textContent.trim();
+                const cVal = parseFloat(tds[1].textContent) || 0; 
+                const aVal = parseFloat(tds[3].textContent) || 0;
+                const rVal = parseFloat(tds[4].textContent) || 0;
+                moisLabels.push(moisTxt);
+                consoData.push(cVal);
+                autoData.push(aVal);
+                revData.push(rVal);
+              }
+            });
+          }
+          pdf.setFontSize(14);
+          pdf.text("Graphique (Détails par mois)", 10, nextY);
+          nextY += 10;
+          drawVectorBarChart(pdf, 15, nextY, 170, 70, moisLabels, consoData, autoData, revData);
+          nextY += 80 + 15; 
+        }
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.setTextColor(40, 40, 40);
+        pdf.text("Projection sur 20 ans", 10, 15);
+        let nextY3 = 20;
+        const twentyTableEl = document.getElementById(twentyYearsId);
+        if (twentyTableEl) {
+          pdf.autoTable({
+            html: twentyTableEl,
+            startY: nextY3,
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
+          });
+          const lastAuto = pdf.lastAutoTable;
+          if (lastAuto) { nextY3 = lastAuto.finalY + 10; }
+        } else {
+          pdf.setFontSize(12);
+          pdf.text("Aucun tableau de projection trouvé.", 10, nextY3 + 5);
+          nextY3 += 15;
+        }
+        pdf.setFontSize(14);
+        pdf.text("Chiffres Clés", 10, nextY3);
+        nextY3 += 8;
+        pdf.setFontSize(12);
+        const pReco = document.getElementById(puissanceId)?.textContent || "-";
+        const cInst = document.getElementById(coutInstId)?.textContent || "-";
+        const cPrime = document.getElementById(primeId)?.textContent || "-";
+        const cReel = document.getElementById(coutReelId)?.textContent || "-";
+        const gSans = document.getElementById(gainSansId)?.textContent || "-";
+        const gAvec = document.getElementById(gainAvecId)?.textContent || "-";
+        const roiVal = document.getElementById(roiId)?.textContent || "-";
+        pdf.text(`Puissance préconisée : ${pReco} kWc`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Coût de l'installation : ${cInst} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Prime : ${cPrime} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Coût réel de l'installation : ${cReel} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Gain total (sans inv.) : ${gSans} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Gain total (avec inv.) : ${gAvec} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`ROI (années) : ${roiVal}`, 10, nextY3);
+        nextY3 += 12;
+        pdf.setFontSize(12);
+        const finalText = 
+          "Ce projet photovoltaïque vous apporte des bénéfices financiers tout " +
+          "en valorisant votre toiture et en participant à la transition énergétique. " +
+          "Grâce à une expertise FRH PRO, vous bénéficiez d'un accompagnement complet " +
+          "et de conseils personnalisés pour optimiser votre retour sur investissement.\n\n" +
+          "L'autoconsommation et la revente du surplus vous permettent de réduire vos " +
+          "factures d'électricité et de profiter d'une source de revenu durable.";
+        const finalLines = pdf.splitTextToSize(finalText, 180);
+        pdf.text(finalLines, 10, nextY3);
+        nextY3 += 20;
         let pdfFileName = "Rapport_Etude.pdf";
-        if (companyName) {
-          pdfFileName = `Rapport_${companyName}.pdf`;
-        }
+        if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
         pdf.save(pdfFileName);
-
-        if (drawingCanvas && drawingCanvasParent) {
-          drawingCanvasParent.appendChild(drawingCanvas);
-        }
-
+        if (drawingCanvas && drawingCanvasParent) { drawingCanvasParent.appendChild(drawingCanvas); }
       } catch (e) {
         console.error("Erreur exportStudyReportPDF:", e);
         alert("Une erreur s'est produite lors de l'export PDF (voir console).");
@@ -1693,11 +1362,9 @@
     const saveButton = document.getElementById("saveToFile");
     const loadFileInput = document.getElementById("loadFromFile");
     const uploadButton = document.getElementById("uploadFile");
-
     saveButton.addEventListener("click", () => {
       const form = document.getElementById("userForm");
       const rawFormData = new FormData(form);
-
       const formObject = {};
       rawFormData.forEach((value, key) => {
         if(formObject[key] !== undefined){
@@ -1709,34 +1376,24 @@
           formObject[key] = value;
         }
       });
-
       const center = map.getCenter();
       formObject["mapCenterLat"] = center.lat;
       formObject["mapCenterLng"] = center.lng;
       formObject["mapZoom"] = map.getZoom();
       formObject["canvasImage"] = drawingCanvas.toDataURL();
-
       const shapesGeoJSON = drawnItems.toGeoJSON();
       formObject["drawnShapes"] = shapesGeoJSON;
-
       formObject["monthlyProductionData"] = monthlyProductionData;
-
       const companyName = formObject["companyName"] || "Formulaire";
       const fileName = `Formulaire_${companyName}.json`;
-
       const jsonString = JSON.stringify(formObject, null, 2);
       const blob = new Blob([jsonString], { type:"application/json" });
-
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = fileName;
       link.click();
     });
-
-    uploadButton.addEventListener("click", () => {
-      loadFileInput.click();
-    });
-
+    uploadButton.addEventListener("click", () => { loadFileInput.click(); });
     loadFileInput.addEventListener("change", (event) => {
       const file = event.target.files[0];
       if(file){
@@ -1744,7 +1401,6 @@
         reader.onload = e => {
           const jsonData = JSON.parse(e.target.result);
           const form = document.getElementById("userForm");
-
           Object.keys(jsonData).forEach(key => {
             if(["mapCenterLat","mapCenterLng","mapZoom","canvasImage","drawnShapes","monthlyProductionData"].includes(key)){
               return;
@@ -1753,24 +1409,16 @@
             if(Array.isArray(dataValue)){
               dataValue.forEach(val => {
                 const checkbox = form.querySelector(`[name="${key}"][value="${val}"]`);
-                if(checkbox){
-                  checkbox.checked = true;
-                }
+                if(checkbox){ checkbox.checked = true; }
               });
             } else {
               const input = form.querySelector(`[name="${key}"]`);
-              if(input){
-                input.value = dataValue;
-              }
+              if(input){ input.value = dataValue; }
             }
           });
-
-          if(jsonData["mapCenterLat"] !== undefined &&
-             jsonData["mapCenterLng"] !== undefined &&
-             jsonData["mapZoom"] !== undefined){
+          if(jsonData["mapCenterLat"] !== undefined && jsonData["mapCenterLng"] !== undefined && jsonData["mapZoom"] !== undefined){
             map.setView([jsonData["mapCenterLat"], jsonData["mapCenterLng"]], jsonData["mapZoom"]);
           }
-
           if(jsonData["canvasImage"]){
             const image = new Image();
             image.onload = function(){
@@ -1779,22 +1427,17 @@
             };
             image.src = jsonData["canvasImage"];
           }
-
           if(jsonData["drawnShapes"]){
             drawnItems.clearLayers();
             L.geoJson(jsonData["drawnShapes"]).eachLayer(layer => {
               drawnItems.addLayer(layer);
             });
           }
-
           if(jsonData["monthlyProductionData"]){
             monthlyProductionData = jsonData["monthlyProductionData"];
             fillMonthlyProductionTable(monthlyProductionData);
           }
-
-          for(let i=0; i<12; i++){
-            calculateCost(i);
-          }
+          for(let i = 0; i < 12; i++){ calculateCost(i); }
           updateProductionPotential();
         };
         reader.readAsText(file);
@@ -1808,80 +1451,55 @@
       const eurosInput = document.getElementById(`euros_${index}`);
       const kwhInput = document.getElementById(`kwh_${index}`);
       const costCell = document.getElementById(`costPerKwh_${index}`);
-
       if(!eurosInput || !kwhInput || !costCell) return;
-
       const euros = parseFloat(eurosInput.value) || 0;
       const kwh = parseFloat(kwhInput.value) || 0;
-
       if(kwh > 0){
         const costPerKwh = (euros / kwh).toFixed(2);
         costCell.textContent = `${costPerKwh} €`;
-      } else {
-        costCell.textContent = "-";
-      }
+      } else { costCell.textContent = "-"; }
       calculateTotals();
     }
-
     function calculateTotals(){
       let totalEuros = 0, totalKwh = 0;
-      for(let i=0; i<12; i++){
+      for(let i = 0; i < 12; i++){
         const eurosVal = document.getElementById(`euros_${i}`);
         const kwhVal = document.getElementById(`kwh_${i}`);
         if(!eurosVal || !kwhVal) continue;
-
         const eVal = parseFloat(eurosVal.value) || 0;
         const kVal = parseFloat(kwhVal.value) || 0;
         totalEuros += eVal;
         totalKwh += kVal;
       }
       const averageCostPerKwh = totalKwh > 0 ? (totalEuros / totalKwh).toFixed(2) : "-";
-
       const totalEurosCell = document.getElementById("totalEuros");
       const totalKwhCell = document.getElementById("totalKwh");
       const totalCostPerKwhCell = document.getElementById("totalCostPerKwh");
-
       if(totalEurosCell) totalEurosCell.textContent = totalEuros.toFixed(2).toLocaleString('fr-FR') + " €";
-      if(totalKwhCell)   totalKwhCell.textContent = totalKwh.toFixed(2).toLocaleString('fr-FR') + " kWh";
+      if(totalKwhCell) totalKwhCell.textContent = totalKwh.toFixed(2).toLocaleString('fr-FR') + " kWh";
       if(totalCostPerKwhCell){
-        totalCostPerKwhCell.textContent = averageCostPerKwh !== "-"
-          ? `${averageCostPerKwh} €`
-          : "-";
+        totalCostPerKwhCell.textContent = averageCostPerKwh !== "-" ? `${averageCostPerKwh} €` : "-";
       }
     }
 
     /***************************************************
      * 7) CALCUL DE LA PRÉCONISATION
      ***************************************************/
-
-    // (A) COÛT INSTALLATION (modifié pour tenir compte du territoire)
     function costInstallation(S, territory){
       let raw;
-      if (S <= 100) {
-        raw = S * ((1.9093 - (0.00659 * S))) * 1000;
-      } else {
-        raw = S * 1.15 * 1000;
-      }
-
-      if (territory === "Corse") {
-        raw *= 1.00;
-      } else if (territory === "Reunion") {
-        raw *= 1.13;
-      }
+      if (S <= 100) { raw = S * ((1.9093 - (0.00659 * S))) * 1000; }
+      else { raw = S * 1.15 * 1000; }
+      if (territory === "Corse") { raw *= 1.00; }
+      else if (territory === "Reunion") { raw *= 1.13; }
       return Math.round(raw / 100) * 100;
     }
-
-    // (B) FRACTION DE JOURS FERMÉS
     function getClosedDaysFraction() {
       const closedDays = [];
-      document.querySelectorAll('input[name="joursConges[]"]:checked')
-        .forEach(chk => closedDays.push(chk.value));
+      document.querySelectorAll('input[name="joursConges[]"]:checked').forEach(chk => closedDays.push(chk.value));
       const nbClosed = closedDays.length;
       const fraction = nbClosed / 7.0;
       return fraction;
     }
-
-    // (C) Récupération du tarif de rachat et prime
     function getTarifRachatAndPrime(S, territory){
       if(!primeTarifsData) {
         console.warn("primeTarifsData introuvable, on retourne par défaut 0.0761 et prime=0");
@@ -1893,25 +1511,17 @@
       if(tData){
         if(Array.isArray(tData.tarif_rachat)){
           for(let range of tData.tarif_rachat){
-            if(S >= range.min && S <= range.max){
-              foundTarif = range.tarif;
-              break;
-            }
+            if(S >= range.min && S <= range.max){ foundTarif = range.tarif; break; }
           }
         }
         if(Array.isArray(tData.primes)){
           for(let range of tData.primes){
-            if(S >= range.min && S <= range.max){
-              foundPrime = range.montant_euros_par_wc;
-              break;
-            }
+            if(S >= range.min && S <= range.max){ foundPrime = range.montant_euros_par_wc; break; }
           }
         }
       }
       return {tarif: foundTarif, primeByWc: foundPrime};
     }
-
-    // Fonction calculateROI
     function calculateROI(coutInstallation, autoYear1, surplusYear1, primeTotal, annualPriceIncrease) {
       let cumulativeSavings = 0;
       let roiYears = 0;
@@ -1922,57 +1532,42 @@
         let prime = (roiYears === 2) ? primeTotal : 0;
         let totalYearSavings = econAuto + gainsRev + prime;
         cumulativeSavings += totalYearSavings;
-        if (cumulativeSavings >= coutInstallation) {
-          break;
-        }
+        if (cumulativeSavings >= coutInstallation) { break; }
       }
       return roiYears;
     }
-        
-    // (D) Calcule le GAIN total (auto + revente)
     function computeAutoAndSurplusForPower(S, globalTarif){
       const ratioDStr = document.getElementById("ratioDiurne").value || "50";
       const ratioD = parseFloat(ratioDStr) || 50;
       const fractionClosed = getClosedDaysFraction();
-
       let totalGain = 0;
       for(let i = 0; i < 12; i++){
         const kwhInput = document.getElementById(`kwh_${i}`);
         const costCell = document.getElementById(`costPerKwh_${i}`);
         if(!kwhInput || !costCell || !monthlyProductionData[i]) continue;
-
         const consoKwh = parseFloat(kwhInput.value) || 0;
         const p_kWh = parseFloat(costCell.textContent) || 0;
         const E_m1kW = monthlyProductionData[i].E_m || 0;
         const production = S * E_m1kW;
-
         const forcedSurplus = fractionClosed * production;
         const leftover = production - forcedSurplus;
-
         const consoKwhDiurne = consoKwh * (ratioD / 100);
         const autoCons = Math.min(leftover, consoKwhDiurne);
         const leftoverAfter = leftover - autoCons;
         const finalSurplus = forcedSurplus + Math.max(leftoverAfter, 0);
-
         const gainMonth = (autoCons * p_kWh);
         totalGain += gainMonth;
       }
       return totalGain;
     }
-
-    // (E) Applique la puissance retenue => Fill Tables
     function calculatePreconisationWithPower(S, firstYearGain, territoryObj){
       fillMonthlyPreconisation(S, territoryObj.tarif);
       fill20YearsPreconisation(S, firstYearGain, territoryObj);
     }
-
-    // (F) fillMonthlyPreconisation (scénario standard)
     let monthlyBarChart = null;
     function createMonthlyBarChart(labels, consoData, autoData, revData){
       const ctx = document.getElementById("monthlyBarChart").getContext("2d");
-      if(monthlyBarChart){
-        monthlyBarChart.destroy();
-      }
+      if(monthlyBarChart){ monthlyBarChart.destroy(); }
       monthlyBarChart = new Chart(ctx, {
         type: "bar",
         data: {
@@ -1989,14 +1584,10 @@
         }
       });
     }
-
-    // Réagencement du tableau pour le scénario standard
     function fillMonthlyPreconisation(S, globalTarif){
       const showKwh = document.getElementById("showKwhColumns").checked;
       const table = document.getElementById("preconisationMonthlyTable");
       table.innerHTML = "";
-
-      // En-tête dans l'ordre désiré
       let headerRow = `<tr>
         <th>Mois</th>
         ${ showKwh ? '<th>Conso kWh</th>' : '' }
@@ -2015,10 +1606,8 @@
       const thead = document.createElement("thead");
       thead.innerHTML = headerRow;
       table.appendChild(thead);
-
       const tbody = document.createElement("tbody");
       table.appendChild(tbody);
-
       let footRow = `<tr>
         <th>Totaux</th>
         ${ showKwh ? '<td id="monthlySumKwhConso">-</td>' : '' }
@@ -2037,53 +1626,40 @@
       const tfoot = document.createElement("tfoot");
       tfoot.innerHTML = footRow;
       table.appendChild(tfoot);
-
       let sumSansPv = 0, sumAuto = 0, sumRev = 0, sumAvecPv = 0, sumEco = 0;
       let sumKwhConso = 0, sumKwhAuto = 0, sumKwhRev = 0, sumProduction = 0;
-
       const moisNoms = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-
       const fractionClosed = getClosedDaysFraction();
       const ratioD = parseFloat(document.getElementById("ratioDiurne").value) || 50;
-
       const chartConso = [], chartAuto = [], chartRev = [];
-
       for(let i = 0; i < 12; i++){
         const eurosStr = document.getElementById(`euros_${i}`)?.value || "0";
         const factureSansPv = parseFloat(eurosStr) || 0;
-
         const consoKwh = parseFloat(document.getElementById(`kwh_${i}`)?.value) || 0;
         const costText = document.getElementById(`costPerKwh_${i}`)?.textContent || "0";
         const costUnit = parseFloat(costText) || 0;
-
         if(!monthlyProductionData[i]) continue;
-        const E_m1kW = monthlyProductionData[i].E_m;
+        const E_m1kW = monthlyProductionData[i].E_m || 0;
         const production = S * E_m1kW;
         sumProduction += production;
-
         const forcedSurplus = fractionClosed * production;
         const leftover = production - forcedSurplus;
-
         const consoKwhDiurne = consoKwh * (ratioD/100);
         const autoCons = Math.min(leftover, consoKwhDiurne);
         const leftoverAfter = leftover - autoCons;
         const finalSurplus = forcedSurplus + Math.max(leftoverAfter, 0);
-
         const economies = autoCons * costUnit;
         const revente = finalSurplus * globalTarif;
         const totalEco = economies + revente;
         const factureAvecPv = factureSansPv - economies;
-
         sumSansPv += factureSansPv;
         sumAuto += economies;
         sumRev += revente;
         sumAvecPv += factureAvecPv;
         sumEco += totalEco;
-
         sumKwhConso += consoKwh;
         sumKwhAuto += autoCons;
         sumKwhRev += finalSurplus;
-
         let autoprodPerc = 0;
         if(consoKwh > 0) autoprodPerc = 100*(autoCons/consoKwh);
         const totProd = production;
@@ -2092,7 +1668,6 @@
           percAutoConsoGlobal = 100*(autoCons/totProd);
           percReventeGlobal = 100*(finalSurplus/totProd);
         }
-
         let row = document.createElement("tr");
         let rowHTML = `<td>${moisNoms[i]}</td>`;
         if(showKwh) { rowHTML += `<td>${consoKwh.toFixed(1)}</td>`; }
@@ -2107,15 +1682,12 @@
         rowHTML += `<td>${autoprodPerc.toFixed(1)}%</td>`;
         rowHTML += `<td>${percAutoConsoGlobal.toFixed(1)}%</td>`;
         rowHTML += `<td>${percReventeGlobal.toFixed(1)}%</td>`;
-
         row.innerHTML = rowHTML;
         tbody.appendChild(row);
-
         chartConso.push(consoKwh);
         chartAuto.push(autoCons);
         chartRev.push(finalSurplus);
       }
-
       if(showKwh){
         document.getElementById("monthlySumKwhConso").textContent = sumKwhConso.toFixed(1);
         document.getElementById("monthlySumProduction").textContent = sumProduction.toFixed(1);
@@ -2127,7 +1699,6 @@
       document.getElementById("monthlyTotalAvecPv").textContent = sumAvecPv.toFixed(2)+" €";
       document.getElementById("monthlyTotalRevente").textContent = sumRev.toFixed(2)+" €";
       document.getElementById("monthlyTotalEconomies").textContent = sumEco.toFixed(2)+" €";
-
       let totProd = sumKwhAuto + sumKwhRev;
       let finalAutoProdPerc = 0, finalAutoConsoPerc = 0, finalRevPerc = 0;
       if(sumKwhConso > 0) finalAutoProdPerc = 100*(sumKwhAuto/sumKwhConso);
@@ -2135,57 +1706,41 @@
         finalAutoConsoPerc = 100*(sumKwhAuto/totProd);
         finalRevPerc = 100*(sumKwhRev/totProd);
       }
-
       document.getElementById("monthlyTotalAutoProdPerc").textContent = finalAutoProdPerc.toFixed(1)+"%";
       document.getElementById("monthlyTotalAutoConsoPerc").textContent = finalAutoConsoPerc.toFixed(1)+"%";
       document.getElementById("monthlyTotalRevPerc").textContent = finalRevPerc.toFixed(1)+"%";
-
       createMonthlyBarChart(moisNoms, chartConso, chartAuto, chartRev);
     }
-
-    // (G) fill20YearsPreconisation
     function fill20YearsPreconisation(S, firstYearGain, territoryObj){
       const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
-
       let baseYearStr = document.getElementById("monthlyTotalSansPv").textContent.replace("€","").trim();
       let baseYearCost = parseFloat(baseYearStr) || 0;
-
       let strEco = document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim();
       let strRev = document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim();
       let autoYear1 = parseFloat(strEco) || 0;
       let surplusYear1 = parseFloat(strRev) || 0;
-
       const primeByWc = territoryObj.primeByWc || 0;
       const primeTotal = Math.round(primeByWc * (S * 1000));
-
       const preconTableBody = document.querySelector("#preconisationTable tbody");
       preconTableBody.innerHTML = "";
-
       let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
       let cumulativeEco = 0;
-      
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
         const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
-        if(year === 2){
-          primeYear = primeTotal;
-        }
+        if(year === 2){ primeYear = primeTotal; }
         const totalEcos = econAuto + gainsRev + primeYear;
         const factureAvecPv = factureSansPv - econAuto;
-
         totalSansPv += factureSansPv;
         totalAuto += econAuto;
         totalRev += gainsRev;
         totalPrime += primeYear;
         totalAvecPv += factureAvecPv;
         totalEco += totalEcos;
-
         cumulativeEco += totalEcos;
-        
         const row = document.createElement("tr");
-        // Réagencement : Facture Avec PV après Économies Autoconso
         row.innerHTML = `
           <td>${year}</td>
           <td>${factureSansPv.toFixed(2)} €</td>
@@ -2198,48 +1753,34 @@
         `;
         preconTableBody.appendChild(row);
       }
-
       document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
       document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
       document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
       document.getElementById("totalPrime").textContent = totalPrime.toFixed(2)+" €";
       document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
       document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
-
       document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
-
       const territory = document.getElementById("territory").value || "France Metropolitaine";
       const costInst = costInstallation(S, territory);
       document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
       document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
-
       let coutReel = costInst - primeTotal;
       if(coutReel < 0) coutReel = 0;
       document.getElementById("coutReelInstallation").textContent = coutReel.toLocaleString('fr-FR');
-
       document.getElementById("gainSansInv").textContent = totalEco.toFixed(2)+" €";
-
       let gainAvecInvVal = totalEco - coutReel;
       document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
-
       let roiYears = calculateROI(costInst, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
       document.getElementById("roiResult").textContent = roiYears.toFixed(1);
     }
-
-    // Écouteur => "Calculer la préconisation"
     const calcPrecBtn = document.getElementById("calculatePreconisation");
     calcPrecBtn.addEventListener("click", () => {
       const territory = document.getElementById("territory").value || "France Metropolitaine";
       let maxPowerStr = (document.getElementById("puissanceMaxPV").value || "0").replace(/\s/g, "");
       const maxPower = parseFloat(maxPowerStr) || 0;
-      if(maxPower <= 0){
-        alert("Puissance max PV non définie ou nulle.");
-        return;
-      }
-
+      if(maxPower <= 0){ alert("Puissance max PV non définie ou nulle."); return; }
       let bestS = 1, bestTotalGain = 0;
       let bestTerritoryObj = {tarif:0.0761, primeByWc:0};
-
       for(let s = 1; s <= maxPower; s++){
         const tObj = getTarifRachatAndPrime(s, territory);
         const totalGain = computeAutoAndSurplusForPower(s, tObj.tarif);
@@ -2250,19 +1791,12 @@
         }
       }
       calculatePreconisationWithPower(bestS, bestTotalGain, bestTerritoryObj);
-
       document.getElementById("tarifRachat").value = bestTerritoryObj.tarif.toFixed(4);
     });
-
-    /***************************************************
-     * 8) PRÉCONISATION Sélection
-     ***************************************************/
     let monthlyBarChartForced = null;
     function createMonthlyBarChartForced(monthLabels, consoData, autoData, revData){
       const ctx = document.getElementById("monthlyBarChartForced").getContext("2d");
-      if(monthlyBarChartForced){
-        monthlyBarChartForced.destroy();
-      }
+      if(monthlyBarChartForced){ monthlyBarChartForced.destroy(); }
       monthlyBarChartForced = new Chart(ctx, {
         type: "bar",
         data: {
@@ -2279,13 +1813,10 @@
         }
       });
     }
-
-    // Réagencement du tableau pour le scénario "Sélection"
     function fillMonthlyPreconisationForced(S, globalTarif){
       const showKwh = document.getElementById("showKwhColumns").checked;
       const table = document.getElementById("preconisationMonthlyTableForced");
       table.innerHTML = "";
-
       let headerRow = `<tr>
         <th>Mois</th>
         ${showKwh ? '<th>Conso kWh</th>' : ''}
@@ -2304,10 +1835,8 @@
       const thead = document.createElement("thead");
       thead.innerHTML = headerRow;
       table.appendChild(thead);
-
       const tbody = document.createElement("tbody");
       table.appendChild(tbody);
-
       let footRow = `<tr>
         <th>Totaux</th>
         ${showKwh ? '<td id="monthlySumKwhConsoForced">-</td>' : ''}
@@ -2326,52 +1855,40 @@
       const tfoot = document.createElement("tfoot");
       tfoot.innerHTML = footRow;
       table.appendChild(tfoot);
-
       let sumSansPv = 0, sumAuto = 0, sumRev = 0, sumAvecPv = 0, sumEco = 0;
       let sumKwhConso = 0, sumKwhAuto = 0, sumKwhRev = 0, sumProductionForced = 0;
-
       const moisNoms = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
       const chartConso = [], chartAuto = [], chartRev = [];
-
       const fractionClosed = getClosedDaysFraction();
       const ratioD = parseFloat(document.getElementById("ratioDiurne").value) || 50;
-
       for(let i = 0; i < 12; i++){
         const eurosStr = document.getElementById(`euros_${i}`)?.value || "0";
         const factureSansPv = parseFloat(eurosStr) || 0;
-
         const consoKwh = parseFloat(document.getElementById(`kwh_${i}`)?.value) || 0;
         const costText = document.getElementById(`costPerKwh_${i}`)?.textContent || "0";
         const costUnit = parseFloat(costText) || 0;
-
         if(!monthlyProductionData[i]) continue;
         const E_m1kW = monthlyProductionData[i].E_m || 0;
         const production = S * E_m1kW;
         sumProductionForced += production;
-
         const forcedSurplus = fractionClosed * production;
         const leftover = production - forcedSurplus;
-
         const consoKwhDiurne = consoKwh * (ratioD/100);
         const autoCons = Math.min(leftover, consoKwhDiurne);
         const leftoverAfter = leftover - autoCons;
         const finalSurplus = forcedSurplus + Math.max(leftoverAfter, 0);
-
         const economies = autoCons * costUnit;
         const revente = finalSurplus * globalTarif;
         const totalEco = economies + revente;
         const factureAvecPv = factureSansPv - economies;
-
         sumSansPv += factureSansPv;
         sumAuto += economies;
         sumRev += revente;
         sumAvecPv += factureAvecPv;
         sumEco += totalEco;
-
         sumKwhConso += consoKwh;
         sumKwhAuto += autoCons;
         sumKwhRev += finalSurplus;
-
         let autoprodPerc = 0;
         if(consoKwh > 0) autoprodPerc = 100*(autoCons/consoKwh);
         const totProd = production;
@@ -2380,7 +1897,6 @@
           percAutoConsoGlobal = 100*(autoCons/totProd);
           percReventeGlobal = 100*(finalSurplus/totProd);
         }
-
         let row = document.createElement("tr");
         let rowHTML = `<td>${moisNoms[i]}</td>`;
         if(showKwh) { rowHTML += `<td>${consoKwh.toFixed(1)}</td>`; }
@@ -2395,15 +1911,12 @@
         rowHTML += `<td>${autoprodPerc.toFixed(1)}%</td>`;
         rowHTML += `<td>${percAutoConsoGlobal.toFixed(1)}%</td>`;
         rowHTML += `<td>${percReventeGlobal.toFixed(1)}%</td>`;
-
         row.innerHTML = rowHTML;
         tbody.appendChild(row);
-
         chartConso.push(consoKwh);
         chartAuto.push(autoCons);
         chartRev.push(finalSurplus);
       }
-
       if(showKwh){
         document.getElementById("monthlySumKwhConsoForced").textContent = sumKwhConso.toFixed(1);
         document.getElementById("monthlySumProductionForced").textContent = sumProductionForced.toFixed(1);
@@ -2415,7 +1928,6 @@
       document.getElementById("monthlyTotalAvecPvForced").textContent = sumAvecPv.toFixed(2)+" €";
       document.getElementById("monthlyTotalReventeForced").textContent = sumRev.toFixed(2)+" €";
       document.getElementById("monthlyTotalEconomiesForced").textContent = sumEco.toFixed(2)+" €";
-
       let totProd = sumKwhAuto + sumKwhRev;
       let finalAutoProdPerc = 0, finalAutoConsoPerc = 0, finalRevPerc = 0;
       if(sumKwhConso > 0) finalAutoProdPerc = 100*(sumKwhAuto/sumKwhConso);
@@ -2423,56 +1935,41 @@
         finalAutoConsoPerc = 100*(sumKwhAuto/totProd);
         finalRevPerc = 100*(sumKwhRev/totProd);
       }
-
       document.getElementById("monthlyTotalAutoProdPercForced").textContent = finalAutoProdPerc.toFixed(1)+"%";
       document.getElementById("monthlyTotalAutoConsoPercForced").textContent = finalAutoConsoPerc.toFixed(1)+"%";
       document.getElementById("monthlyTotalRevPercForced").textContent = finalRevPerc.toFixed(1)+"%";
-
       createMonthlyBarChartForced(moisNoms, chartConso, chartAuto, chartRev);
     }
-
     function fill20YearsPreconisationForced(S, firstYearGain, territoryObj){
       const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
-
       let baseYearStr = document.getElementById("monthlyTotalSansPvForced").textContent.replace("€","").trim();
       let baseYearCost = parseFloat(baseYearStr) || 0;
-
       let strEco = document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim();
       let strRev = document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim();
       let autoYear1 = parseFloat(strEco) || 0;
       let surplusYear1 = parseFloat(strRev) || 0;
-
       const primeByWc = territoryObj.primeByWc || 0;
       const primeTotal = Math.round(primeByWc * (S * 1000));
-
       const preconTableBody = document.querySelector("#preconisationTableForced tbody");
       preconTableBody.innerHTML = "";
-
       let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
       let cumulativeEco = 0;
-      
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
         const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
-        if(year === 2){
-          primeYear = primeTotal;
-        }
+        if(year === 2){ primeYear = primeTotal; }
         const totalEcos = econAuto + gainsRev + primeYear;
         const factureAvecPv = factureSansPv - econAuto;
-
         totalSansPv += factureSansPv;
         totalAuto += econAuto;
         totalRev += gainsRev;
         totalPrime += primeYear;
         totalAvecPv += factureAvecPv;
         totalEco += totalEcos;
-        
         cumulativeEco += totalEcos;
-        
         const row = document.createElement("tr");
-        // Réagencement : Facture Avec PV après Économies Autoconso
         row.innerHTML = `
           <td>${year}</td>
           <td>${factureSansPv.toFixed(2)} €</td>
@@ -2485,35 +1982,27 @@
         `;
         preconTableBody.appendChild(row);
       }
-
       document.getElementById("totalSansPvForced").textContent = totalSansPv.toFixed(2)+" €";
       document.getElementById("totalAutoForced").textContent = totalAuto.toFixed(2)+" €";
       document.getElementById("totalReventeForced").textContent = totalRev.toFixed(2)+" €";
       document.getElementById("totalPrimeForced").textContent = totalPrime.toFixed(2)+" €";
       document.getElementById("totalAvecPvForced").textContent = totalAvecPv.toFixed(2)+" €";
       document.getElementById("totalEconomiesForced").textContent = totalEco.toFixed(2)+" €";
-
       document.getElementById("puissanceRecoForced").textContent = S.toLocaleString('fr-FR');
-
       const territory = document.getElementById("territory").value || "France Metropolitaine";
       const forcedCost = costInstallation(S, territory);
       document.getElementById("coutInstallationForced").textContent = forcedCost.toLocaleString('fr-FR');
       document.getElementById("primeValueForced").textContent = primeTotal.toLocaleString('fr-FR');
-
       let coutReel = forcedCost - primeTotal;
       if(coutReel < 0) coutReel = 0;
       document.getElementById("coutReelInstallationForced").textContent = coutReel.toLocaleString('fr-FR');
-
       let gainSansInvVal = totalEco;
       document.getElementById("gainSansInvForced").textContent = gainSansInvVal.toFixed(2)+" €";
-
       let gainAvecInvVal = totalEco - coutReel;
       document.getElementById("gainAvecInvForced").textContent = gainAvecInvVal.toFixed(2)+" €";
-
       let roiYearsForced = calculateROI(forcedCost, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
       document.getElementById("roiResultForced").textContent = roiYearsForced.toFixed(1);
     }
-
     const applyForcedPreconisationBtn = document.getElementById("applyForcedPreconisationBtn");
     applyForcedPreconisationBtn.addEventListener("click", () => {
       const territory = document.getElementById("territory").value || "France Metropolitaine";
@@ -2528,7 +2017,6 @@
       const totalGain = computeAutoAndSurplusForPower(S, territoryObj.tarif);
       fill20YearsPreconisationForced(S, totalGain, territoryObj);
     });
-    
     flatpickr("#rdvDate", {
       locale: "fr",
       dateFormat: "d/m/Y"

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v93</title>
+  <title>FRH PRO formulaire  - v100</title>
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -53,7 +53,6 @@
       text-align: center;
       margin-bottom: 30px;
     }
-
     /****************************************************
      * ONGLET NAVIGATION
      ****************************************************/
@@ -82,7 +81,6 @@
       background-color: #3498db;
       color: #fff;
     }
-
     /****************************************************
      * CONTENU D'ONGLET
      ****************************************************/
@@ -93,7 +91,6 @@
     .tabContent.activeTab {
       display: block;
     }
-
     /****************************************************
      * LOGO
      ****************************************************/
@@ -111,7 +108,6 @@
       font-size: 18px;
       color: #333;
     }
-
     /****************************************************
      * FORMULAIRES ET BLOCS
      ****************************************************/
@@ -156,7 +152,6 @@
       background-color: #ececec;
       color: #666;
     }
-
     /****************************************************
      * TABLES
      ****************************************************/
@@ -174,7 +169,6 @@
     table thead {
       background-color: #f0f0f0;
     }
-
     /****************************************************
      * CARTE, BOUTONS
      ****************************************************/
@@ -215,7 +209,6 @@
       background-color: #2980b9;
       transform: scale(1.03);
     }
-
     /****************************************************
      * CHECKBOX GRID
      ****************************************************/
@@ -225,7 +218,6 @@
       gap: 5px 10px;
       margin-top: 5px;
     }
-
     /****************************************************
      * GRAPHIQUE
      ****************************************************/
@@ -235,7 +227,6 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-
     /****************************************************
      * STYLES SPÉCIAUX POUR L'ONGLET 9
      ****************************************************/
@@ -261,6 +252,7 @@
       <button type="button" class="tablinks" onclick="openTab(event, 'tab9')">9. Préconisation Sélection</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab10')">10. Commentaires</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab11')">11. Paramètres</button>
+      <button type="button" class="tablinks" onclick="openTab(event, 'tab12')">12. Plan de trésorerie</button>
     </div>
 
     <!-- Formulaire global -->
@@ -271,19 +263,15 @@
           <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
           <h2>Localisation & Données Irradiation</h2>
         </div>
-
         <label for="address">Adresse :</label>
         <input type="text" id="address" name="address" placeholder="Entrez une adresse" required />
         <button type="button" id="addressSearchBtn">Rechercher</button>
-
         <button type="button" id="toggleDrawingButton">Activer le dessin (main levée)</button>
         <button type="button" id="toggleMeasureButton">Mesurer une surface</button>
-
         <div id="map-container">
           <div id="map"></div>
           <canvas id="drawingCanvas"></canvas>
         </div>
-
         <div class="form-section">
           <h3>Données irradiation</h3>
           <label for="latitudeIrr">Latitude :</label>
@@ -304,7 +292,6 @@
           <input type="number" id="angleIrr" name="angleIrr" value="35" />
           <label for="productible">Productible :</label>
           <input type="text" id="productible" name="productible" placeholder="kWh/kWc/an" readonly/>
-          <!-- Nouveau champ Territoire (détecté auto) -->
           <label for="territory">Territoire détecté :</label>
           <input type="text" id="territory" name="territory" disabled />
           <button type="button" id="calculateIrrButton">Calculer le productible</button>
@@ -504,7 +491,6 @@
             </thead>
             <tbody id="consumptionTableBody">
               <!-- Les lignes seront insérées dynamiquement -->
-              <!-- Ligne Totaux annuels en bas -->
               <tr>
                 <td><strong>Total annuel</strong></td>
                 <td id="totalEuros">-</td>
@@ -526,7 +512,6 @@
           <h3>Préconisation</h3>
           <label for="annualPriceIncrease">Augmentation annuelle du prix de l'électricité (%):</label>
           <input type="number" step="0.1" id="annualPriceIncrease" name="annualPriceIncrease" value="5" />
-          <!-- Le tarif rachat n'est plus un input "manuel", mais "disabled" pour affichage --> 
           <label for="tarifRachat">Tarif de rachat du surplus (€/kWh) :</label>
           <input type="number" step="0.0001" id="tarifRachat" name="tarifRachat" value="0.0761" disabled />
           <label for="ratioDiurne">Ratio diurne (%) :</label>
@@ -537,7 +522,6 @@
           </label>
           <button type="button" id="calculatePreconisation">Calculer la préconisation</button>
           <h4>Détails par mois (année 1)</h4>
-          <!-- Tableau réagencé pour le scénario standard -->
           <table id="preconisationMonthlyTable"></table>
           <h4>Graphique (Détails par mois)</h4>
           <canvas id="monthlyBarChart" width="600" height="300"></canvas>
@@ -592,7 +576,6 @@
           <input type="number" id="forcedPower" name="forcedPower" value="10" min="1" />
           <button type="button" id="applyForcedPreconisationBtn">Calculer la préconisation choisie</button>
           <h4>Détails par mois (année 1) - Sélection</h4>
-          <!-- Tableau réagencé pour le scénario "Sélection" -->
           <table id="preconisationMonthlyTableForced"></table>
           <h4>Graphique (Détails par mois) - Sélection</h4>
           <canvas id="monthlyBarChartForced" width="600" height="300"></canvas>
@@ -695,7 +678,7 @@
           <label for="taux_emprunt">Taux emprunt % :</label>
           <input type="text" id="taux_emprunt" name="taux_emprunt" value="2.00" />
           <label for="duree_pret">Durée prêt en années :</label>
-          <input type="number" id="duree_pret" name="duree_pret" value="" placeholder="Saisir durée" />
+          <input type="number" id="duree_pret" name="duree_pret" value="15" placeholder="Saisir durée" />
           <label for="taux_autofinancement">Taux autofinancement :</label>
           <input type="text" id="taux_autofinancement" name="taux_autofinancement" value="" placeholder="Saisir taux" />
           <label for="index_leasing">Index du leasing :</label>
@@ -704,6 +687,36 @@
           <input type="number" id="duree_leasing" name="duree_leasing" value="72" />
         </div>
       </div><!-- fin tab11 -->
+
+      <!-- TAB 12 : Plan de trésorerie -->
+      <div id="tab12" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Plan de trésorerie</h2>
+        </div>
+        <div class="form-section">
+          <h3>Mode de financement</h3>
+          <label>
+            <input type="radio" name="modeFinancement" value="pret" checked />
+            Prêt bancaire
+          </label>
+          <br/>
+          <label>
+            <input type="radio" name="modeFinancement" value="leasing" />
+            Leasing
+          </label>
+        </div>
+        <div class="form-section">
+          <button type="button" id="calculatePlanTresorerieBtn">
+            Calculer le plan de trésorerie
+          </button>
+        </div>
+        <div class="form-section">
+          <h3>Résultat - Plan de trésorerie (Annuel)</h3>
+          <table id="planTresorerieTable"></table>
+        </div>
+      </div><!-- fin tab12 -->
+
     </form><!-- fin userForm -->
   </div><!-- fin container -->
 
@@ -722,7 +735,6 @@
       }
       document.getElementById(tabId).classList.add("activeTab");
       evt.currentTarget.classList.add("activeTab");
-
       if (tabId === 'tab1') {
         setTimeout(() => { map.invalidateSize(); }, 300);
       }
@@ -1294,7 +1306,7 @@
           pdf.text("Graphique (Détails par mois)", 10, nextY);
           nextY += 10;
           drawVectorBarChart(pdf, 15, nextY, 170, 70, moisLabels, consoData, autoData, revData);
-          nextY += 80 + 15; 
+          nextY += 95;
         }
         pdf.addPage();
         pdf.setFontSize(14);
@@ -1497,8 +1509,7 @@
       const closedDays = [];
       document.querySelectorAll('input[name="joursConges[]"]:checked').forEach(chk => closedDays.push(chk.value));
       const nbClosed = closedDays.length;
-      const fraction = nbClosed / 7.0;
-      return fraction;
+      return nbClosed / 7.0;
     }
     function getTarifRachatAndPrime(S, territory){
       if(!primeTarifsData) {
@@ -1727,6 +1738,7 @@
       let cumulativeEco = 0;
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        // Le remplacement onduleur à la 11ème année n'est PAS affecté par l'inflation
         const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
@@ -1773,6 +1785,7 @@
       let roiYears = calculateROI(costInst, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
       document.getElementById("roiResult").textContent = roiYears.toFixed(1);
     }
+
     const calcPrecBtn = document.getElementById("calculatePreconisation");
     calcPrecBtn.addEventListener("click", () => {
       const territory = document.getElementById("territory").value || "France Metropolitaine";
@@ -1793,6 +1806,7 @@
       calculatePreconisationWithPower(bestS, bestTotalGain, bestTerritoryObj);
       document.getElementById("tarifRachat").value = bestTerritoryObj.tarif.toFixed(4);
     });
+
     let monthlyBarChartForced = null;
     function createMonthlyBarChartForced(monthLabels, consoData, autoData, revData){
       const ctx = document.getElementById("monthlyBarChartForced").getContext("2d");
@@ -1956,17 +1970,18 @@
       let cumulativeEco = 0;
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        // Pour le prêt, on applique l'inflation sur la partie autoconsommation
         const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
         if(year === 2){ primeYear = primeTotal; }
-        const totalEcos = econAuto + gainsRev + primeYear;
         const factureAvecPv = factureSansPv - econAuto;
         totalSansPv += factureSansPv;
         totalAuto += econAuto;
         totalRev += gainsRev;
         totalPrime += primeYear;
         totalAvecPv += factureAvecPv;
+        const totalEcos = econAuto + gainsRev + primeYear;
         totalEco += totalEcos;
         cumulativeEco += totalEcos;
         const row = document.createElement("tr");
@@ -2003,20 +2018,158 @@
       let roiYearsForced = calculateROI(forcedCost, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
       document.getElementById("roiResultForced").textContent = roiYearsForced.toFixed(1);
     }
-    const applyForcedPreconisationBtn = document.getElementById("applyForcedPreconisationBtn");
-    applyForcedPreconisationBtn.addEventListener("click", () => {
-      const territory = document.getElementById("territory").value || "France Metropolitaine";
-      const forcedPowerStr = document.getElementById("forcedPower").value || "1";
-      let S = parseFloat(forcedPowerStr);
-      if(isNaN(S) || S <= 0){
-        alert("Veuillez saisir une valeur > 0 pour l'installation choisie (kWc).");
-        return;
-      }
-      const territoryObj = getTarifRachatAndPrime(S, territory);
-      fillMonthlyPreconisationForced(S, territoryObj.tarif);
-      const totalGain = computeAutoAndSurplusForPower(S, territoryObj.tarif);
-      fill20YearsPreconisationForced(S, totalGain, territoryObj);
+
+    /***************************************************
+     * Nouvel onglet : Plan de trésorerie
+     ***************************************************/
+    const calculatePlanTresorerieBtn = document.getElementById("calculatePlanTresorerieBtn");
+    calculatePlanTresorerieBtn.addEventListener("click", () => {
+      calculatePlanTresorerie();
     });
+    function calculatePlanTresorerie() {
+      // 1) Mode de financement
+      const modeElems = document.getElementsByName("modeFinancement");
+      let modeSelected = "pret";
+      for (let i = 0; i < modeElems.length; i++){
+        if(modeElems[i].checked){
+          modeSelected = modeElems[i].value;
+          break;
+        }
+      }
+      // 2) Récupération des paramètres financiers depuis l'onglet Paramètres
+      const inflationRate = parseFloat(document.getElementById("inflation_estimee").value.replace(",", ".")) || 2.0;
+      const assuranceDomRate = parseFloat(document.getElementById("assurance_dommages").value.replace(",", ".")) / 100.0 || 0.002;
+      const assurancePerteRate = parseFloat(document.getElementById("assurance_perte").value.replace(",", ".")) / 100.0 || 0.003;
+      const coutMaintenance = parseFloat(document.getElementById("cout_maintenance").value.replace(",", ".")) || 5.97;
+      const coutChangementOnduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value.replace(",", ".")) || 0;
+      const tauxEmprunt = parseFloat(document.getElementById("taux_emprunt").value.replace(",", ".")) / 100.0 || 0.02;
+      const dureePret = parseInt(document.getElementById("duree_pret").value) || 15;
+      const indexLeasing = parseFloat(document.getElementById("index_leasing").value.replace(",", ".")) || 1.837;
+      const dureeLeasing = parseInt(document.getElementById("duree_leasing").value) || 72;
+      
+      // 3) On suppose que le coût d'installation HT et la puissance installée sont déjà calculés
+      const costInstallStr = document.getElementById("coutInstallation").textContent || "0";
+      const costInstall = parseFloat(costInstallStr.replace(/\s/g, "").replace(",", ".")) || 0;
+      const costInstallHT = costInstall; // Tout est en HT
+      const Sstr = document.getElementById("puissanceReco").textContent || "0";
+      const S = parseFloat(Sstr.replace(/\s/g, "").replace(",", ".")) || 0;
+      
+      // 4) Calcul des recettes d'exploitation
+      // Ici, nous allons utiliser un calcul simplifié sur 20 ans.
+      const nbYears = 20;
+      let recettesParAn = [];
+      // Par exemple, pour simplifier, supposons une base de recettes et une évolution avec l'inflation
+      const baseRecette = 1000; // valeur de base (à adapter)
+      for(let year = 1; year <= nbYears; year++){
+        recettesParAn.push(baseRecette * Math.pow(1 + inflationRate/100, year-1));
+      }
+      
+      // 5) Calcul des charges d'exploitation
+      // Charges d'exploitation = (S * coutMaintenance * (1+inflation)^(year-1)) + (coût changement onduleurs, à la 11ème année sans inflation)
+      // Assurance photovoltaïque = costInstallHT * (assuranceDomRate + assurancePerteRate) * (1+inflation)^(year-1)
+      
+      // 6) Calcul du financement
+      let yearlyFinancement = 0;
+      if(modeSelected === "pret"){
+        // Calcul de la mensualité d'un prêt bancaire (formule d'annuité)
+        const i_mens = tauxEmprunt / 12;
+        const n_mois = dureePret * 12;
+        let M = (n_mois > 0) ? costInstallHT * ( i_mens / (1 - Math.pow(1+i_mens, -n_mois)) ) : 0;
+        yearlyFinancement = M * 12;
+      } else {
+        // Mode leasing
+        const nbYearsLeasing = dureeLeasing / 12;
+        yearlyFinancement = (S > 0) ? costInstallHT * (indexLeasing/100) * 12 : 0;
+      }
+      
+      // 7) Construction du tableau du plan de trésorerie
+      const table = document.getElementById("planTresorerieTable");
+      table.innerHTML = "";
+      // Définir les entêtes selon le mode (en se basant sur les modèles PDF)
+      let headerHTML = "";
+      if(modeSelected === "pret"){
+        headerHTML = `
+          <tr>
+            <th>Année</th>
+            <th>Recettes d'exploitation<br/>(économies + revente surplus)</th>
+            <th>Charges d'exploitation<br/>(maintenance, nettoyage, remplacement onduleur(s))</th>
+            <th>Assurance photovoltaïque<br/>(dommage, RC, pertes de recettes)</th>
+            <th>Total Charges d'exploitation</th>
+            <th>Remboursement du prêt<br/>(capital + intérêts)</th>
+            <th>Solde net annuel</th>
+          </tr>
+        `;
+      } else {
+        headerHTML = `
+          <tr>
+            <th>Année</th>
+            <th>Recettes d'exploitation<br/>(économies + revente surplus)</th>
+            <th>Charges d'exploitation<br/>(maintenance, nettoyage, remplacement onduleur(s))</th>
+            <th>Assurance photovoltaïque<br/>(dommage, RC, pertes de recettes)</th>
+            <th>Total Charges d'exploitation</th>
+            <th>Loyer</th>
+            <th>Solde net annuel</th>
+          </tr>
+        `;
+      }
+      const thead = document.createElement("thead");
+      thead.innerHTML = headerHTML;
+      table.appendChild(thead);
+      const tbody = document.createElement("tbody");
+      table.appendChild(tbody);
+      
+      let cumulCharges = 0;
+      for(let year = 1; year <= nbYears; year++){
+        // Recettes d'exploitation
+        let recettesYear = recettesParAn[year-1] || 0;
+        // Charges d'exploitation
+        let maintenance = S * coutMaintenance * Math.pow(1 + inflationRate/100, year-1);
+        let remplacementOnduleur = (year === 11) ? coutChangementOnduleurs : 0; // Pas d'inflation
+        let chargesExploitation = maintenance + remplacementOnduleur;
+        // Assurance photovoltaïque
+        let assurance = costInstallHT * (assuranceDomRate + assurancePerteRate) * Math.pow(1 + inflationRate/100, year-1);
+        let totalCharges = chargesExploitation + assurance;
+        cumulCharges += totalCharges;
+        // Financement
+        let costFinancement = 0;
+        if(modeSelected === "pret"){
+          if(year <= dureePret){ costFinancement = yearlyFinancement; }
+        } else {
+          const nbYearsLeasing = dureeLeasing / 12;
+          if(year <= nbYearsLeasing){ costFinancement = yearlyFinancement; }
+        }
+        // Solde net annuel = Recettes - (Total Charges + Financement)
+        let soldeNet = recettesYear - (totalCharges + costFinancement);
+        let row = document.createElement("tr");
+        if(modeSelected === "pret"){
+          row.innerHTML = `
+            <td>${year}</td>
+            <td>${recettesYear.toFixed(2)}</td>
+            <td>${chargesExploitation.toFixed(2)}</td>
+            <td>${assurance.toFixed(2)}</td>
+            <td>${totalCharges.toFixed(2)}</td>
+            <td>${(year <= dureePret ? costFinancement.toFixed(2) : "-")}</td>
+            <td>${soldeNet.toFixed(2)}</td>
+          `;
+        } else {
+          row.innerHTML = `
+            <td>${year}</td>
+            <td>${recettesYear.toFixed(2)}</td>
+            <td>${chargesExploitation.toFixed(2)}</td>
+            <td>${assurance.toFixed(2)}</td>
+            <td>${totalCharges.toFixed(2)}</td>
+            <td>${(year <= (dureeLeasing/12) ? costFinancement.toFixed(2) : "-")}</td>
+            <td>${soldeNet.toFixed(2)}</td>
+          `;
+        }
+        tbody.appendChild(row);
+      }
+    }
+
+    /***************************************************
+     * FIN NOUVELLE FONCTIONNALITÉ : PLAN DE TRÉSORERIE
+     ***************************************************/
+
     flatpickr("#rdvDate", {
       locale: "fr",
       dateFormat: "d/m/Y"

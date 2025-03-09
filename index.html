@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v93</title>
+  <title>FRH PRO formulaire  - v111</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -262,6 +261,8 @@
       <button type="button" class="tablinks" onclick="openTab(event, 'tab9')">9. Préconisation Sélection</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab10')">10. Commentaires</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab11')">11. Paramètres</button>
+      <!-- Onglet 12 ajouté ici -->
+      <button type="button" class="tablinks" onclick="openTab(event, 'tab12')">12. Plan de trésorerie</button>
     </div>
 
     <!-- Formulaire global -->
@@ -305,7 +306,6 @@
           <input type="number" id="angleIrr" name="angleIrr" value="35" />
           <label for="productible">Productible :</label>
           <input type="text" id="productible" name="productible" placeholder="kWh/kWc/an" readonly/>
-          <!-- Nouveau champ Territoire (détecté auto) -->
           <label for="territory">Territoire détecté :</label>
           <input type="text" id="territory" name="territory" disabled />
           <button type="button" id="calculateIrrButton">Calculer le productible</button>
@@ -504,8 +504,6 @@
               </tr>
             </thead>
             <tbody id="consumptionTableBody">
-              <!-- Les lignes seront insérées dynamiquement -->
-              <!-- Ligne Totaux annuels en bas -->
               <tr>
                 <td><strong>Total annuel</strong></td>
                 <td id="totalEuros">-</td>
@@ -527,7 +525,7 @@
           <h3>Préconisation</h3>
           <label for="annualPriceIncrease">Augmentation annuelle du prix de l'électricité (%):</label>
           <input type="number" step="0.1" id="annualPriceIncrease" name="annualPriceIncrease" value="5" />
-          <!-- Le tarif rachat n'est plus un input "manuel", mais "disabled" pour affichage --> 
+          <!-- Le tarif rachat est affiché en mode disabled -->
           <label for="tarifRachat">Tarif de rachat du surplus (€/kWh) :</label>
           <input type="number" step="0.0001" id="tarifRachat" name="tarifRachat" value="0.0761" disabled />
           <label for="ratioDiurne">Ratio diurne (%) :</label>
@@ -538,7 +536,6 @@
           </label>
           <button type="button" id="calculatePreconisation">Calculer la préconisation</button>
           <h4>Détails par mois (année 1)</h4>
-          <!-- Tableau réagencé pour le scénario standard -->
           <table id="preconisationMonthlyTable"></table>
           <h4>Graphique (Détails par mois)</h4>
           <canvas id="monthlyBarChart" width="600" height="300"></canvas>
@@ -593,7 +590,6 @@
           <input type="number" id="forcedPower" name="forcedPower" value="10" min="1" />
           <button type="button" id="applyForcedPreconisationBtn">Calculer la préconisation choisie</button>
           <h4>Détails par mois (année 1) - Sélection</h4>
-          <!-- Tableau réagencé pour le scénario "Sélection" -->
           <table id="preconisationMonthlyTableForced"></table>
           <h4>Graphique (Détails par mois) - Sélection</h4>
           <canvas id="monthlyBarChartForced" width="600" height="300"></canvas>
@@ -705,6 +701,48 @@
           <input type="number" id="duree_leasing" name="duree_leasing" value="72" />
         </div>
       </div><!-- fin tab11 -->
+
+      <!-- TAB 12 : Plan de trésorerie -->
+      <div id="tab12" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Plan de trésorerie</h2>
+        </div>
+        <div class="form-section">
+          <h3>Choix du mode de financement et du scénario</h3>
+          <label for="financementMode">Mode de financement :</label>
+          <select id="financementMode" name="financementMode">
+            <option value="banque">Financement bancaire</option>
+            <option value="leasing">Leasing</option>
+          </select>
+          <label for="scenarioPlan">Scénario de préconisation :</label>
+          <select id="scenarioPlan" name="scenarioPlan">
+            <option value="standard">Préconisation standard</option>
+            <option value="selection">Préconisation Sélection</option>
+          </select>
+          <button type="button" id="calculateTresorerieBtn">Calculer le plan de trésorerie</button>
+        </div>
+        <div class="form-section">
+          <h3>Plan de trésorerie (Annuel)</h3>
+          <table id="planTresorerieTable">
+            <thead id="planTresorerieHeader">
+              <tr>
+                <th>Année</th>
+                <th>Recettes d'exploitation<br/>(économies + revente)</th>
+                <th>Charges d'exploitation<br/>(maintenance, nettoyage, rem. onduleur(s))</th>
+                <th>Assurance photovoltaïque<br/>(dommages, RC, pertes)</th>
+                <th>Total Charges</th>
+                <th id="financementLabel">Remboursement du prêt</th>
+                <th>Solde net annuel</th>
+              </tr>
+            </thead>
+            <tbody id="planTresorerieBody">
+              <!-- Lignes générées dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+      </div><!-- fin tab12 -->
+
     </form><!-- fin userForm -->
   </div><!-- fin container -->
 
@@ -1083,7 +1121,6 @@
       document.getElementById("puissanceMaxPV").value = puissanceMaxKW.toLocaleString('fr-FR');
       document.getElementById("productionInstall").value = production.toLocaleString('fr-FR');
     }
-
     const surfaceInput = document.getElementById("Surface toiture");
     const exclInput = document.getElementById("exclusionPercent");
     const panelSelect = document.getElementById("puissancePanneau");
@@ -1170,8 +1207,7 @@
         yPos += 10;
         let scenarioChoice = prompt(
           "Choisir la préconisation à utiliser dans le rapport\n" +
-          "'1' => Préconisation standard\n" +
-          "'2' => Préconisation Sélection"
+          "'1' => Préconisation standard\n'2' => Préconisation Sélection"
         );
         if(!scenarioChoice) return;
         scenarioChoice = scenarioChoice.trim();
@@ -1201,102 +1237,6 @@
           roiId            = "roiResult";
         }
         await page2_TableauEtGraphique(pdf, scenarioChoice);
-        function drawVectorBarChart(pdf, chartX, chartY, chartWidth, chartHeight, moisLabels, consoData, autoData, revData) {
-          const allValues = [...consoData, ...autoData, ...revData];
-          const maxValue = Math.max(...allValues, 0);
-          if (maxValue <= 0) {
-            pdf.setFontSize(12);
-            pdf.text("Pas de données valides pour tracer le graphique.", chartX, chartY + 10);
-            return;
-          }
-          const nbGridLines = 5;
-          const stepValue = maxValue / nbGridLines;
-          const stepHeight = chartHeight / nbGridLines;
-          pdf.setDrawColor(200, 200, 200);
-          pdf.setLineWidth(0.2);
-          pdf.setFontSize(8);
-          for (let i = 0; i <= nbGridLines; i++) {
-            const y = chartY + chartHeight - i * stepHeight; 
-            pdf.line(chartX, y, chartX + chartWidth, y);
-            const val = i * stepValue;
-            const labelStr = Math.round(val).toLocaleString() + " kWh";
-            pdf.text(labelStr, chartX - 2, y, { align: "right" });
-          }
-          const nbMois = moisLabels.length;
-          const groupWidth = chartWidth / nbMois;
-          const barWidth = groupWidth / 3;
-          const colorConso = [255, 159, 159];
-          const colorAuto = [159, 235, 159];
-          const colorRev = [159, 189, 255];
-          pdf.setFontSize(7);
-          for (let i = 0; i < nbMois; i++) {
-            const baseX = chartX + i * groupWidth;
-            const baseY = chartY + chartHeight;
-            const hConso = (consoData[i] / maxValue) * chartHeight;
-            pdf.setFillColor(...colorConso);
-            pdf.rect(baseX, baseY - hConso, barWidth, hConso, "F");
-            const hAuto = (autoData[i] / maxValue) * chartHeight;
-            pdf.setFillColor(...colorAuto);
-            pdf.rect(baseX + barWidth, baseY - hAuto, barWidth, hAuto, "F");
-            const hRev = (revData[i] / maxValue) * chartHeight;
-            pdf.setFillColor(...colorRev);
-            pdf.rect(baseX + 2 * barWidth, baseY - hRev, barWidth, hRev, "F");
-            pdf.setTextColor(0, 0, 0);
-            pdf.text(moisLabels[i], baseX + barWidth, baseY + 3, { align: "center" });
-          }
-          pdf.setFontSize(9);
-          pdf.text("kWh", chartX + 2, chartY + 5);
-        }
-        async function page2_TableauEtGraphique(pdf, scenarioChoice) {
-          pdf.addPage();
-          pdf.setFontSize(14);
-          pdf.setTextColor(40, 40, 40);
-          pdf.text("Détails par mois (année 1)", 10, 15);
-          let nextY = 20;
-          let monthlyTableId;
-          if (scenarioChoice === "2") { monthlyTableId = "preconisationMonthlyTableForced"; }
-          else { monthlyTableId = "preconisationMonthlyTable"; }
-          const monthlyTableEl = document.getElementById(monthlyTableId);
-          if (monthlyTableEl) {
-            pdf.autoTable({
-              html: monthlyTableEl,
-              startY: nextY,
-              styles: { fontSize: 8, cellPadding: 2 },
-              headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 9 }
-            });
-            const lastAutoTable = pdf.lastAutoTable;
-            if (lastAutoTable) { nextY = lastAutoTable.finalY + 10; }
-          } else {
-            pdf.setFontSize(12);
-            pdf.text("Aucun tableau mensuel trouvé.", 10, 25);
-            nextY = 35;
-          }
-          const moisLabels = [];
-          const consoData = [];
-          const autoData = [];
-          const revData = [];
-          if (monthlyTableEl) {
-            const rows = monthlyTableEl.querySelectorAll("tbody tr");
-            rows.forEach((tr) => {
-              const tds = tr.querySelectorAll("td");
-              if (tds.length >= 5) {
-                const moisTxt = tds[0].textContent.trim();
-                const cVal = parseFloat(tds[1].textContent) || 0; 
-                const aVal = parseFloat(tds[3].textContent) || 0;
-                const rVal = parseFloat(tds[4].textContent) || 0;
-                moisLabels.push(moisTxt);
-                consoData.push(cVal);
-                autoData.push(aVal);
-                revData.push(rVal);
-              }
-            });
-          }
-          pdf.setFontSize(14);
-          pdf.text("Graphique (Détails par mois)", 10, nextY);
-          nextY += 10;
-          drawVectorBarChart(pdf, 15, nextY, 170, 70, moisLabels, consoData, autoData, revData);
-          nextY += 80 + 15; 
-        }
         pdf.addPage();
         pdf.setFontSize(14);
         pdf.setTextColor(40, 40, 40);
@@ -1321,34 +1261,28 @@
         pdf.text("Chiffres Clés", 10, nextY3);
         nextY3 += 8;
         pdf.setFontSize(12);
-        const pReco = document.getElementById(puissanceId)?.textContent || "-";
-        const cInst = document.getElementById(coutInstId)?.textContent || "-";
-        const cPrime = document.getElementById(primeId)?.textContent || "-";
-        const cReel = document.getElementById(coutReelId)?.textContent || "-";
-        const gSans = document.getElementById(gainSansId)?.textContent || "-";
-        const gAvec = document.getElementById(gainAvecId)?.textContent || "-";
-        const roiVal = document.getElementById(roiId)?.textContent || "-";
-        pdf.text(`Puissance préconisée : ${pReco} kWc`, 10, nextY3); nextY3 += 6;
-        pdf.text(`Coût de l'installation : ${cInst} €`, 10, nextY3); nextY3 += 6;
-        pdf.text(`Prime : ${cPrime} €`, 10, nextY3); nextY3 += 6;
-        pdf.text(`Coût réel de l'installation : ${cReel} €`, 10, nextY3); nextY3 += 6;
-        pdf.text(`Gain total (sans inv.) : ${gSans} €`, 10, nextY3); nextY3 += 6;
-        pdf.text(`Gain total (avec inv.) : ${gAvec} €`, 10, nextY3); nextY3 += 6;
-        pdf.text(`ROI (années) : ${roiVal}`, 10, nextY3);
+        const pRecoText = document.getElementById(puissanceId)?.textContent || "-";
+        const cInstText = document.getElementById(coutInstId)?.textContent || "-";
+        const cPrimeText = document.getElementById(primeId)?.textContent || "-";
+        const cReelText = document.getElementById(coutReelId)?.textContent || "-";
+        const gSansText = document.getElementById(gainSansId)?.textContent || "-";
+        const gAvecText = document.getElementById(gainAvecId)?.textContent || "-";
+        const roiValText = document.getElementById(roiId)?.textContent || "-";
+        pdf.text(`Puissance préconisée : ${pRecoText} kWc`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Coût de l'installation : ${cInstText} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Prime : ${cPrimeText} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Coût réel de l'installation : ${cReelText} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Gain total (sans inv.) : ${gSansText} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`Gain total (avec inv.) : ${gAvecText} €`, 10, nextY3); nextY3 += 6;
+        pdf.text(`ROI (années) : ${roiValText}`, 10, nextY3);
         nextY3 += 12;
         pdf.setFontSize(12);
-        const finalText = 
-          "Ce projet photovoltaïque vous apporte des bénéfices financiers tout " +
-          "en valorisant votre toiture et en participant à la transition énergétique. " +
-          "Grâce à une expertise FRH PRO, vous bénéficiez d'un accompagnement complet " +
-          "et de conseils personnalisés pour optimiser votre retour sur investissement.\n\n" +
-          "L'autoconsommation et la revente du surplus vous permettent de réduire vos " +
-          "factures d'électricité et de profiter d'une source de revenu durable.";
+        const finalText = "Ce projet photovoltaïque vous apporte des bénéfices financiers tout en valorisant votre toiture et en participant à la transition énergétique. Grâce à une expertise FRH PRO, vous bénéficiez d'un accompagnement complet et de conseils personnalisés pour optimiser votre retour sur investissement.\n\nL'autoconsommation et la revente du surplus vous permettent de réduire vos factures d'électricité et de profiter d'une source de revenu durable.";
         const finalLines = pdf.splitTextToSize(finalText, 180);
         pdf.text(finalLines, 10, nextY3);
         nextY3 += 20;
         let pdfFileName = "Rapport_Etude.pdf";
-        if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
+        if(companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
         pdf.save(pdfFileName);
         if (drawingCanvas && drawingCanvasParent) { drawingCanvasParent.appendChild(drawingCanvas); }
       } catch (e) {
@@ -1356,6 +1290,197 @@
         alert("Une erreur s'est produite lors de l'export PDF (voir console).");
       }
     }
+    async function page2_TableauEtGraphique(pdf, scenarioChoice) {
+      pdf.addPage();
+      pdf.setFontSize(14);
+      pdf.setTextColor(40, 40, 40);
+      pdf.text("Détails par mois (année 1)", 10, 15);
+      let nextY = 20;
+      let monthlyTableId;
+      if (scenarioChoice === "2") { monthlyTableId = "preconisationMonthlyTableForced"; }
+      else { monthlyTableId = "preconisationMonthlyTable"; }
+      const monthlyTableEl = document.getElementById(monthlyTableId);
+      if (monthlyTableEl) {
+        pdf.autoTable({
+          html: monthlyTableEl,
+          startY: nextY,
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 9 }
+        });
+        const lastAutoTable = pdf.lastAutoTable;
+        if (lastAutoTable) { nextY = lastAutoTable.finalY + 10; }
+      } else {
+        pdf.setFontSize(12);
+        pdf.text("Aucun tableau mensuel trouvé.", 10, 25);
+        nextY = 35;
+      }
+      const moisLabels = [];
+      const consoData = [];
+      const autoData = [];
+      const revData = [];
+      if (monthlyTableEl) {
+        const rows = monthlyTableEl.querySelectorAll("tbody tr");
+        rows.forEach((tr) => {
+          const tds = tr.querySelectorAll("td");
+          if (tds.length >= 5) {
+            const moisTxt = tds[0].textContent.trim();
+            const cVal = parseFloat(tds[1].textContent) || 0; 
+            const aVal = parseFloat(tds[3].textContent) || 0;
+            const rVal = parseFloat(tds[4].textContent) || 0;
+            moisLabels.push(moisTxt);
+            consoData.push(cVal);
+            autoData.push(aVal);
+            revData.push(rVal);
+          }
+        });
+      }
+      pdf.setFontSize(14);
+      pdf.text("Graphique (Détails par mois)", 10, nextY);
+      nextY += 10;
+      drawVectorBarChart(pdf, 15, nextY, 170, 70, moisLabels, consoData, autoData, revData);
+    }
+    function drawVectorBarChart(pdf, chartX, chartY, chartWidth, chartHeight, moisLabels, consoData, autoData, revData) {
+      const allValues = [...consoData, ...autoData, ...revData];
+      const maxValue = Math.max(...allValues, 0);
+      if (maxValue <= 0) {
+        pdf.setFontSize(12);
+        pdf.text("Pas de données valides pour tracer le graphique.", chartX, chartY + 10);
+        return;
+      }
+      const nbGridLines = 5;
+      const stepValue = maxValue / nbGridLines;
+      const stepHeight = chartHeight / nbGridLines;
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.2);
+      pdf.setFontSize(8);
+      for (let i = 0; i <= nbGridLines; i++) {
+        const y = chartY + chartHeight - i * stepHeight; 
+        pdf.line(chartX, y, chartX + chartWidth, y);
+        const val = i * stepValue;
+        const labelStr = Math.round(val).toLocaleString() + " kWh";
+        pdf.text(labelStr, chartX - 2, y, { align: "right" });
+      }
+      const nbMois = moisLabels.length;
+      const groupWidth = chartWidth / nbMois;
+      const barWidth = groupWidth / 3;
+      const colorConso = [255, 159, 159];
+      const colorAuto = [159, 235, 159];
+      const colorRev = [159, 189, 255];
+      pdf.setFontSize(7);
+      for (let i = 0; i < nbMois; i++) {
+        const baseX = chartX + i * groupWidth;
+        const baseY = chartY + chartHeight;
+        const hConso = (consoData[i] / maxValue) * chartHeight;
+        pdf.setFillColor(...colorConso);
+        pdf.rect(baseX, baseY - hConso, barWidth, hConso, "F");
+        const hAuto = (autoData[i] / maxValue) * chartHeight;
+        pdf.setFillColor(...colorAuto);
+        pdf.rect(baseX + barWidth, baseY - hAuto, barWidth, hAuto, "F");
+        const hRev = (revData[i] / maxValue) * chartHeight;
+        pdf.setFillColor(...colorRev);
+        pdf.rect(baseX + 2 * barWidth, baseY - hRev, barWidth, hRev, "F");
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(moisLabels[i], baseX + barWidth, baseY + 3, { align: "center" });
+      }
+      pdf.setFontSize(9);
+      pdf.text("kWh", chartX + 2, chartY + 5);
+    }
+
+    /***************************************************
+     * MODULE : PLAN DE TRÉSORERIE (ONGLET 12)
+     ***************************************************/
+    function calculatePlanTresorerie(){
+      // Récupération du mode de financement et du scénario choisi
+      const financementMode = document.getElementById("financementMode").value;
+      const scenarioPlan = document.getElementById("scenarioPlan").value;
+      // On récupère les valeurs des recettes (économies et revente) à partir des totaux de l'onglet préconisation
+      let autoYear1_val, surplus_val;
+      if(scenarioPlan === "standard"){
+        autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
+        surplus_val = parseFloat(document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim());
+      } else {
+        autoYear1_val = parseFloat(document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim());
+        surplus_val = parseFloat(document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim());
+      }
+      const recettesExploitation = autoYear1_val + surplus_val;
+      
+      // Récupération du coût de l'installation HT depuis l'onglet préconisation
+      let installationCostHT = 0;
+      if(scenarioPlan === "standard"){
+        installationCostHT = parseFloat(document.getElementById("coutInstallation").textContent.replace(/[^0-9.]/g,"")) || 0;
+      } else {
+        installationCostHT = parseFloat(document.getElementById("coutInstallationForced").textContent.replace(/[^0-9.]/g,"")) || 0;
+      }
+      // Récupération de la puissance de l'installation (en kWc) – on pourra l'utiliser pour le coût de maintenance
+      const installationPower = parseFloat(document.getElementById("puissanceMaxPV").value) || 0;
+      
+      // Paramètres financiers et charges depuis l'onglet Paramètres
+      const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
+      const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
+      const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
+      const cout_changement_onduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value) || 0;
+      const inflation = parseFloat(document.getElementById("inflation_estimee").value) || 0;
+      const taux_emprunt = parseFloat(document.getElementById("taux_emprunt").value) || 0;
+      const duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
+      const index_leasing = parseFloat(document.getElementById("index_leasing").value) || 0;
+      const duree_leasing = parseFloat(document.getElementById("duree_leasing").value) || 0;
+      
+      // Calcul du coût annuel de remboursement pour un prêt bancaire (si applicable)
+      let annualRepayment = 0;
+      if(financementMode === "banque" && duree_pret > 0){
+        const n = duree_pret * 12;
+        const i = taux_emprunt / 100 / 12;
+        const monthlyPayment = installationCostHT * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
+        annualRepayment = monthlyPayment * 12;
+      }
+      // Calcul du coût annuel du leasing (si applicable)
+      let annualLeasing = 0;
+      if(financementMode === "leasing" && duree_leasing > 0){
+        annualLeasing = installationCostHT * (index_leasing/100) * 12;
+      }
+      
+      // Construction du tableau de plan de trésorerie
+      const tableBody = document.getElementById("planTresorerieBody");
+      tableBody.innerHTML = "";
+      // Pour chaque année sur 20 ans
+      for(let year = 1; year <= 20; year++){
+        // Le facteur d'inflation appliqué pour l'année (les coûts évoluent avec l'inflation)
+        const factor = Math.pow(1 + inflation/100, year-1);
+        // Charges d'exploitation : maintenance (basé sur la puissance installée), assurances sur l'installation (dommages et perte) – ici on suppose que la partie maintenance est multipliée par la puissance,
+        // et que le coût d'installation est utilisé pour les assurances. À l'année 11, on ajoute le coût de changement des onduleurs (non indexé).
+        let chargesExploitation = (installationCostHT * (assurance_dommages + assurance_perte) + installationPower * cout_maintenance) * factor;
+        if(year === 11){
+          chargesExploitation += cout_changement_onduleurs;
+        }
+        // Assurance photovoltaïque : on prend à nouveau le coût d'installation HT multiplié par la somme des pourcentages d'assurance, indexés
+        const assurancePhoto = installationCostHT * (assurance_dommages + assurance_perte) * factor;
+        // Total charges d'exploitation : somme des charges et de l'assurance
+        const totalCharges = chargesExploitation + assurancePhoto;
+        // Coût de financement : selon le mode choisi et la durée de remboursement ou leasing
+        let financementCost = 0;
+        if(financementMode === "banque"){
+          financementCost = (year <= duree_pret) ? annualRepayment : 0;
+        } else { // leasing
+          financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
+        }
+        // Solde net annuel = Recettes d'exploitation - (Total charges + Coût de financement)
+        const soldeNet = recettesExploitation - (totalCharges + financementCost);
+        // Création d'une ligne de tableau
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${year}</td>
+          <td>${recettesExploitation.toFixed(2)} €</td>
+          <td>${chargesExploitation.toFixed(2)} €</td>
+          <td>${assurancePhoto.toFixed(2)} €</td>
+          <td>${totalCharges.toFixed(2)} €</td>
+          <td>${financementCost.toFixed(2)} €</td>
+          <td>${soldeNet.toFixed(2)} €</td>
+        `;
+        tableBody.appendChild(row);
+      }
+    }
+    const calculateTresorerieBtn = document.getElementById("calculateTresorerieBtn");
+    calculateTresorerieBtn.addEventListener("click", calculatePlanTresorerie);
 
     /***************************************************
      * 5) SAUVEGARDER / CHARGER JSON

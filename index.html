@@ -28,7 +28,8 @@
   <!-- Chart.js pour le diagramme en barres -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-autotable/3.5.25/js.plugin.autotable.min.js"></script>
+  <!-- jspdf-autotable (note : vérifiez bien cette URL si nécessaire) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     /****************************************************
@@ -1157,11 +1158,9 @@
      * MODULE : PLAN DE TRÉSORERIE (ONGLET 12)
      ***************************************************/
     function calculatePlanTresorerie(){
-      // Récupération du mode de financement et du scénario choisi dans l'onglet Plan de trésorerie
       const financementMode = document.getElementById("financementMode").value;
       const scenarioPlan = document.getElementById("scenarioPlan").value;
       
-      // Pour l'année 1, on utilise les totaux mensuels de l'onglet Préconisation
       let autoYear1_val, surplus_val;
       if(scenarioPlan === "standard"){
         autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
@@ -1172,7 +1171,6 @@
       }
       const recettesAnnee1 = autoYear1_val + surplus_val;
       
-      // Récupération du coût de l'installation HT depuis l'onglet Préconisation
       let installationCostHT = 0;
       if(scenarioPlan === "standard"){
         installationCostHT = parseFloat(document.getElementById("coutInstallation").textContent.replace(/[^0-9.]/g,"")) || 0;
@@ -1180,7 +1178,6 @@
         installationCostHT = parseFloat(document.getElementById("coutInstallationForced").textContent.replace(/[^0-9.]/g,"")) || 0;
       }
       
-      // Récupération de la puissance préconisée (selon le scénario)
       let preconisePower = 0;
       if(scenarioPlan === "standard"){
           preconisePower = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
@@ -1188,7 +1185,6 @@
           preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
       }
       
-      // Paramètres financiers et charges depuis l'onglet Paramètres
       const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
       const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
       const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
@@ -1199,7 +1195,6 @@
       const index_leasing = parseFloat(document.getElementById("index_leasing").value) || 0;
       const duree_leasing = parseFloat(document.getElementById("duree_leasing").value) || 0;
       
-      // Calcul du coût annuel de remboursement pour un prêt bancaire (si applicable)
       let annualRepayment = 0;
       if(financementMode === "banque" && duree_pret > 0){
         const n = duree_pret * 12;
@@ -1207,28 +1202,23 @@
         const monthlyPayment = installationCostHT * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
         annualRepayment = monthlyPayment * 12;
       }
-      // Calcul du coût annuel du leasing (si applicable)
       let annualLeasing = 0;
       if(financementMode === "leasing" && duree_leasing > 0){
         annualLeasing = installationCostHT * (index_leasing/100) * 12;
       }
       
-      // Initialisation des totaux pour la ligne "Totaux"
       let totalRecettes = 0;
-      let totalChargesExploitation = 0; // maintenance
+      let totalChargesExploitation = 0;
       let totalAssurance = 0;
       let totalFinancement = 0;
       let totalSoldeNet = 0;
       
-      // Construction du tableau de plan de trésorerie
       const tableBody = document.getElementById("planTresorerieBody");
       tableBody.innerHTML = "";
       
       for(let year = 1; year <= 20; year++){
-        // Facteur d'actualisation (inflation) pour l'année (à partir de l'année 2)
         const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
         
-        // Recettes d'exploitation :
         let recettes;
         if(year === 1){
           recettes = recettesAnnee1;
@@ -1250,7 +1240,6 @@
           }
         }
         
-        // Charges d'exploitation (maintenance, nettoyage, rem. onduleur(s))
         let maintenanceCost = preconisePower * cout_maintenance;
         if(year > 1){
           maintenanceCost = maintenanceCost * factor;
@@ -1259,7 +1248,6 @@
           maintenanceCost += cout_changement_onduleurs;
         }
         
-        // Assurance photovoltaïque
         let assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
         if(year > 1){
           assurancePhoto = assurancePhoto * factor;
@@ -1267,7 +1255,6 @@
         
         const totalCharges = maintenanceCost + assurancePhoto;
         
-        // Financement
         let financementCost = 0;
         if(financementMode === "banque"){
           financementCost = (year <= duree_pret) ? annualRepayment : 0;
@@ -1296,7 +1283,6 @@
         tableBody.appendChild(row);
       }
       
-      // Ligne Totaux
       const totauxRow = document.createElement("tr");
       totauxRow.innerHTML = `
         <th>Totaux</th>
@@ -1988,7 +1974,7 @@
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // Utiliser le select de l'onglet 12 pour déterminer le scénario (standard ou selection)
+      // Détermine le scénario via l'onglet Plan de trésorerie
       const scenarioPlan = document.getElementById("scenarioPlan").value; // "standard" ou "selection"
       let monthlyTableId, projectionTableId;
       if(scenarioPlan === "selection"){
@@ -1998,25 +1984,21 @@
         monthlyTableId = "preconisationMonthlyTable";
         projectionTableId = "preconisationTable";
       }
-      // Pour le tableau plan de trésorerie, on utilise l'ID unique
       const tresorerieTableId = "planTresorerieTable";
-
-      // --------------------
-      // Page 1 : Capture de carte
-      // --------------------
+      
+      // PAGE 1 : Capture de carte
       pdf.setFontSize(16);
       pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
       if(mapCaptureDataURL) {
         const imgWidth = pageWidth - 30;
+        // Ajustement de la hauteur (ici 60% de la largeur)
         const imgHeight = imgWidth * 0.6;
         pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", 15, 25, imgWidth, imgHeight);
       } else {
         pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
       }
       
-      // --------------------
-      // Page 2 : Tableau "Détails par mois (année 1)"
-      // --------------------
+      // PAGE 2 : Tableau "Détails par mois (année 1)"
       pdf.addPage();
       pdf.setFontSize(14);
       pdf.text("Détails par mois (année 1)", 10, 15);
@@ -2032,14 +2014,12 @@
         pdf.text("Tableau Détails par mois non disponible", 10, 30);
       }
       
-      // --------------------
-      // Page 3 : Graphique et légende
-      // --------------------
+      // PAGE 3 : Graphique et légende
       pdf.addPage();
       pdf.setFontSize(14);
       pdf.text("Graphique des productions", 10, 15);
-      if(window.monthlyChart) {
-        const chartImage = window.monthlyChart.toBase64Image();
+      if(monthlyBarChart) {
+        const chartImage = monthlyBarChart.toBase64Image();
         pdf.addImage(chartImage, "PNG", 15, 20, pageWidth - 30, 80);
         // Légende
         pdf.setFontSize(10);
@@ -2057,9 +2037,7 @@
         pdf.text("Graphique non disponible", 10, 30);
       }
       
-      // --------------------
-      // Page 4 : Tableau "Projection sur 20 ans"
-      // --------------------
+      // PAGE 4 : Tableau "Projection sur 20 ans"
       pdf.addPage();
       pdf.setFontSize(14);
       pdf.text("Projection sur 20 ans", 10, 15);
@@ -2075,9 +2053,7 @@
         pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
       }
       
-      // --------------------
-      // Page 5 : Tableau "Plan de trésorerie (Annuel)"
-      // --------------------
+      // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
       pdf.addPage();
       pdf.setFontSize(14);
       pdf.text("Plan de trésorerie (Annuel)", 10, 15);

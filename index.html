@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v118</title> 
+  <title>FRH PRO formulaire  - v119</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1220,7 +1220,7 @@
       for(let year = 1; year <= 20; year++){
         const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
         
-        let recettes;
+              let recettes;
         if(year === 1){
           recettes = recettesAnnee1;
         } else {
@@ -1233,13 +1233,28 @@
           const rows = projTable.querySelectorAll("tbody tr");
           if(rows.length >= year){
             const row = rows[year - 1];
+            // Dans le tableau, la colonne 2 ("Économies Autoconso") et la colonne 4 ("Gains Revente")
             const econ = parseFloat(row.cells[2].textContent.replace(/[^0-9.-]+/g,"")) || 0;
             const revente = parseFloat(row.cells[4].textContent.replace(/[^0-9.-]+/g,"")) || 0;
             recettes = econ + revente;
+            if(year === 2) {
+              // Récupération de la puissance préconisée (selon le scénario)
+              let S = 0;
+              if(scenarioPlan === "standard"){
+                S = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
+              } else {
+                S = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
+              }
+              const territory = document.getElementById("territory").value || "France Metropolitaine";
+              const tObj = getTarifRachatAndPrime(S, territory);
+              const primeTotal = Math.round(tObj.primeByWc * (S * 1000));
+              recettes += primeTotal; // Ajout de la prime (sans inflation)
+            }
           } else {
             recettes = recettesAnnee1;
           }
         }
+
         
         let maintenanceCost = preconisePower * cout_maintenance;
         if(year > 1){

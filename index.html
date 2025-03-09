@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v120</title> 
+  <title>FRH PRO formulaire  - v121</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1154,166 +1154,25 @@
       reader.readAsDataURL(file);
     });
     exportPDFBtn.addEventListener("click", generatePdfReport);
+let scenarioChoice = prompt(
+  "Choisir le scénario de préconisation pour le plan de trésorerie:\n" +
+  "Entrez 1 pour Préconisation standard\n" +
+  "Entrez 2 pour Préconisation Sélection"
+);
+if (scenarioChoice === null) return;
+scenarioChoice = scenarioChoice.trim();
+while (scenarioChoice !== "1" && scenarioChoice !== "2") {
+  scenarioChoice = prompt(
+    "Saisie invalide.\n" +
+    "Entrez 1 pour Préconisation standard\n" +
+    "Entrez 2 pour Préconisation Sélection"
+  );
+  if (scenarioChoice === null) return;
+  scenarioChoice = scenarioChoice.trim();
+}
+const scenarioPlan = scenarioChoice === "1" ? "standard" : "selection";
 
-    /***************************************************
-     * MODULE : PLAN DE TRÉSORERIE (ONGLET 12)
-     ***************************************************/
-    function calculatePlanTresorerie(){
-      const financementMode = document.getElementById("financementMode").value;
-      const scenarioPlan = document.getElementById("scenarioPlan").value;
-      
-      let autoYear1_val, surplus_val;
-      if(scenarioPlan === "standard"){
-        autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
-        surplus_val = parseFloat(document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim());
-      } else {
-        autoYear1_val = parseFloat(document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim());
-        surplus_val = parseFloat(document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim());
-      }
-      const recettesAnnee1 = autoYear1_val + surplus_val;
-      
-      let installationCostHT = 0;
-      if(scenarioPlan === "standard"){
-        installationCostHT = parseFloat(document.getElementById("coutInstallation").textContent.replace(/[^0-9.]/g,"")) || 0;
-      } else {
-        installationCostHT = parseFloat(document.getElementById("coutInstallationForced").textContent.replace(/[^0-9.]/g,"")) || 0;
-      }
-      
-      let preconisePower = 0;
-      if(scenarioPlan === "standard"){
-          preconisePower = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
-      } else {
-          preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
-      }
-      
-      const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
-      const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
-      const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
-      const cout_changement_onduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value) || 0;
-      const inflation = parseFloat(document.getElementById("inflation_estimee").value) || 0;
-      const taux_emprunt = parseFloat(document.getElementById("taux_emprunt").value) || 0;
-      const duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
-      const index_leasing = parseFloat(document.getElementById("index_leasing").value) || 0;
-      const duree_leasing = parseFloat(document.getElementById("duree_leasing").value) || 0;
-      
-      let annualRepayment = 0;
-      if(financementMode === "banque" && duree_pret > 0){
-        const n = duree_pret * 12;
-        const i = taux_emprunt / 100 / 12;
-        const monthlyPayment = installationCostHT * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
-        annualRepayment = monthlyPayment * 12;
-      }
-      let annualLeasing = 0;
-      if(financementMode === "leasing" && duree_leasing > 0){
-        annualLeasing = installationCostHT * (index_leasing/100) * 12;
-      }
-      
-      let totalRecettes = 0;
-      let totalChargesExploitation = 0;
-      let totalAssurance = 0;
-      let totalFinancement = 0;
-      let totalSoldeNet = 0;
-      
-      const tableBody = document.getElementById("planTresorerieBody");
-      tableBody.innerHTML = "";
-      
-      for(let year = 1; year <= 20; year++){
-        const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
-        
-              let recettes;
-        if(year === 1){
-          recettes = recettesAnnee1;
-        } else {
-          let projTable;
-          if(scenarioPlan === "standard"){
-            projTable = document.getElementById("preconisationTable");
-          } else {
-            projTable = document.getElementById("preconisationTableForced");
-          }
-          const rows = projTable.querySelectorAll("tbody tr");
-          if(rows.length >= year){
-            const row = rows[year - 1];
-            // Dans le tableau, la colonne 2 ("Économies Autoconso") et la colonne 4 ("Gains Revente")
-            const econ = parseFloat(row.cells[2].textContent.replace(/[^0-9.-]+/g,"")) || 0;
-            const revente = parseFloat(row.cells[4].textContent.replace(/[^0-9.-]+/g,"")) || 0;
-            recettes = econ + revente;
-            if(year === 2) {
-              // Récupération de la puissance préconisée (selon le scénario)
-              let S = 0;
-              if(scenarioPlan === "standard"){
-                S = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
-              } else {
-                S = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
-              }
-              const territory = document.getElementById("territory").value || "France Metropolitaine";
-              const tObj = getTarifRachatAndPrime(S, territory);
-              const primeTotal = Math.round(tObj.primeByWc * (S * 1000));
-              recettes += primeTotal; // Ajout de la prime (sans inflation)
-            }
-          } else {
-            recettes = recettesAnnee1;
-          }
-        }
 
-        
-        let maintenanceCost = preconisePower * cout_maintenance;
-        if(year > 1){
-          maintenanceCost = maintenanceCost * factor;
-        }
-        if(year === 11){
-          maintenanceCost += cout_changement_onduleurs;
-        }
-        
-        let assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
-        if(year > 1){
-          assurancePhoto = assurancePhoto * factor;
-        }
-        
-        const totalCharges = maintenanceCost + assurancePhoto;
-        
-        let financementCost = 0;
-        if(financementMode === "banque"){
-          financementCost = (year <= duree_pret) ? annualRepayment : 0;
-        } else {
-          financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
-        }
-        
-        const soldeNet = recettes - (totalCharges + financementCost);
-        
-        totalRecettes += recettes;
-        totalChargesExploitation += maintenanceCost;
-        totalAssurance += assurancePhoto;
-        totalFinancement += financementCost;
-        totalSoldeNet += soldeNet;
-        
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${year}</td>
-          <td>${recettes.toFixed(2)} €</td>
-          <td>${maintenanceCost.toFixed(2)} €</td>
-          <td>${assurancePhoto.toFixed(2)} €</td>
-          <td>${totalCharges.toFixed(2)} €</td>
-          <td>${financementCost.toFixed(2)} €</td>
-          <td>${soldeNet.toFixed(2)} €</td>
-        `;
-        tableBody.appendChild(row);
-      }
-      
-      const totauxRow = document.createElement("tr");
-      totauxRow.innerHTML = `
-        <th>Totaux</th>
-        <th>${totalRecettes.toFixed(2)} €</th>
-        <th>${totalChargesExploitation.toFixed(2)} €</th>
-        <th>${totalAssurance.toFixed(2)} €</th>
-        <th>${(totalChargesExploitation + totalAssurance).toFixed(2)} €</th>
-        <th>${totalFinancement.toFixed(2)} €</th>
-        <th>${totalSoldeNet.toFixed(2)} €</th>
-      `;
-      tableBody.appendChild(totauxRow);
-    }
-    
-    const calculateTresorerieBtn = document.getElementById("calculateTresorerieBtn");
-    calculateTresorerieBtn.addEventListener("click", calculatePlanTresorerie);
 
     /***************************************************
      * 5) SAUVEGARDER / CHARGER JSON

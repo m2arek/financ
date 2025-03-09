@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v130</title> 
+  <title>FRH PRO formulaire  - v131</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1991,13 +1991,13 @@ function generatePdfReport() {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Demande à l'utilisateur de choisir le scénario pour le PDF
+  // Demande à l'utilisateur de choisir le scénario pour le PDF via un prompt
   let scenarioChoice = prompt(
     "Choisissez le scénario pour le PDF :\n" +
     "Entrez 1 pour Préconisation standard\n" +
     "Entrez 2 pour Préconisation Sélection"
   );
-  if (scenarioChoice === null) return; // L'utilisateur a annulé
+  if (scenarioChoice === null) return; // Annulation de l'utilisateur
   scenarioChoice = scenarioChoice.trim();
   while (scenarioChoice !== "1" && scenarioChoice !== "2") {
     scenarioChoice = prompt(
@@ -2134,6 +2134,7 @@ function generatePdfReport() {
   if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
   pdf.save(pdfFileName);
 }
+
 
   </script>
 </body>

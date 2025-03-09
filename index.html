@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v111</title> 
+  <title>FRH PRO formulaire  - v112</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -261,7 +261,7 @@
       <button type="button" class="tablinks" onclick="openTab(event, 'tab9')">9. Préconisation Sélection</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab10')">10. Commentaires</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab11')">11. Paramètres</button>
-      <!-- Onglet 12 ajouté ici -->
+      <!-- Onglet 12 ajouté -->
       <button type="button" class="tablinks" onclick="openTab(event, 'tab12')">12. Plan de trésorerie</button>
     </div>
 
@@ -525,7 +525,6 @@
           <h3>Préconisation</h3>
           <label for="annualPriceIncrease">Augmentation annuelle du prix de l'électricité (%):</label>
           <input type="number" step="0.1" id="annualPriceIncrease" name="annualPriceIncrease" value="5" />
-          <!-- Le tarif rachat est affiché en mode disabled -->
           <label for="tarifRachat">Tarif de rachat du surplus (€/kWh) :</label>
           <input type="number" step="0.0001" id="tarifRachat" name="tarifRachat" value="0.0761" disabled />
           <label for="ratioDiurne">Ratio diurne (%) :</label>
@@ -732,7 +731,7 @@
                 <th>Charges d'exploitation<br/>(maintenance, nettoyage, rem. onduleur(s))</th>
                 <th>Assurance photovoltaïque<br/>(dommages, RC, pertes)</th>
                 <th>Total Charges</th>
-                <th id="financementLabel">Remboursement du prêt</th>
+                <th>Remboursement du prêt</th>
                 <th>Solde net annuel</th>
               </tr>
             </thead>
@@ -1393,7 +1392,8 @@
       // Récupération du mode de financement et du scénario choisi
       const financementMode = document.getElementById("financementMode").value;
       const scenarioPlan = document.getElementById("scenarioPlan").value;
-      // On récupère les valeurs des recettes (économies et revente) à partir des totaux de l'onglet préconisation
+      
+      // Pour l'année 1, on utilise les totaux mensuels de l'onglet Préconisation
       let autoYear1_val, surplus_val;
       if(scenarioPlan === "standard"){
         autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
@@ -1402,19 +1402,26 @@
         autoYear1_val = parseFloat(document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim());
         surplus_val = parseFloat(document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim());
       }
-      const recettesExploitation = autoYear1_val + surplus_val;
+      const recettesAnnee1 = autoYear1_val + surplus_val;
       
-      // Récupération du coût de l'installation HT depuis l'onglet préconisation
+      // Récupération du coût de l'installation HT depuis l'onglet Préconisation
       let installationCostHT = 0;
       if(scenarioPlan === "standard"){
         installationCostHT = parseFloat(document.getElementById("coutInstallation").textContent.replace(/[^0-9.]/g,"")) || 0;
       } else {
         installationCostHT = parseFloat(document.getElementById("coutInstallationForced").textContent.replace(/[^0-9.]/g,"")) || 0;
       }
-      // Récupération de la puissance de l'installation (en kWc) – on pourra l'utiliser pour le coût de maintenance
-      const installationPower = parseFloat(document.getElementById("puissanceMaxPV").value) || 0;
+      
+      // Récupération de la puissance préconisée (selon le scénario)
+      let preconisePower = 0;
+      if(scenarioPlan === "standard"){
+          preconisePower = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
+      } else {
+          preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
+      }
       
       // Paramètres financiers et charges depuis l'onglet Paramètres
+      // Les pourcentages d'assurance sont exprimés en pourcentage (ex. 0.20 = 0,20%)
       const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
       const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
       const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
@@ -1439,38 +1446,89 @@
         annualLeasing = installationCostHT * (index_leasing/100) * 12;
       }
       
+      // Initialisation des totaux pour la ligne "Totaux"
+      let totalRecettes = 0;
+      let totalChargesExploitation = 0; // maintenance
+      let totalAssurance = 0;
+      let totalFinancement = 0;
+      let totalSoldeNet = 0;
+      
       // Construction du tableau de plan de trésorerie
       const tableBody = document.getElementById("planTresorerieBody");
       tableBody.innerHTML = "";
-      // Pour chaque année sur 20 ans
+      
       for(let year = 1; year <= 20; year++){
-        // Le facteur d'inflation appliqué pour l'année (les coûts évoluent avec l'inflation)
-        const factor = Math.pow(1 + inflation/100, year-1);
-        // Charges d'exploitation : maintenance (basé sur la puissance installée), assurances sur l'installation (dommages et perte) – ici on suppose que la partie maintenance est multipliée par la puissance,
-        // et que le coût d'installation est utilisé pour les assurances. À l'année 11, on ajoute le coût de changement des onduleurs (non indexé).
-        let chargesExploitation = (installationCostHT * (assurance_dommages + assurance_perte) + installationPower * cout_maintenance) * factor;
-        if(year === 11){
-          chargesExploitation += cout_changement_onduleurs;
+        // Facteur d'actualisation (inflation) pour l'année (à partir de l'année 2)
+        const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
+        
+        // Recettes d'exploitation :
+        // Pour l'année 1, utiliser les totaux mensuels.
+        // Pour les années 2 à 20, récupérer les valeurs de la projection sur 20 ans.
+        let recettes;
+        if(year === 1){
+          recettes = recettesAnnee1;
+        } else {
+          let projTable;
+          if(scenarioPlan === "standard"){
+            projTable = document.getElementById("preconisationTable");
+          } else {
+            projTable = document.getElementById("preconisationTableForced");
+          }
+          const rows = projTable.querySelectorAll("tbody tr");
+          if(rows.length >= year){
+            const row = rows[year - 1];
+            // Dans le tableau, la colonne 2 ("Économies Autoconso") et la colonne 4 ("Gains Revente")
+            const econ = parseFloat(row.cells[2].textContent.replace(/[^0-9.-]+/g,"")) || 0;
+            const revente = parseFloat(row.cells[4].textContent.replace(/[^0-9.-]+/g,"")) || 0;
+            recettes = econ + revente;
+          } else {
+            recettes = recettesAnnee1;
+          }
         }
-        // Assurance photovoltaïque : on prend à nouveau le coût d'installation HT multiplié par la somme des pourcentages d'assurance, indexés
-        const assurancePhoto = installationCostHT * (assurance_dommages + assurance_perte) * factor;
-        // Total charges d'exploitation : somme des charges et de l'assurance
-        const totalCharges = chargesExploitation + assurancePhoto;
-        // Coût de financement : selon le mode choisi et la durée de remboursement ou leasing
+        
+        // Charges d'exploitation (maintenance, nettoyage, rem. onduleur(s)) :
+        // Calcul basé sur la puissance préconisée * coût maintenance
+        let maintenanceCost = preconisePower * cout_maintenance;
+        if(year > 1){
+          maintenanceCost = maintenanceCost * factor;
+        }
+        if(year === 11){
+          maintenanceCost += cout_changement_onduleurs; // coût onduleur non indexé
+        }
+        
+        // Assurance photovoltaïque : calculée à partir du coût de l'installation HT multiplié par ((assurance_dommages+assurance_perte)/100)
+        let assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
+        if(year > 1){
+          assurancePhoto = assurancePhoto * factor;
+        }
+        
+        // Total charges = maintenance + assurance
+        const totalCharges = maintenanceCost + assurancePhoto;
+        
+        // Financement (remboursement du prêt ou loyer)
         let financementCost = 0;
         if(financementMode === "banque"){
           financementCost = (year <= duree_pret) ? annualRepayment : 0;
-        } else { // leasing
+        } else {
           financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
         }
-        // Solde net annuel = Recettes d'exploitation - (Total charges + Coût de financement)
-        const soldeNet = recettesExploitation - (totalCharges + financementCost);
-        // Création d'une ligne de tableau
+        
+        // Solde net annuel = Recettes - (Total charges + Financement)
+        const soldeNet = recettes - (totalCharges + financementCost);
+        
+        // Accumulation des totaux
+        totalRecettes += recettes;
+        totalChargesExploitation += maintenanceCost;
+        totalAssurance += assurancePhoto;
+        totalFinancement += financementCost;
+        totalSoldeNet += soldeNet;
+        
+        // Création de la ligne pour l'année
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${year}</td>
-          <td>${recettesExploitation.toFixed(2)} €</td>
-          <td>${chargesExploitation.toFixed(2)} €</td>
+          <td>${recettes.toFixed(2)} €</td>
+          <td>${maintenanceCost.toFixed(2)} €</td>
           <td>${assurancePhoto.toFixed(2)} €</td>
           <td>${totalCharges.toFixed(2)} €</td>
           <td>${financementCost.toFixed(2)} €</td>
@@ -1478,7 +1536,21 @@
         `;
         tableBody.appendChild(row);
       }
+      
+      // Ajout de la ligne Totaux
+      const totauxRow = document.createElement("tr");
+      totauxRow.innerHTML = `
+        <th>Totaux</th>
+        <th>${totalRecettes.toFixed(2)} €</th>
+        <th>${totalChargesExploitation.toFixed(2)} €</th>
+        <th>${totalAssurance.toFixed(2)} €</th>
+        <th>${(totalChargesExploitation + totalAssurance).toFixed(2)} €</th>
+        <th>${totalFinancement.toFixed(2)} €</th>
+        <th>${totalSoldeNet.toFixed(2)} €</th>
+      `;
+      tableBody.appendChild(totauxRow);
     }
+    
     const calculateTresorerieBtn = document.getElementById("calculateTresorerieBtn");
     calculateTresorerieBtn.addEventListener("click", calculatePlanTresorerie);
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v116</title> 
+  <title>FRH PRO formulaire  - v117</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1998,21 +1998,53 @@
         pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
       }
       
-      // PAGE 2 : Tableau "Détails par mois (année 1)"
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Détails par mois (année 1)", 10, 15);
-      const monthlyTableEl = document.getElementById(monthlyTableId);
-      if(monthlyTableEl) {
-        pdf.autoTable({
-          html: monthlyTableEl,
-          startY: 20,
-          styles: { fontSize: 8 },
-          headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 9 }
-        });
-      } else {
-        pdf.text("Tableau Détails par mois non disponible", 10, 30);
-      }
+      // Page 2 : Tableau "Détails par mois (année 1)"
+pdf.addPage();
+pdf.setFontSize(14);
+pdf.text("Détails par mois (année 1)", 10, 15);
+
+const monthlyTableEl = document.getElementById(monthlyTableId);
+if (monthlyTableEl) {
+  pdf.autoTable({
+    html: monthlyTableEl,
+    startY: 20,
+    // Styles généraux
+    styles: {
+      fontSize: 7,           // Police plus petite
+      cellPadding: 2,        // Réduit l'espacement intérieur
+      overflow: 'linebreak', // Permet le saut de ligne si trop long
+      halign: 'center',      // Centre le texte horizontalement
+      valign: 'middle',      // Centre verticalement
+    },
+    // Styles spécifiques à l'en-tête
+    headStyles: {
+      fillColor: [0, 92, 160],
+      textColor: 255,
+      fontSize: 7,           // Police en-tête
+      halign: 'center',
+      valign: 'middle',
+    },
+    // Largeur fixée (ou ajustée) pour chaque colonne
+    columnStyles: {
+      0: { cellWidth: 25 },  // "Mois"
+      1: { cellWidth: 25 },  // "Conso kWh" (si visible)
+      2: { cellWidth: 25 },  // "Production kWh" (si visible)
+      3: { cellWidth: 25 },  // "Autoconso kWh"
+      4: { cellWidth: 25 },  // "Revente kWh"
+      5: { cellWidth: 28 },  // "Facture Sans Centrale"
+      6: { cellWidth: 28 },  // "Économies Autoconso"
+      7: { cellWidth: 28 },  // "Facture Avec Centrale"
+      8: { cellWidth: 25 },  // "Gains Revente"
+      9: { cellWidth: 25 },  // "Total Économies"
+      10: { cellWidth: 20 }, // "% Auto prod"
+      11: { cellWidth: 20 }, // "% Auto conso"
+      12: { cellWidth: 20 }, // "% Revente"
+    },
+  });
+} else {
+  pdf.text("Tableau Détails par mois non disponible", 10, 30);
+}
+
       
       // PAGE 3 : Graphique et légende
       pdf.addPage();

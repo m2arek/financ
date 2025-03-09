@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v119</title> 
+  <title>FRH PRO formulaire  - v130</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1982,147 +1982,159 @@
       dateFormat: "d/m/Y"
     });
 
-    /***************************************************
-     * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
-     ***************************************************/
-    function generatePdfReport() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+/***************************************************
+ * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
+ ***************************************************/
+function generatePdfReport() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // Détermine le scénario via l'onglet Plan de trésorerie
-      const scenarioPlan = document.getElementById("scenarioPlan").value; // "standard" ou "selection"
-      let monthlyTableId, projectionTableId;
-      if(scenarioPlan === "selection"){
-        monthlyTableId = "preconisationMonthlyTableForced";
-        projectionTableId = "preconisationTableForced";
-      } else {
-        monthlyTableId = "preconisationMonthlyTable";
-        projectionTableId = "preconisationTable";
-      }
-      const tresorerieTableId = "planTresorerieTable";
-      
-      // PAGE 1 : Capture de carte
-      pdf.setFontSize(16);
-      pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
-      if(mapCaptureDataURL) {
-        const imgWidth = pageWidth - 30;
-        // Ajustement de la hauteur (ici 60% de la largeur)
-        const imgHeight = imgWidth * 0.6;
-        pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", 15, 25, imgWidth, imgHeight);
-      } else {
-        pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
-      }
-      
-      // Page 2 : Tableau "Détails par mois (année 1)"
-pdf.addPage();
-pdf.setFontSize(14);
-pdf.text("Détails par mois (année 1)", 10, 15);
+  // Demande à l'utilisateur de choisir le scénario pour le PDF
+  let scenarioChoice = prompt(
+    "Choisissez le scénario pour le PDF :\n" +
+    "Entrez 1 pour Préconisation standard\n" +
+    "Entrez 2 pour Préconisation Sélection"
+  );
+  if (scenarioChoice === null) return; // L'utilisateur a annulé
+  scenarioChoice = scenarioChoice.trim();
+  while (scenarioChoice !== "1" && scenarioChoice !== "2") {
+    scenarioChoice = prompt(
+      "Saisie invalide.\n" +
+      "Entrez 1 pour Préconisation standard\n" +
+      "Entrez 2 pour Préconisation Sélection"
+    );
+    if (scenarioChoice === null) return;
+    scenarioChoice = scenarioChoice.trim();
+  }
+  const scenarioPlan = scenarioChoice === "1" ? "standard" : "selection";
 
-const monthlyTableEl = document.getElementById(monthlyTableId);
-if (monthlyTableEl) {
-  pdf.autoTable({
-    html: monthlyTableEl,
-    startY: 20,
-    // Styles généraux
-    styles: {
-      fontSize: 7,           // Police plus petite
-      cellPadding: 2,        // Réduit l'espacement intérieur
-      overflow: 'linebreak', // Permet le saut de ligne si trop long
-      halign: 'center',      // Centre le texte horizontalement
-      valign: 'middle',      // Centre verticalement
-    },
-    // Styles spécifiques à l'en-tête
-    headStyles: {
-      fillColor: [0, 92, 160],
-      textColor: 255,
-      fontSize: 7,           // Police en-tête
-      halign: 'center',
-      valign: 'middle',
-    },
-    // Largeur fixée (ou ajustée) pour chaque colonne
-    columnStyles: {
-      0: { cellWidth: 25 },  // "Mois"
-      1: { cellWidth: 25 },  // "Conso kWh" (si visible)
-      2: { cellWidth: 25 },  // "Production kWh" (si visible)
-      3: { cellWidth: 25 },  // "Autoconso kWh"
-      4: { cellWidth: 25 },  // "Revente kWh"
-      5: { cellWidth: 28 },  // "Facture Sans Centrale"
-      6: { cellWidth: 28 },  // "Économies Autoconso"
-      7: { cellWidth: 28 },  // "Facture Avec Centrale"
-      8: { cellWidth: 25 },  // "Gains Revente"
-      9: { cellWidth: 25 },  // "Total Économies"
-      10: { cellWidth: 20 }, // "% Auto prod"
-      11: { cellWidth: 20 }, // "% Auto conso"
-      12: { cellWidth: 20 }, // "% Revente"
-    },
-  });
-} else {
-  pdf.text("Tableau Détails par mois non disponible", 10, 30);
+  let monthlyTableId, projectionTableId;
+  if (scenarioPlan === "selection") {
+    monthlyTableId = "preconisationMonthlyTableForced";
+    projectionTableId = "preconisationTableForced";
+  } else {
+    monthlyTableId = "preconisationMonthlyTable";
+    projectionTableId = "preconisationTable";
+  }
+  const tresorerieTableId = "planTresorerieTable";
+
+  // PAGE 1 : Capture de carte
+  pdf.setFontSize(16);
+  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
+  if (mapCaptureDataURL) {
+    const imgWidth = pageWidth - 30;
+    const imgHeight = imgWidth * 0.6;
+    pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", 15, 25, imgWidth, imgHeight);
+  } else {
+    pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
+  }
+
+  // PAGE 2 : Tableau "Détails par mois (année 1)"
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Détails par mois (année 1)", 10, 15);
+
+  const monthlyTableEl = document.getElementById(monthlyTableId);
+  if (monthlyTableEl) {
+    pdf.autoTable({
+      html: monthlyTableEl,
+      startY: 20,
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        overflow: 'linebreak',
+        halign: 'center',
+        valign: 'middle',
+      },
+      headStyles: {
+        fillColor: [0, 92, 160],
+        textColor: 255,
+        fontSize: 7,
+        halign: 'center',
+        valign: 'middle',
+      },
+      columnStyles: {
+        0: { cellWidth: 25 },
+        1: { cellWidth: 25 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 25 },
+        5: { cellWidth: 28 },
+        6: { cellWidth: 28 },
+        7: { cellWidth: 28 },
+        8: { cellWidth: 25 },
+        9: { cellWidth: 25 },
+        10: { cellWidth: 20 },
+        11: { cellWidth: 20 },
+        12: { cellWidth: 20 },
+      },
+    });
+  } else {
+    pdf.text("Tableau Détails par mois non disponible", 10, 30);
+  }
+
+  // PAGE 3 : Graphique et légende
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Graphique des productions", 10, 15);
+  if (monthlyBarChart) {
+    const chartImage = monthlyBarChart.toBase64Image();
+    pdf.addImage(chartImage, "PNG", 15, 20, pageWidth - 30, 80);
+    pdf.setFontSize(10);
+    pdf.text("Légende :", 15, 110);
+    pdf.setFillColor(255, 99, 132);
+    pdf.rect(40, 105, 5, 5, "F");
+    pdf.text("Conso kWh", 50, 109);
+    pdf.setFillColor(75, 192, 75);
+    pdf.rect(40, 115, 5, 5, "F");
+    pdf.text("Autoconso kWh", 50, 119);
+    pdf.setFillColor(54, 162, 235);
+    pdf.rect(40, 125, 5, 5, "F");
+    pdf.text("Revente kWh", 50, 129);
+  } else {
+    pdf.text("Graphique non disponible", 10, 30);
+  }
+
+  // PAGE 4 : Tableau "Projection sur 20 ans"
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Projection sur 20 ans", 10, 15);
+  const projectionTableEl = document.getElementById(projectionTableId);
+  if (projectionTableEl) {
+    pdf.autoTable({
+      html: projectionTableEl,
+      startY: 20,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
+    });
+  } else {
+    pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
+  }
+
+  // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Plan de trésorerie (Annuel)", 10, 15);
+  const tresorerieTableEl = document.getElementById(tresorerieTableId);
+  if (tresorerieTableEl) {
+    pdf.autoTable({
+      html: tresorerieTableEl,
+      startY: 20,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [200, 200, 200] }
+    });
+  } else {
+    pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
+  }
+
+  let companyName = document.getElementById("companyName")?.value || "";
+  let pdfFileName = "Rapport_Photovoltaïque.pdf";
+  if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
+  pdf.save(pdfFileName);
 }
 
-      
-      // PAGE 3 : Graphique et légende
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Graphique des productions", 10, 15);
-      if(monthlyBarChart) {
-        const chartImage = monthlyBarChart.toBase64Image();
-        pdf.addImage(chartImage, "PNG", 15, 20, pageWidth - 30, 80);
-        // Légende
-        pdf.setFontSize(10);
-        pdf.text("Légende :", 15, 110);
-        pdf.setFillColor(255, 99, 132);
-        pdf.rect(40, 105, 5, 5, "F");
-        pdf.text("Conso kWh", 50, 109);
-        pdf.setFillColor(75, 192, 75);
-        pdf.rect(40, 115, 5, 5, "F");
-        pdf.text("Autoconso kWh", 50, 119);
-        pdf.setFillColor(54, 162, 235);
-        pdf.rect(40, 125, 5, 5, "F");
-        pdf.text("Revente kWh", 50, 129);
-      } else {
-        pdf.text("Graphique non disponible", 10, 30);
-      }
-      
-      // PAGE 4 : Tableau "Projection sur 20 ans"
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Projection sur 20 ans", 10, 15);
-      const projectionTableEl = document.getElementById(projectionTableId);
-      if(projectionTableEl) {
-        pdf.autoTable({
-          html: projectionTableEl,
-          startY: 20,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
-        });
-      } else {
-        pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
-      }
-      
-      // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Plan de trésorerie (Annuel)", 10, 15);
-      const tresorerieTableEl = document.getElementById(tresorerieTableId);
-      if(tresorerieTableEl) {
-        pdf.autoTable({
-          html: tresorerieTableEl,
-          startY: 20,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [200, 200, 200] }
-        });
-      } else {
-        pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
-      }
-      
-      let companyName = document.getElementById("companyName")?.value || "";
-      let pdfFileName = "Rapport_Photovoltaïque.pdf";
-      if(companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
-      pdf.save(pdfFileName);
-    }
   </script>
 </body>
 </html>

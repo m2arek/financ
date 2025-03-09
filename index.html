@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v119</title> 
+  <title>FRH PRO formulaire  - v120</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1984,23 +1984,45 @@
     /***************************************************
      * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
      ***************************************************/
-    function generatePdfReport() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+function generatePdfReport() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // Détermine le scénario via l'onglet Plan de trésorerie
-      const scenarioPlan = document.getElementById("scenarioPlan").value; // "standard" ou "selection"
-      let monthlyTableId, projectionTableId;
-      if(scenarioPlan === "selection"){
-        monthlyTableId = "preconisationMonthlyTableForced";
-        projectionTableId = "preconisationTableForced";
-      } else {
-        monthlyTableId = "preconisationMonthlyTable";
-        projectionTableId = "preconisationTable";
-      }
-      const tresorerieTableId = "planTresorerieTable";
+  // Demander à l'utilisateur de choisir le scénario via prompt
+  let scenarioChoice = "";
+  while (scenarioChoice !== "1" && scenarioChoice !== "2") {
+    scenarioChoice = prompt(
+      "Choisir la préconisation à utiliser dans le rapport:\n" +
+      "Entrez 1 pour Préconisation standard\n" +
+      "Entrez 2 pour Préconisation Sélection"
+    );
+    if (scenarioChoice === null) {
+      // L'utilisateur a annulé, on interrompt la génération du PDF
+      return;
+    }
+    scenarioChoice = scenarioChoice.trim();
+  }
+  let scenarioPlan;
+  if (scenarioChoice === "1") {
+    scenarioPlan = "standard";
+  } else {
+    scenarioPlan = "selection";
+  }
+
+  let monthlyTableId, projectionTableId;
+  if (scenarioPlan === "selection") {
+    monthlyTableId = "preconisationMonthlyTableForced";
+    projectionTableId = "preconisationTableForced";
+  } else {
+    monthlyTableId = "preconisationMonthlyTable";
+    projectionTableId = "preconisationTable";
+  }
+  const tresorerieTableId = "planTresorerieTable";
+  // ... (le reste du code de génération du PDF)
+}
+
       
       // PAGE 1 : Capture de carte
       pdf.setFontSize(16);

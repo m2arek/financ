@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v136</title> 
+  <title>FRH PRO formulaire  - v137</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2002,7 +2002,7 @@ function generatePdfReport() {
     projectionTableId = "preconisationTable";
   }
   const tresorerieTableId = "planTresorerieTable";
-
+  
   // -------------------------------
   // PAGE 1 : Capture de carte
   // -------------------------------
@@ -2011,12 +2011,13 @@ function generatePdfReport() {
   if (mapCaptureDataURL) {
     const imgWidth = pageWidth - 30;
     const imgHeight = imgWidth * 0.6;
+    // Centre verticalement l'image
     const yPos = (pageHeight - imgHeight) / 2;
     pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", 15, yPos, imgWidth, imgHeight);
   } else {
     pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
   }
-
+  
   // -------------------------------
   // PAGE 2 : Tableau "Détails par mois (année 1)"
   // -------------------------------
@@ -2025,7 +2026,7 @@ function generatePdfReport() {
   pdf.text("Détails par mois (année 1)", pageWidth / 2, 15, { align: "center" });
   const monthlyTableEl = document.getElementById(monthlyTableId);
   if (monthlyTableEl) {
-    // Première étape : mesurer la hauteur du tableau avec des colonnes réduites
+    // Utilisation d'un PDF temporaire pour mesurer la hauteur du tableau
     const tempPdf = new jsPDF("p", "mm", "a4");
     tempPdf.autoTable({
       html: monthlyTableEl,
@@ -2045,23 +2046,22 @@ function generatePdfReport() {
         valign: "middle",
       },
       columnStyles: {
-        0: { cellWidth: 18 },  // "Mois"
-        1: { cellWidth: 18 },  // "Conso kWh" (si visible)
-        2: { cellWidth: 18 },  // "Production kWh" (si visible)
-        3: { cellWidth: 18 },  // "Autoconso kWh"
-        4: { cellWidth: 18 },  // "Revente kWh"
-        5: { cellWidth: 22 },  // "Facture Sans Centrale"
-        6: { cellWidth: 22 },  // "Économies Autoconso"
-        7: { cellWidth: 22 },  // "Facture Avec Centrale"
-        8: { cellWidth: 18 },  // "Gains Revente"
-        9: { cellWidth: 18 },  // "Total Économies"
-        10: { cellWidth: 15 }, // "% Auto prod"
-        11: { cellWidth: 15 }, // "% Auto conso"
-        12: { cellWidth: 15 }, // "% Revente"
+        0: { cellWidth: 15 },  // "Mois"
+        1: { cellWidth: 15 },  // "Conso kWh" (si visible)
+        2: { cellWidth: 15 },  // "Production kWh" (si visible)
+        3: { cellWidth: 15 },  // "Autoconso kWh"
+        4: { cellWidth: 15 },  // "Revente kWh"
+        5: { cellWidth: 18 },  // "Facture Sans Centrale"
+        6: { cellWidth: 18 },  // "Économies Autoconso"
+        7: { cellWidth: 18 },  // "Facture Avec Centrale"
+        8: { cellWidth: 15 },  // "Gains Revente"
+        9: { cellWidth: 15 },  // "Total Économies"
+        10: { cellWidth: 12 }, // "% Auto prod"
+        11: { cellWidth: 12 }, // "% Auto conso"
+        12: { cellWidth: 12 }, // "% Revente"
       },
     });
-    const tableHeight = tempPdf.lastAutoTable.finalY; // Hauteur en mm
-    // Calculer une position de départ pour centrer verticalement le tableau
+    const tableHeight = tempPdf.lastAutoTable.finalY;
     const newStartY = (pageHeight - tableHeight) / 2;
     // Génération du tableau dans le PDF principal
     pdf.autoTable({
@@ -2082,25 +2082,25 @@ function generatePdfReport() {
         valign: "middle",
       },
       columnStyles: {
-        0: { cellWidth: 18 },
-        1: { cellWidth: 18 },
-        2: { cellWidth: 18 },
-        3: { cellWidth: 18 },
-        4: { cellWidth: 18 },
-        5: { cellWidth: 22 },
-        6: { cellWidth: 22 },
-        7: { cellWidth: 22 },
-        8: { cellWidth: 18 },
-        9: { cellWidth: 18 },
-        10: { cellWidth: 15 },
-        11: { cellWidth: 15 },
-        12: { cellWidth: 15 },
+        0: { cellWidth: 15 },
+        1: { cellWidth: 15 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 15 },
+        4: { cellWidth: 15 },
+        5: { cellWidth: 18 },
+        6: { cellWidth: 18 },
+        7: { cellWidth: 18 },
+        8: { cellWidth: 15 },
+        9: { cellWidth: 15 },
+        10: { cellWidth: 12 },
+        11: { cellWidth: 12 },
+        12: { cellWidth: 12 },
       },
     });
   } else {
     pdf.text("Tableau Détails par mois non disponible", 10, 30);
   }
-
+  
   // -------------------------------
   // PAGE 3 : Graphique et légende
   // -------------------------------
@@ -2110,9 +2110,9 @@ function generatePdfReport() {
   if (monthlyBarChart) {
     const chartImage = monthlyBarChart.toBase64Image();
     const chartCanvas = document.getElementById("monthlyBarChart");
-    const chartCanvasHeightPx = chartCanvas.height;
-    // Conversion : 1px ≈ 0.264583 mm (à 72 DPI)
-    const chartHeight = chartCanvasHeightPx * 0.264583;
+    const chartHeightPx = chartCanvas.height;
+    // Conversion approximative : 1px ≈ 0.264583 mm (à 72 DPI)
+    const chartHeight = chartHeightPx * 0.264583;
     const chartWidth = pageWidth - 30;
     const yPosChart = (pageHeight - chartHeight) / 2;
     pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
@@ -2131,7 +2131,7 @@ function generatePdfReport() {
   } else {
     pdf.text("Graphique non disponible", 10, 30);
   }
-
+  
   // -------------------------------
   // PAGE 4 : Tableau "Projection sur 20 ans"
   // -------------------------------
@@ -2158,7 +2158,7 @@ function generatePdfReport() {
   } else {
     pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
   }
-
+  
   // -------------------------------
   // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
   // -------------------------------
@@ -2185,13 +2185,14 @@ function generatePdfReport() {
   } else {
     pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
   }
-
+  
   // Nom du fichier
   let companyName = document.getElementById("companyName")?.value || "";
   let pdfFileName = "Rapport_Photovoltaïque.pdf";
   if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
   pdf.save(pdfFileName);
 }
+
 
 
 

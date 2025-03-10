@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v131</title> 
+  <title>FRH PRO formulaire  - v132</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1981,7 +1981,6 @@
       locale: "fr",
       dateFormat: "d/m/Y"
     });
-
 /***************************************************
  * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
  ***************************************************/
@@ -1991,25 +1990,9 @@ function generatePdfReport() {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Demande à l'utilisateur de choisir le scénario pour le PDF via un prompt
-  let scenarioChoice = prompt(
-    "Choisissez le scénario pour le PDF :\n" +
-    "Entrez 1 pour Préconisation standard\n" +
-    "Entrez 2 pour Préconisation Sélection"
-  );
-  if (scenarioChoice === null) return; // Annulation de l'utilisateur
-  scenarioChoice = scenarioChoice.trim();
-  while (scenarioChoice !== "1" && scenarioChoice !== "2") {
-    scenarioChoice = prompt(
-      "Saisie invalide.\n" +
-      "Entrez 1 pour Préconisation standard\n" +
-      "Entrez 2 pour Préconisation Sélection"
-    );
-    if (scenarioChoice === null) return;
-    scenarioChoice = scenarioChoice.trim();
-  }
-  const scenarioPlan = scenarioChoice === "1" ? "standard" : "selection";
-
+  // Utilisation directe du scénario choisi dans le select de l'onglet Plan de trésorerie
+  const scenarioPlan = document.getElementById("scenarioPlan").value; // "standard" ou "selection"
+  
   let monthlyTableId, projectionTableId;
   if (scenarioPlan === "selection") {
     monthlyTableId = "preconisationMonthlyTableForced";
@@ -2019,7 +2002,7 @@ function generatePdfReport() {
     projectionTableId = "preconisationTable";
   }
   const tresorerieTableId = "planTresorerieTable";
-
+  
   // PAGE 1 : Capture de carte
   pdf.setFontSize(16);
   pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
@@ -2030,12 +2013,12 @@ function generatePdfReport() {
   } else {
     pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
   }
-
+  
   // PAGE 2 : Tableau "Détails par mois (année 1)"
   pdf.addPage();
   pdf.setFontSize(14);
   pdf.text("Détails par mois (année 1)", 10, 15);
-
+  
   const monthlyTableEl = document.getElementById(monthlyTableId);
   if (monthlyTableEl) {
     pdf.autoTable({
@@ -2074,7 +2057,7 @@ function generatePdfReport() {
   } else {
     pdf.text("Tableau Détails par mois non disponible", 10, 30);
   }
-
+  
   // PAGE 3 : Graphique et légende
   pdf.addPage();
   pdf.setFontSize(14);
@@ -2096,7 +2079,7 @@ function generatePdfReport() {
   } else {
     pdf.text("Graphique non disponible", 10, 30);
   }
-
+  
   // PAGE 4 : Tableau "Projection sur 20 ans"
   pdf.addPage();
   pdf.setFontSize(14);
@@ -2112,7 +2095,7 @@ function generatePdfReport() {
   } else {
     pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
   }
-
+  
   // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
   pdf.addPage();
   pdf.setFontSize(14);
@@ -2128,7 +2111,7 @@ function generatePdfReport() {
   } else {
     pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
   }
-
+  
   let companyName = document.getElementById("companyName")?.value || "";
   let pdfFileName = "Rapport_Photovoltaïque.pdf";
   if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }

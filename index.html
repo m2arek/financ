@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v145</title> 
+  <title>FRH PRO formulaire  - v146</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2004,13 +2004,14 @@ function generatePdfReport() {
   const tresorerieTableId = "planTresorerieTable";
   
   // -------------------------------
-  // PAGE 1 : Capture de carte
-  // -------------------------------
-  
-  const companyName = document.getElementById("companyName")?.value || "";
-const titleText = `Rapport d'étude\npour centrale photovoltaïque\n& ${companyName}`;
-  pdf.setFontSize(16);
-  pdf.text(titleText, pageWidth / 2, 60, { align: "center" });
+ // PAGE 1 : Capture de carte avec nouveau titre
+var compElem = document.getElementById("companyName");
+var companyName = compElem ? compElem.value : "";
+var titleText = "Rapport d'étude\npour centrale photovoltaïque\n& " + companyName;
+var titleLines = pdf.splitTextToSize(titleText, pageWidth - 20); // Découpe le texte sur plusieurs lignes
+pdf.setFontSize(16);
+// Place le texte centré horizontalement à 200 mm du haut
+pdf.text(titleLines, pageWidth / 2, 60, { align: "center" });
   if (mapCaptureDataURL) {
     const imgWidth = pageWidth - 30;
     const imgHeight = imgWidth * 0.6;

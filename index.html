@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v139</title> 
+  <title>FRH PRO formulaire  - v140</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2007,7 +2007,7 @@ function generatePdfReport() {
   // PAGE 1 : Capture de carte
   // -------------------------------
   pdf.setFontSize(16);
-  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 200, { align: "center" });
   if (mapCaptureDataURL) {
     const imgWidth = pageWidth - 30;
     const imgHeight = imgWidth * 0.6;
@@ -2023,7 +2023,7 @@ function generatePdfReport() {
   // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Détails par mois (année 1)", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Détails par mois (année 1)", pageWidth / 2, 200, { align: "center" });
   const monthlyTableEl = document.getElementById(monthlyTableId);
   if (monthlyTableEl) {
     // Utilisation d'un PDF temporaire pour mesurer la hauteur du tableau
@@ -2107,7 +2107,7 @@ function generatePdfReport() {
 // -------------------------------
 pdf.addPage();
 pdf.setFontSize(14);
-pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
+pdf.text("Graphique des productions", pageWidth / 2, 200, { align: "center" });
 if (monthlyBarChart) {
   const chartImage = monthlyBarChart.toBase64Image();
   const chartCanvas = document.getElementById("monthlyBarChart");
@@ -2127,7 +2127,7 @@ if (monthlyBarChart) {
   // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Projection sur 20 ans", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Projection sur 20 ans", pageWidth / 2, 200, { align: "center" });
   const projectionTableEl = document.getElementById(projectionTableId);
   if (projectionTableEl) {
     const tempPdf2 = new jsPDF("p", "mm", "a4");
@@ -2154,7 +2154,7 @@ if (monthlyBarChart) {
   // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 200, { align: "center" });
   const tresorerieTableEl = document.getElementById(tresorerieTableId);
   if (tresorerieTableEl) {
     const tempPdf3 = new jsPDF("p", "mm", "a4");

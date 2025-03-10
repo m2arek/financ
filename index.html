@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v138</title> 
+  <title>FRH PRO formulaire  - v139</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2103,35 +2103,24 @@ function generatePdfReport() {
   }
   
   // -------------------------------
-  // PAGE 3 : Graphique et légende
-  // -------------------------------
-  pdf.addPage();
-  pdf.setFontSize(14);
-  pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
-  if (monthlyBarChart) {
-    const chartImage = monthlyBarChart.toBase64Image();
-    const chartCanvas = document.getElementById("monthlyBarChart");
-    const chartHeightPx = chartCanvas.height;
-    // Conversion approximative : 1px ≈ 0.264583 mm (à 72 DPI)
-    const chartHeight = chartHeightPx * 0.264583;
-    const chartWidth = pageWidth - 30;
-    const yPosChart = (pageHeight - chartHeight) / 2;
-    pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
-    // Légende centrée sous le graphique
-    pdf.setFontSize(10);
-    pdf.text("Légende :", pageWidth / 2, yPosChart + chartHeight + 8, { align: "center" });
-    pdf.setFillColor(255, 99, 132);
-    pdf.rect(pageWidth / 2 - 40, yPosChart + chartHeight + 2, 5, 5, "F");
-    pdf.text("Conso kWh", pageWidth / 2 - 30, yPosChart + chartHeight + 6, { align: "center" });
-    pdf.setFillColor(75, 192, 75);
-    pdf.rect(pageWidth / 2, yPosChart + chartHeight + 2, 5, 5, "F");
-    pdf.text("Autoconso kWh", pageWidth / 2 + 10, yPosChart + chartHeight + 6, { align: "center" });
-    pdf.setFillColor(54, 162, 235);
-    pdf.rect(pageWidth / 2 + 40, yPosChart + chartHeight + 2, 5, 5, "F");
-    pdf.text("Revente kWh", pageWidth / 2 + 50, yPosChart + chartHeight + 6, { align: "center" });
-  } else {
-    pdf.text("Graphique non disponible", 10, 30);
-  }
+// PAGE 3 : Graphique sans légende
+// -------------------------------
+pdf.addPage();
+pdf.setFontSize(14);
+pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
+if (monthlyBarChart) {
+  const chartImage = monthlyBarChart.toBase64Image();
+  const chartCanvas = document.getElementById("monthlyBarChart");
+  const chartHeightPx = chartCanvas.height;
+  // Conversion approximative : 1px ≈ 0.264583 mm (à 72 DPI)
+  const chartHeight = chartHeightPx * 0.264583;
+  const chartWidth = pageWidth - 30;
+  const yPosChart = (pageHeight - chartHeight) / 2;
+  pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
+} else {
+  pdf.text("Graphique non disponible", 10, 30);
+}
+
   
   // -------------------------------
   // PAGE 4 : Tableau "Projection sur 20 ans"

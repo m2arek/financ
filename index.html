@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v141</title> 
+  <title>FRH PRO formulaire  - v142</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2023,7 +2023,7 @@ function generatePdfReport() {
   // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Détails par mois (année 1)", pageWidth / 2, 40, { align: "center" });
+  pdf.text("Détails par mois (année 1)", pageWidth / 2, 60, { align: "center" });
   const monthlyTableEl = document.getElementById(monthlyTableId);
   if (monthlyTableEl) {
     // Utilisation d'un PDF temporaire pour mesurer la hauteur du tableau
@@ -2107,7 +2107,7 @@ function generatePdfReport() {
 // -------------------------------
 pdf.addPage();
 pdf.setFontSize(14);
-pdf.text("Graphique des productions", pageWidth / 2, 40, { align: "center" });
+pdf.text("Graphique des productions", pageWidth / 2, 60, { align: "center" });
 if (monthlyBarChart) {
   const chartImage = monthlyBarChart.toBase64Image();
   const chartCanvas = document.getElementById("monthlyBarChart");

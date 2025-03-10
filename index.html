@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v142</title> 
+  <title>FRH PRO formulaire  - v143</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2007,7 +2007,7 @@ function generatePdfReport() {
   // PAGE 1 : Capture de carte
   // -------------------------------
   pdf.setFontSize(16);
-  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 40, { align: "center" });
+  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 60, { align: "center" });
   if (mapCaptureDataURL) {
     const imgWidth = pageWidth - 30;
     const imgHeight = imgWidth * 0.6;

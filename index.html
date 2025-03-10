@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v137</title> 
+  <title>FRH PRO formulaire  - v138</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -2067,6 +2067,7 @@ function generatePdfReport() {
     pdf.autoTable({
       html: monthlyTableEl,
       startY: newStartY,
+      margin: { left: 5 }, // Décale le tableau de 5 mm vers la gauche
       styles: {
         fontSize: 7,
         cellPadding: 2,

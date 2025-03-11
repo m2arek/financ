@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v205</title> 
+  <title>FRH PRO formulaire  - v206</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -28,11 +28,13 @@
   <!-- Chart.js pour le diagramme en barres -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- jspdf-autotable -->
+  <!-- jspdf-autotable (note : vérifiez bien cette URL si nécessaire) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* STYLES GÉNÉRAUX */
+    /****************************************************
+     * STYLES GÉNÉRAUX
+     ****************************************************/
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
@@ -52,7 +54,10 @@
       text-align: center;
       margin-bottom: 30px;
     }
-    /* ONGLET NAVIGATION */
+
+    /****************************************************
+     * ONGLET NAVIGATION
+     ****************************************************/
     .tabNav {
       display: flex;
       margin-bottom: 10px;
@@ -65,7 +70,7 @@
       padding: 8px 10px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 12px;      /* Réduction de la taille de la police */
       transition: background-color 0.3s ease, color 0.3s ease;
       border-right: 1px solid #ccc;
     }
@@ -79,7 +84,10 @@
       background-color: #3498db;
       color: #fff;
     }
-    /* CONTENU D'ONGLET */
+
+    /****************************************************
+     * CONTENU D'ONGLET
+     ****************************************************/
     .tabContent {
       display: none;
       padding: 20px 0;
@@ -87,7 +95,10 @@
     .tabContent.activeTab {
       display: block;
     }
-    /* LOGO */
+
+    /****************************************************
+     * LOGO
+     ****************************************************/
     .tabLogo {
       display: flex;
       align-items: center;
@@ -102,7 +113,10 @@
       font-size: 18px;
       color: #333;
     }
-    /* FORMULAIRES ET BLOCS */
+
+    /****************************************************
+     * FORMULAIRES ET BLOCS
+     ****************************************************/
     form {
       display: block;
       margin-bottom: 20px;
@@ -144,7 +158,10 @@
       background-color: #ececec;
       color: #666;
     }
-    /* TABLES */
+
+    /****************************************************
+     * TABLES
+     ****************************************************/
     table {
       border: 1px solid #ddd;
       border-collapse: collapse;
@@ -159,7 +176,10 @@
     table thead {
       background-color: #f0f0f0;
     }
-    /* CARTE, BOUTONS */
+
+    /****************************************************
+     * CARTE, BOUTONS
+     ****************************************************/
     #map-container {
       position: relative;
       width: 100%;
@@ -197,21 +217,30 @@
       background-color: #2980b9;
       transform: scale(1.03);
     }
-    /* CHECKBOX GRID */
+
+    /****************************************************
+     * CHECKBOX GRID
+     ****************************************************/
     .checkbox-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 5px 10px;
       margin-top: 5px;
     }
-    /* GRAPHIQUE */
+
+    /****************************************************
+     * GRAPHIQUE
+     ****************************************************/
     #monthlyBarChart,
     #monthlyBarChartForced {
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    /* STYLES SPÉCIAUX POUR L'ONGLET 9 */
+
+    /****************************************************
+     * STYLES SPÉCIAUX POUR L'ONGLET 9
+     ****************************************************/
     #tab9.tabContent {
       background-color: #fff8ef;
     }
@@ -234,6 +263,7 @@
       <button type="button" class="tablinks" onclick="openTab(event, 'tab9')">9. Préconisation Sélection</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab10')">10. Commentaires</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab11')">11. Paramètres</button>
+      <!-- Onglet 12 ajouté -->
       <button type="button" class="tablinks" onclick="openTab(event, 'tab12')">12. Plan de trésorerie</button>
     </div>
 
@@ -506,7 +536,7 @@
             Kwh visible
           </label>
           <button type="button" id="calculatePreconisation">Calculer la préconisation</button>
-          <!-- Bloc de résumé avant le tableau -->
+          <!-- Bloc récapitulatif déplacé AVANT le tableau des détails -->
           <div id="preconisationSummary" style="margin-top:10px;">
             <p><strong>Puissance préconisée :</strong> <span id="puissanceReco">-</span> kWc</p>
             <p><strong>Coût de l'installation :</strong> <span id="coutInstallation">-</span> €</p>
@@ -565,7 +595,7 @@
           <label for="forcedPower">Installation choisie (kWc) :</label>
           <input type="number" id="forcedPower" name="forcedPower" value="10" min="1" />
           <button type="button" id="applyForcedPreconisationBtn">Calculer la préconisation choisie</button>
-          <!-- Bloc de résumé avant le tableau -->
+          <!-- Bloc récapitulatif déplacé AVANT le tableau des détails -->
           <div id="preconisationSummaryForced" style="margin-top:10px;">
             <p><strong>Puissance préconisée (Sélection) :</strong> <span id="puissanceRecoForced">-</span> kWc</p>
             <p><strong>Coût de l'installation (Sélection) :</strong> <span id="coutInstallationForced">-</span> €</p>
@@ -635,6 +665,7 @@
         <label for="mapCaptureFile" style="cursor:pointer; color:blue; text-decoration:underline;">Sélectionner la capture</label>
         <br/><br/>
         <div style="margin-bottom:15px;">
+          <!-- Bouton pour générer le rapport PDF sur 5 pages -->
           <button type="button" id="exportPDFBtn" onclick="generatePdfReport()">Générer Rapport PDF</button>
           <button type="button" id="saveToFile">Télécharger les données</button>
           <input type="file" id="loadFromFile" style="display: none;" />
@@ -709,9 +740,12 @@
             <thead id="planTresorerieHeader">
               <tr>
                 <th>Année</th>
-                <th>Recettes d'exploitation<br/>(économies + revente + Prime)</th>
-                <th>Remboursement du prêt<br/>(ou Loyer)</th>
-                <th>Solde net actuel</th>
+                <th>Recettes d'exploitation<br/>(économies + revente)<br/>Prime</th>
+                <th>Charges d'exploitation<br/>(maintenance, nettoyage,<br/> remp. onduleur(s))</th>
+                <th>Assurance photovoltaïque<br/>(dommages, RC)</th>
+                <th>Total Charges</th>
+                <th>Remboursement <br/> du prêt</th>
+                <th>Solde net annuel</th>
               </tr>
             </thead>
             <tbody id="planTresorerieBody">
@@ -725,9 +759,6 @@
   </div><!-- fin container -->
 
   <script>
-  (function() {
-    // Toutes les variables et fonctions ci-dessous sont dans cette portée locale
-
     /******************************************************
      * GESTION DES ONGLETS + AJUSTEMENT CARTE
      ******************************************************/
@@ -749,7 +780,7 @@
     }
 
     /***************************************************
-     * VARIABLES GLOBALES & DONNÉES PRIMES INTÉGRÉES
+     *  VARIABLES GLOBALES & DONNÉES PRIMES INTÉGRÉES
      ***************************************************/
     let monthlyProductionData = [];
     const primeTarifsData = {
@@ -812,7 +843,7 @@
     }
 
     /***************************************************
-     * INITIALISATION PAGE
+     *  INITIALISATION PAGE
      ***************************************************/
     window.addEventListener("load", function() {
       const firstTabButton = document.querySelector(".tabNav button");
@@ -1112,7 +1143,7 @@
     productibleInput.addEventListener("input", updateProductionPotential);
 
     /***************************************************
-     * PARTIE : EXPORT AVEC CAPTURE CARTE
+     * PARTIE : EXPORT  AVEC CAPTURE CARTE
      ***************************************************/
     const mapCaptureFileInput = document.getElementById("mapCaptureFile");
     const exportPDFBtn = document.getElementById("exportPDFBtn");
@@ -1140,14 +1171,6 @@
       const financementMode = document.getElementById("financementMode").value;
       const scenarioPlan = document.getElementById("scenarioPlan").value;
       
-      // Mise à jour dynamique de l'en-tête : le 3ème titre passe à "Loyer" si leasing
-      const headerRow = document.getElementById("planTresorerieHeader").querySelector("tr");
-      if(financementMode === "leasing") {
-        headerRow.cells[2].innerHTML = "Loyer";
-      } else {
-        headerRow.cells[2].innerHTML = "Remboursement du prêt";
-      }
-      
       let autoYear1_val, surplus_val;
       if(scenarioPlan === "standard"){
         autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
@@ -1172,6 +1195,10 @@
           preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
       }
       
+      const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
+      const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
+      const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
+      const cout_changement_onduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value) || 0;
       const inflation = parseFloat(document.getElementById("inflation_estimee").value) || 0;
       const taux_emprunt = parseFloat(document.getElementById("taux_emprunt").value) || 0;
       const duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
@@ -1191,6 +1218,8 @@
       }
       
       let totalRecettes = 0;
+      let totalChargesExploitation = 0;
+      let totalAssurance = 0;
       let totalFinancement = 0;
       let totalSoldeNet = 0;
       
@@ -1232,7 +1261,23 @@
             recettes = recettesAnnee1;
           }
         }
-      
+
+        
+        let maintenanceCost = preconisePower * cout_maintenance;
+        if(year > 1){
+          maintenanceCost = maintenanceCost * factor;
+        }
+        if(year === 11){
+          maintenanceCost += cout_changement_onduleurs;
+        }
+        
+        let assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
+        if(year > 1){
+          assurancePhoto = assurancePhoto * factor;
+        }
+        
+        const totalCharges = maintenanceCost + assurancePhoto;
+        
         let financementCost = 0;
         if(financementMode === "banque"){
           financementCost = (year <= duree_pret) ? annualRepayment : 0;
@@ -1240,9 +1285,11 @@
           financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
         }
         
-        const soldeNet = recettes - financementCost;
+        const soldeNet = recettes - (totalCharges + financementCost);
         
         totalRecettes += recettes;
+        totalChargesExploitation += maintenanceCost;
+        totalAssurance += assurancePhoto;
         totalFinancement += financementCost;
         totalSoldeNet += soldeNet;
         
@@ -1250,36 +1297,31 @@
         row.innerHTML = `
           <td>${year}</td>
           <td>${recettes.toFixed(2)} €</td>
+          <td>${maintenanceCost.toFixed(2)} €</td>
+          <td>${assurancePhoto.toFixed(2)} €</td>
+          <td>${totalCharges.toFixed(2)} €</td>
           <td>${financementCost.toFixed(2)} €</td>
           <td>${soldeNet.toFixed(2)} €</td>
         `;
         tableBody.appendChild(row);
       }
       
-      // Pour le calcul du ROI, récupérer la prime et la remise
-      let primeTotal = 0;
-      if(scenarioPlan === "standard"){
-        primeTotal = parseFloat(document.getElementById("primeValue").textContent.replace(/[^0-9.]/g,"")) || 0;
-      } else {
-        primeTotal = parseFloat(document.getElementById("primeValueForced").textContent.replace(/[^0-9.]/g,"")) || 0;
-      }
-      let remiseVal = 0;
-      if(scenarioPlan === "standard"){
-        remiseVal = parseFloat(document.getElementById("remise").value) || 0;
-      } else {
-        remiseVal = parseFloat(document.getElementById("remiseForced").value) || 0;
-      }
-      // Le coût réel est l'installation HT moins prime et remise
-      let realCost = installationCostHT - primeTotal - remiseVal;
-      if(realCost < 0) realCost = 0;
-      
-      if(scenarioPlan === "standard"){
-        document.getElementById("roiResult").textContent = calculateROI(realCost, autoYear1_val, surplus_val, primeTotal, inflation).toFixed(1);
-      } else {
-        document.getElementById("roiResultForced").textContent = calculateROI(realCost, autoYear1_val, surplus_val, primeTotal, inflation).toFixed(1);
-      }
+      const totauxRow = document.createElement("tr");
+      totauxRow.innerHTML = `
+        <th>Totaux</th>
+        <th>${totalRecettes.toFixed(2)} €</th>
+        <th>${totalChargesExploitation.toFixed(2)} €</th>
+        <th>${totalAssurance.toFixed(2)} €</th>
+        <th>${(totalChargesExploitation + totalAssurance).toFixed(2)} €</th>
+        <th>${totalFinancement.toFixed(2)} €</th>
+        <th>${totalSoldeNet.toFixed(2)} €</th>
+      `;
+      tableBody.appendChild(totauxRow);
     }
     
+    const calculateTresorerieBtn = document.getElementById("calculateTresorerieBtn");
+    calculateTresorerieBtn.addEventListener("click", calculatePlanTresorerie);
+
     /***************************************************
      * 5) SAUVEGARDER / CHARGER JSON
      ***************************************************/
@@ -1651,7 +1693,7 @@
       let cumulativeEco = 0;
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
-        const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
         if(year === 2){ primeYear = primeTotal; }
@@ -1680,7 +1722,7 @@
       document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
       document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
       document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
-      document.getElementById("totalPrime").textContent = primeTotal.toLocaleString('fr-FR');
+      document.getElementById("totalPrime").textContent = primeTotal.toFixed(2)+" €";
       document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
       document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
       document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
@@ -1688,6 +1730,7 @@
       const costInst = costInstallation(S, territory);
       document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
       document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
+      // Intégration de la remise dans le calcul du coût réel
       let remise = parseFloat(document.getElementById("remise").value) || 0;
       let coutReel = costInst - primeTotal - remise;
       if(coutReel < 0) coutReel = 0;
@@ -1697,26 +1740,6 @@
       document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
       let roiYears = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
       document.getElementById("roiResult").textContent = roiYears.toFixed(1);
-    }
-    let monthlyBarChartForced = null;
-    function createMonthlyBarChartForced(monthLabels, consoData, autoData, revData){
-      const ctx = document.getElementById("monthlyBarChartForced").getContext("2d");
-      if(monthlyBarChartForced){ monthlyBarChartForced.destroy(); }
-      monthlyBarChartForced = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: monthLabels,
-          datasets: [
-            { label: "Conso kWh", data: consoData, backgroundColor: "rgba(255,99,132,0.6)" },
-            { label: "Autoconso kWh", data: autoData, backgroundColor: "rgba(75,192,75,0.6)" },
-            { label: "Revente kWh", data: revData, backgroundColor: "rgba(54,162,235,0.6)" }
-          ]
-        },
-        options: {
-          responsive: true,
-          scales: { y: { beginAtZero: true, title: { display: true, text: "kWh" } } }
-        }
-      });
     }
     function fill20YearsPreconisationForced(S, firstYearGain, territoryObj){
       const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
@@ -1763,7 +1786,7 @@
       document.getElementById("totalSansPvForced").textContent = totalSansPv.toFixed(2)+" €";
       document.getElementById("totalAutoForced").textContent = totalAuto.toFixed(2)+" €";
       document.getElementById("totalReventeForced").textContent = totalRev.toFixed(2)+" €";
-      document.getElementById("totalPrimeForced").textContent = primeTotal.toLocaleString('fr-FR');
+      document.getElementById("totalPrimeForced").textContent = totalPrime.toFixed(2)+" €";
       document.getElementById("totalAvecPvForced").textContent = totalAvecPv.toFixed(2)+" €";
       document.getElementById("totalEconomiesForced").textContent = totalEco.toFixed(2)+" €";
       document.getElementById("puissanceRecoForced").textContent = S.toLocaleString('fr-FR');
@@ -1775,26 +1798,32 @@
       let coutReel = forcedCost - primeTotal - remiseForced;
       if(coutReel < 0) coutReel = 0;
       document.getElementById("coutReelInstallationForced").textContent = coutReel.toLocaleString('fr-FR');
-      document.getElementById("gainSansInvForced").textContent = totalEco.toFixed(2)+" €";
+      let gainSansInvVal = totalEco;
+      document.getElementById("gainSansInvForced").textContent = gainSansInvVal.toFixed(2)+" €";
       let gainAvecInvVal = totalEco - coutReel;
       document.getElementById("gainAvecInvForced").textContent = gainAvecInvVal.toFixed(2)+" €";
-      let roiYearsForced = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+      let roiYearsForced = calculateROI(forcedCost, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
       document.getElementById("roiResultForced").textContent = roiYearsForced.toFixed(1);
     }
-    const applyForcedPreconisationBtn = document.getElementById("applyForcedPreconisationBtn");
-    applyForcedPreconisationBtn.addEventListener("click", () => {
+    const calcPrecBtn = document.getElementById("calculatePreconisation");
+    calcPrecBtn.addEventListener("click", () => {
       const territory = document.getElementById("territory").value || "France Metropolitaine";
-      const forcedPowerStr = document.getElementById("forcedPower").value || "1";
-      let S = parseFloat(forcedPowerStr);
-      if(isNaN(S) || S <= 0){
-        alert("Veuillez saisir une valeur > 0 pour l'installation choisie (kWc).");
-        return;
+      let maxPowerStr = (document.getElementById("puissanceMaxPV").value || "0").replace(/\s/g, "");
+      const maxPower = parseFloat(maxPowerStr) || 0;
+      if(maxPower <= 0){ alert("Puissance max PV non définie ou nulle."); return; }
+      let bestS = 1, bestTotalGain = 0;
+      let bestTerritoryObj = {tarif:0.0761, primeByWc:0};
+      for(let s = 1; s <= maxPower; s++){
+        const tObj = getTarifRachatAndPrime(s, territory);
+        const totalGain = computeAutoAndSurplusForPower(s, tObj.tarif);
+        if(totalGain > bestTotalGain){
+          bestTotalGain = totalGain;
+          bestS = s;
+          bestTerritoryObj = tObj;
+        }
       }
-      const territoryObj = getTarifRachatAndPrime(S, territory);
-      fillMonthlyPreconisationForced(S, territoryObj.tarif);
-      const totalGain = computeAutoAndSurplusForPower(S, territoryObj.tarif);
-      fill20YearsPreconisationForced(S, totalGain, territoryObj);
-      document.getElementById("tarifRachat").value = territoryObj.tarif.toFixed(4);
+      calculatePreconisationWithPower(bestS, bestTotalGain, bestTerritoryObj);
+      document.getElementById("tarifRachat").value = bestTerritoryObj.tarif.toFixed(4);
     });
     let monthlyBarChartForced = null;
     function createMonthlyBarChartForced(monthLabels, consoData, autoData, revData){
@@ -1820,140 +1849,148 @@
       locale: "fr",
       dateFormat: "d/m/Y"
     });
-    
-    /***************************************************
-     * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
-     ***************************************************/
-    function generatePdfReport() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+/***************************************************
+ * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
+ ***************************************************/
+function generatePdfReport() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // Détermine le scénario via l'onglet Plan de trésorerie
-      const scenarioPlan = document.getElementById("scenarioPlan").value;
-      let monthlyTableId, projectionTableId;
-      if (scenarioPlan === "selection") {
-        monthlyTableId = "preconisationMonthlyTableForced";
-        projectionTableId = "preconisationTableForced";
-      } else {
-        monthlyTableId = "preconisationMonthlyTable";
-        projectionTableId = "preconisationTable";
-      }
-      const tresorerieTableId = "planTresorerieTable";
-      
-      // PAGE 1 : Capture de carte
-      pdf.setFontSize(16);
-      pdf.text("Rapport Photovoltaïque", pageWidth / 2, 60, { align: "center" });
-      if (mapCaptureDataURL) {
-        const imgWidth = pageWidth - 30;
-        const imgHeight = imgWidth * 0.6;
-        const yPos = (pageHeight - imgHeight) / 2;
-        pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", 15, yPos, imgWidth, imgHeight);
-      } else {
-        pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
-      }
-      
-      // PAGE 2 : Tableau "Détails par mois (année 1)"
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Détails par mois (année 1)", pageWidth / 2, 60, { align: "center" });
-      const monthlyTableEl = document.getElementById(monthlyTableId);
-      if (monthlyTableEl) {
-        const tempPdf = new jsPDF("p", "mm", "a4");
-        tempPdf.autoTable({
-          html: monthlyTableEl,
-          startY: 0,
-          styles: { fontSize: 7, cellPadding: 2, overflow: "linebreak", halign: "center", valign: "middle" },
-          headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 7, halign: "center", valign: "middle" },
-          columnStyles: { 0: { cellWidth: 15 }, 1: { cellWidth: 15 }, 2: { cellWidth: 15 }, 3: { cellWidth: 15 }, 4: { cellWidth: 15 }, 5: { cellWidth: 18 }, 6: { cellWidth: 18 }, 7: { cellWidth: 18 }, 8: { cellWidth: 15 }, 9: { cellWidth: 15 }, 10: { cellWidth: 12 }, 11: { cellWidth: 12 }, 12: { cellWidth: 12 } },
-        });
-        const tableHeight = tempPdf.lastAutoTable.finalY;
-        const newStartY = (pageHeight - tableHeight) / 2;
-        pdf.autoTable({
-          html: monthlyTableEl,
-          startY: newStartY,
-          margin: { left: 5 },
-          styles: { fontSize: 7, cellPadding: 2, overflow: "linebreak", halign: "center", valign: "middle" },
-          headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 7, halign: "center", valign: "middle" },
-          columnStyles: { 0: { cellWidth: 15 }, 1: { cellWidth: 15 }, 2: { cellWidth: 15 }, 3: { cellWidth: 15 }, 4: { cellWidth: 15 }, 5: { cellWidth: 18 }, 6: { cellWidth: 18 }, 7: { cellWidth: 18 }, 8: { cellWidth: 15 }, 9: { cellWidth: 15 }, 10: { cellWidth: 12 }, 11: { cellWidth: 12 }, 12: { cellWidth: 12 } },
-        });
-      } else {
-        pdf.text("Tableau Détails par mois non disponible", 10, 30);
-      }
-      
-      // PAGE 3 : Graphique sans légende
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Graphique des productions", pageWidth / 2, 60, { align: "center" });
-      if (monthlyBarChart) {
-        const chartImage = monthlyBarChart.toBase64Image();
-        const chartCanvas = document.getElementById("monthlyBarChart");
-        const chartHeightPx = chartCanvas.height;
-        const chartHeight = chartHeightPx * 0.264583;
-        const chartWidth = pageWidth - 30;
-        const yPosChart = (pageHeight - chartHeight) / 2;
-        pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
-      } else {
-        pdf.text("Graphique non disponible", 10, 30);
-      }
-      
-      // PAGE 4 : Tableau "Projection sur 20 ans"
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Projection sur 20 ans", pageWidth / 2, 40, { align: "center" });
-      const projectionTableEl = document.getElementById(projectionTableId);
-      if (projectionTableEl) {
-        const tempPdf2 = new jsPDF("p", "mm", "a4");
-        tempPdf2.autoTable({
-          html: projectionTableEl,
-          startY: 0,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
-        });
-        const projTableHeight = tempPdf2.lastAutoTable.finalY;
-        const newStartY2 = (pageHeight - projTableHeight) / 2;
-        pdf.autoTable({
-          html: projectionTableEl,
-          startY: newStartY2,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
-        });
-      } else {
-        pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
-      }
-      
-      // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
-      pdf.addPage();
-      pdf.setFontSize(14);
-      pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 40, { align: "center" });
-      const tresorerieTableEl = document.getElementById(tresorerieTableId);
-      if (tresorerieTableEl) {
-        const tempPdf3 = new jsPDF("p", "mm", "a4");
-        tempPdf3.autoTable({
-          html: tresorerieTableEl,
-          startY: 0,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [200, 200, 200] }
-        });
-        const tresoTableHeight = tempPdf3.lastAutoTable.finalY;
-        const newStartY3 = (pageHeight - tresoTableHeight) / 2;
-        pdf.autoTable({
-          html: tresorerieTableEl,
-          startY: newStartY3,
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [200, 200, 200] }
-        });
-      } else {
-        pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
-      }
-      
-      let companyName = document.getElementById("companyName")?.value || "";
-      let pdfFileName = "Rapport_Photovoltaïque.pdf";
-      if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
-      pdf.save(pdfFileName);
-    }
-  })();
+  // Utilisation directe du scénario sélectionné dans le select "scenarioPlan"
+  const scenarioPlan = document.getElementById("scenarioPlan").value; // "standard" ou "selection"
+  let monthlyTableId, projectionTableId;
+  if (scenarioPlan === "selection") {
+    monthlyTableId = "preconisationMonthlyTableForced";
+    projectionTableId = "preconisationTableForced";
+  } else {
+    monthlyTableId = "preconisationMonthlyTable";
+    projectionTableId = "preconisationTable";
+  }
+  const tresorerieTableId = "planTresorerieTable";
+
+  // PAGE 1 : Capture de carte (centrée)
+  pdf.setFontSize(16);
+  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
+  if (mapCaptureDataURL) {
+    const imgWidth = pageWidth - 30;
+    const imgHeight = imgWidth * 0.6;
+    const imgX = (pageWidth - imgWidth) / 2;
+    pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", imgX, 25, imgWidth, imgHeight);
+  } else {
+    pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
+  }
+
+  // PAGE 2 : Tableau "Détails par mois (année 1)" (centré et avec colonnes resserrées)
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Détails par mois (année 1)", pageWidth / 2, 15, { align: "center" });
+  const monthlyTableEl = document.getElementById(monthlyTableId);
+  if (monthlyTableEl) {
+    const tableWidth = 201;
+    const marginLeft = (pageWidth - tableWidth) / 2;
+    pdf.autoTable({
+      html: monthlyTableEl,
+      startY: 20,
+      margin: { left: marginLeft, right: marginLeft },
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        overflow: 'linebreak',
+        halign: 'center',
+        valign: 'middle',
+      },
+      headStyles: {
+        fillColor: [0, 92, 160],
+        textColor: 255,
+        fontSize: 7,
+        halign: 'center',
+        valign: 'middle',
+      },
+      columnStyles: {
+        0: { cellWidth: 15 },
+        1: { cellWidth: 15 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 15 },
+        4: { cellWidth: 15 },
+        5: { cellWidth: 20 },
+        6: { cellWidth: 20 },
+        7: { cellWidth: 20 },
+        8: { cellWidth: 15 },
+        9: { cellWidth: 15 },
+        10: { cellWidth: 12 },
+        11: { cellWidth: 12 },
+        12: { cellWidth: 12 },
+      },
+    });
+  } else {
+    pdf.text("Tableau Détails par mois non disponible", 10, 30);
+  }
+
+  // PAGE 3 : Graphique et légende (centré)
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
+  if (monthlyBarChart) {
+    const chartWidth = pageWidth - 40;
+    const chartX = (pageWidth - chartWidth) / 2;
+    pdf.addImage(monthlyBarChart.toBase64Image(), "PNG", chartX, 20, chartWidth, 80);
+    const legendX = (pageWidth - 100) / 2;
+    pdf.setFontSize(10);
+    pdf.text("Légende :", legendX, 110);
+    pdf.setFillColor(255, 99, 132);
+    pdf.rect(legendX + 20, 105, 5, 5, "F");
+    pdf.text("Conso kWh", legendX + 30, 109);
+    pdf.setFillColor(75, 192, 75);
+    pdf.rect(legendX + 20, 115, 5, 5, "F");
+    pdf.text("Autoconso kWh", legendX + 30, 119);
+    pdf.setFillColor(54, 162, 235);
+    pdf.rect(legendX + 20, 125, 5, 5, "F");
+    pdf.text("Revente kWh", legendX + 30, 129);
+  } else {
+    pdf.text("Graphique non disponible", 10, 30);
+  }
+
+  // PAGE 4 : Tableau "Projection sur 20 ans" (centré)
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Projection sur 20 ans", pageWidth / 2, 15, { align: "center" });
+  const projectionTableEl = document.getElementById(projectionTableId);
+  if (projectionTableEl) {
+    pdf.autoTable({
+      html: projectionTableEl,
+      startY: 20,
+      margin: { left: 10, right: 10 },
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
+    });
+  } else {
+    pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
+  }
+
+  // PAGE 5 : Tableau "Plan de trésorerie (Annuel)" (centré)
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 15, { align: "center" });
+  const tresorerieTableEl = document.getElementById(tresorerieTableId);
+  if (tresorerieTableEl) {
+    pdf.autoTable({
+      html: tresorerieTableEl,
+      startY: 20,
+      margin: { left: 10, right: 10 },
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [200, 200, 200] }
+    });
+  } else {
+    pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
+  }
+
+  let companyName = document.getElementById("companyName")?.value || "";
+  let pdfFileName = "Rapport_Photovoltaïque.pdf";
+  if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
+  pdf.save(pdfFileName);
+}
   </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v310</title> 
+  <title>FRH PRO formulaire  - v308</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -1071,157 +1071,653 @@
       exportPDFBtn.addEventListener("click", generatePdfReport);
 
       /***************************************************
-       * MODULE : PLAN DE TRÉSORERIE (ONGLET 12)
+       * 5) SAUVEGARDER / CHARGER JSON
        ***************************************************/
-      function calculatePlanTresorerie() {
-        var financementMode = document.getElementById("financementMode").value;
-        var scenarioPlan = document.getElementById("scenarioPlan").value;
-        var autoYear1_val, surplus_val;
-        if(scenarioPlan === "standard"){
-          autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
-          surplus_val = parseFloat(document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim());
-        } else {
-          autoYear1_val = parseFloat(document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim());
-          surplus_val = parseFloat(document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim());
-        }
-        var recettesAnnee1 = autoYear1_val + surplus_val;
-        
-        var installationCostHT = 0;
-        if(scenarioPlan === "standard"){
-          installationCostHT = parseFloat(document.getElementById("coutInstallation").textContent.replace(/[^0-9.]/g,"")) || 0;
-        } else {
-          installationCostHT = parseFloat(document.getElementById("coutInstallationForced").textContent.replace(/[^0-9.]/g,"")) || 0;
-        }
-        
-        var preconisePower = 0;
-        if(scenarioPlan === "standard"){
-          preconisePower = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
-        } else {
-          preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
-        }
-        
-        var assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
-        var assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
-        var cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
-        var cout_changement_onduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value) || 0;
-        var inflation = parseFloat(document.getElementById("inflation_estimee").value) || 0;
-        var taux_emprunt = parseFloat(document.getElementById("taux_emprunt").value) || 0;
-        var duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
-        var index_leasing = parseFloat(document.getElementById("index_leasing").value) || 0;
-        var duree_leasing = parseFloat(document.getElementById("duree_leasing").value) || 0;
-        
-        var annualRepayment = 0;
-        if(financementMode === "banque" && duree_pret > 0){
-          var n = duree_pret * 12;
-          var i = taux_emprunt / 100 / 12;
-          var primeVal = 0;
-          var remiseVal = 0;
-          if(scenarioPlan === "standard"){
-            primeVal = parseFloat(document.getElementById("primeValue").textContent.replace(/[^0-9.]/g,"")) || 0;
-            remiseVal = parseFloat(document.getElementById("remise").value) || 0;
-          } else {
-            primeVal = parseFloat(document.getElementById("primeValueForced").textContent.replace(/[^0-9.]/g,"")) || 0;
-            remiseVal = parseFloat(document.getElementById("remiseForced").value) || 0;
-          }
-          var adjustedCost = installationCostHT - primeVal - remiseVal;
-          var monthlyPayment = adjustedCost * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
-          annualRepayment = monthlyPayment * 12;
-        }
-        var annualLeasing = 0;
-        if(financementMode === "leasing" && duree_leasing > 0){
-          annualLeasing = installationCostHT * (index_leasing/100) * 12;
-        }
-        
-        var totalRecettes = 0;
-        var totalChargesExploitation = 0;
-        var totalAssurance = 0;
-        var totalFinancement = 0;
-        var totalSoldeNet = 0;
-        
-        var tableBody = document.getElementById("planTresorerieBody");
-        tableBody.innerHTML = "";
-        
-        for(var year = 1; year <= 20; year++){
-          var factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
-          var recettes;
-          if(year === 1){
-            recettes = recettesAnnee1;
-          } else {
-            var projTable;
-            if(scenarioPlan === "standard"){
-              projTable = document.getElementById("preconisationTable");
-            } else {
-              projTable = document.getElementById("preconisationTableForced");
+      var saveButton = document.getElementById("saveToFile");
+      var loadFileInput = document.getElementById("loadFromFile");
+      var uploadButton = document.getElementById("uploadFile");
+      saveButton.addEventListener("click", function() {
+        var form = document.getElementById("userForm");
+        var rawFormData = new FormData(form);
+        var formObject = {};
+        rawFormData.forEach(function(value, key) {
+          if(formObject[key] !== undefined){
+            if(!Array.isArray(formObject[key])){
+              formObject[key] = [formObject[key]];
             }
-            var rows = projTable.querySelectorAll("tbody tr");
-            if(rows.length >= year){
-              var row = rows[year - 1];
-              var econ = parseFloat(row.cells[2].textContent.replace(/[^0-9.-]+/g,"")) || 0;
-              var revente = parseFloat(row.cells[4].textContent.replace(/[^0-9.-]+/g,"")) || 0;
-              recettes = econ + revente;
-              if(year === 2) {
-                var S = 0;
-                if(scenarioPlan === "standard"){
-                  S = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
-                } else {
-                  S = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
-                }
-                var territory = document.getElementById("territory").value || "France Metropolitaine";
-                var tObj = getTarifRachatAndPrime(S, territory);
-                var primeTotal = Math.round(tObj.primeByWc * (S * 1000));
-                recettes += primeTotal;
+            formObject[key].push(value);
+          } else {
+            formObject[key] = value;
+          }
+        });
+        var center = map.getCenter();
+        formObject["mapCenterLat"] = center.lat;
+        formObject["mapCenterLng"] = center.lng;
+        formObject["mapZoom"] = map.getZoom();
+        formObject["canvasImage"] = drawingCanvas.toDataURL();
+        var shapesGeoJSON = drawnItems.toGeoJSON();
+        formObject["drawnShapes"] = shapesGeoJSON;
+        formObject["monthlyProductionData"] = monthlyProductionData;
+        var companyName = formObject["companyName"] || "Formulaire";
+        var fileName = "Formulaire_" + companyName + ".json";
+        var jsonString = JSON.stringify(formObject, null, 2);
+        var blob = new Blob([jsonString], { type:"application/json" });
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+      });
+      uploadButton.addEventListener("click", function() {
+        console.log("Bouton 'Charger un fichier' cliqué");
+        loadFileInput.click();
+      });
+      loadFileInput.addEventListener("change", function(event) {
+        console.log("Événement 'change' sur l'input loadFromFile déclenché");
+        var file = event.target.files[0];
+        if(file){
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var jsonData = JSON.parse(e.target.result);
+            var form = document.getElementById("userForm");
+            Object.keys(jsonData).forEach(function(key) {
+              if(["mapCenterLat","mapCenterLng","mapZoom","canvasImage","drawnShapes","monthlyProductionData"].indexOf(key) !== -1){
+                return;
               }
-            } else {
-              recettes = recettesAnnee1;
+              var dataValue = jsonData[key];
+              if(Array.isArray(dataValue)){
+                dataValue.forEach(function(val) {
+                  var checkbox = form.querySelector('[name="'+key+'"][value="'+val+'"]');
+                  if(checkbox){ checkbox.checked = true; }
+                });
+              } else {
+                var input = form.querySelector('[name="'+key+'"]');
+                if(input){ input.value = dataValue; }
+              }
+            });
+            if(jsonData["mapCenterLat"] !== undefined && jsonData["mapCenterLng"] !== undefined && jsonData["mapZoom"] !== undefined){
+              map.setView([jsonData["mapCenterLat"], jsonData["mapCenterLng"]], jsonData["mapZoom"]);
             }
+            if(jsonData["canvasImage"]){
+              var image = new Image();
+              image.onload = function(){
+                ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                ctx.drawImage(image, 0, 0);
+              };
+              image.src = jsonData["canvasImage"];
+            }
+            if(jsonData["drawnShapes"]){
+              drawnItems.clearLayers();
+              L.geoJson(jsonData["drawnShapes"]).eachLayer(function(layer) {
+                drawnItems.addLayer(layer);
+              });
+            }
+            if(jsonData["monthlyProductionData"]){
+              monthlyProductionData = jsonData["monthlyProductionData"];
+              fillMonthlyProductionTable(monthlyProductionData);
+            }
+            for(var i = 0; i < 12; i++){ calculateCost(i); }
+            updateProductionPotential();
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      /***************************************************
+       * 6) CALCUL DU COÛT PAR kWh
+       ***************************************************/
+      function calculateCost(index){
+        var eurosInput = document.getElementById("euros_" + index);
+        var kwhInput = document.getElementById("kwh_" + index);
+        var costCell = document.getElementById("costPerKwh_" + index);
+        if(!eurosInput || !kwhInput || !costCell) return;
+        var euros = parseFloat(eurosInput.value) || 0;
+        var kwh = parseFloat(kwhInput.value) || 0;
+        if(kwh > 0){
+          var costPerKwh = (euros / kwh).toFixed(2);
+          costCell.textContent = costPerKwh + " €";
+        } else { costCell.textContent = "-"; }
+        calculateTotals();
+      }
+      function calculateTotals(){
+        var totalEuros = 0, totalKwh = 0;
+        for(var i = 0; i < 12; i++){
+          var eurosVal = document.getElementById("euros_" + i);
+          var kwhVal = document.getElementById("kwh_" + i);
+          if(!eurosVal || !kwhVal) continue;
+          var eVal = parseFloat(eurosVal.value) || 0;
+          var kVal = parseFloat(kwhVal.value) || 0;
+          totalEuros += eVal;
+          totalKwh += kVal;
+        }
+        var averageCostPerKwh = totalKwh > 0 ? (totalEuros / totalKwh).toFixed(2) : "-";
+        var totalEurosCell = document.getElementById("totalEuros");
+        var totalKwhCell = document.getElementById("totalKwh");
+        var totalCostPerKwhCell = document.getElementById("totalCostPerKwh");
+        if(totalEurosCell) totalEurosCell.textContent = totalEuros.toFixed(2).toLocaleString('fr-FR') + " €";
+        if(totalKwhCell) totalKwhCell.textContent = totalKwh.toFixed(2).toLocaleString('fr-FR') + " kWh";
+        if(totalCostPerKwhCell){
+          totalCostPerKwhCell.textContent = averageCostPerKwh !== "-" ? averageCostPerKwh + " €" : "-";
+        }
+      }
+
+      /***************************************************
+       * 7) CALCUL DE LA PRÉCONISATION
+       ***************************************************/
+      function costInstallation(S, territory){
+        var raw;
+        if (S <= 100) { raw = S * ((1.9093 - (0.00659 * S))) * 1000; }
+        else { raw = S * 1.15 * 1000; }
+        if (territory === "Corse") { raw *= 1.00; }
+        else if (territory === "Reunion") { raw *= 1.13; }
+        return Math.round(raw / 100) * 100;
+      }
+      function getClosedDaysFraction() {
+        var closedDays = [];
+        document.querySelectorAll('input[name="joursConges[]"]:checked').forEach(function(chk) { closedDays.push(chk.value); });
+        var nbClosed = closedDays.length;
+        var fraction = nbClosed / 7.0;
+        return fraction;
+      }
+      function getTarifRachatAndPrime(S, territory){
+        if(!primeTarifsData) {
+          console.warn("primeTarifsData introuvable, on retourne par défaut 0.0761 et prime=0");
+          return {tarif:0.0761, primeByWc:0};
+        }
+        var tData = primeTarifsData[territory] || primeTarifsData["France Metropolitaine"];
+        var foundTarif = 0.0761;
+        var foundPrime = 0;
+        if(tData){
+          if(Array.isArray(tData.tarif_rachat)){
+            tData.tarif_rachat.forEach(function(range) {
+              if(S >= range.min && S <= range.max){ foundTarif = range.tarif; }
+            });
           }
-          
-          var maintenanceCost = preconisePower * cout_maintenance;
-          if(year > 1){ maintenanceCost = maintenanceCost * factor; }
-          if(year === 11){ maintenanceCost += cout_changement_onduleurs; }
-          var assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
-          if(year > 1){ assurancePhoto = assurancePhoto * factor; }
-          var totalCharges = maintenanceCost + assurancePhoto;
-          var financementCost = 0;
-          if(financementMode === "banque"){
-            financementCost = (year <= duree_pret) ? annualRepayment : 0;
-          } else {
-            financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
+          if(Array.isArray(tData.primes)){
+            tData.primes.forEach(function(range) {
+              if(S >= range.min && S <= range.max){ foundPrime = range.montant_euros_par_wc; }
+            });
           }
-          var soldeNet = recettes - (totalCharges + financementCost);
-          totalRecettes += recettes;
-          totalChargesExploitation += maintenanceCost;
-          totalAssurance += assurancePhoto;
-          totalFinancement += financementCost;
-          totalSoldeNet += soldeNet;
-          
+        }
+        return {tarif: foundTarif, primeByWc: foundPrime};
+      }
+      function calculateROI(coutInstallation, autoYear1, surplusYear1, primeTotal, annualPriceIncrease) {
+        var cumulativeSavings = 0;
+        var roiYears = 0;
+        while (roiYears < 100) {
+          roiYears++;
+          var econAuto = autoYear1 * Math.pow(1 + annualPriceIncrease / 100, roiYears - 1);
+          var gainsRev = surplusYear1;
+          var prime = (roiYears === 2) ? primeTotal : 0;
+          var totalYearSavings = econAuto + gainsRev + prime;
+          cumulativeSavings += totalYearSavings;
+          if (cumulativeSavings >= coutInstallation) { break; }
+        }
+        return roiYears;
+      }
+      function computeAutoAndSurplusForPower(S, globalTarif){
+        var ratioDStr = document.getElementById("ratioDiurne").value || "50";
+        var ratioD = parseFloat(ratioDStr) || 50;
+        var fractionClosed = getClosedDaysFraction();
+        var totalGain = 0;
+        for(var i = 0; i < 12; i++){
+          var kwhInput = document.getElementById("kwh_" + i);
+          var costCell = document.getElementById("costPerKwh_" + i);
+          if(!kwhInput || !costCell || !monthlyProductionData[i]) continue;
+          var consoKwh = parseFloat(kwhInput.value) || 0;
+          var p_kWh = parseFloat(costCell.textContent) || 0;
+          var E_m1kW = monthlyProductionData[i].E_m || 0;
+          var production = S * E_m1kW;
+          var forcedSurplus = fractionClosed * production;
+          var leftover = production - forcedSurplus;
+          var consoKwhDiurne = consoKwh * (ratioD / 100);
+          var autoCons = Math.min(leftover, consoKwhDiurne);
+          var leftoverAfter = leftover - autoCons;
+          var finalSurplus = forcedSurplus + Math.max(leftoverAfter, 0);
+          var gainMonth = (autoCons * p_kWh);
+          totalGain += gainMonth;
+        }
+        return totalGain;
+      }
+      function calculatePreconisationWithPower(S, firstYearGain, territoryObj){
+        fillMonthlyPreconisation(S, territoryObj.tarif);
+        fill20YearsPreconisation(S, firstYearGain, territoryObj);
+      }
+      var monthlyBarChart = null;
+      function createMonthlyBarChart(labels, consoData, autoData, revData){
+        var ctx = document.getElementById("monthlyBarChart").getContext("2d");
+        if(monthlyBarChart){ monthlyBarChart.destroy(); }
+        monthlyBarChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              { label: "Conso kWh", data: consoData, backgroundColor: "rgba(255,99,132,0.6)" },
+              { label: "Autoconso kWh", data: autoData, backgroundColor: "rgba(75,192,75,0.6)" },
+              { label: "Revente kWh", data: revData, backgroundColor: "rgba(54,162,235,0.6)" },
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, title: { display: true, text: "kWh" } } }
+          }
+        });
+      }
+      function fillMonthlyPreconisation(S, globalTarif){
+        var showKwh = document.getElementById("showKwhColumns").checked;
+        var table = document.getElementById("preconisationMonthlyTable");
+        table.innerHTML = "";
+        var headerRow = `<tr>
+          <th>Mois</th>
+          ${ showKwh ? '<th>Conso kWh</th>' : '' }
+          ${ showKwh ? '<th>Production kWh</th>' : '' }
+          ${ showKwh ? '<th>Autoconso kWh</th>' : '' }
+          ${ showKwh ? '<th>Revente kWh</th>' : '' }
+          <th>Facture Sans Centrale</th>
+          <th>Économies Autoconso</th>
+          <th>Facture Avec Centrale</th>
+          <th>Gains Revente</th>
+          <th>Total Économies</th>
+          <th>% Auto prod</th>
+          <th>% Auto conso</th>
+          <th>% Revente</th>
+        </tr>`;
+        var thead = document.createElement("thead");
+        thead.innerHTML = headerRow;
+        table.appendChild(thead);
+        var tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+        var footRow = `<tr>
+          <th>Totaux</th>
+          ${ showKwh ? '<td id="monthlySumKwhConso">-</td>' : '' }
+          ${ showKwh ? '<td id="monthlySumProduction">-</td>' : '' }
+          ${ showKwh ? '<td id="monthlySumKwhAuto">-</td>' : '' }
+          ${ showKwh ? '<td id="monthlySumKwhRevente">-</td>' : '' }
+          <td id="monthlyTotalSansPv">-</td>
+          <td id="monthlyTotalAuto">-</td>
+          <td id="monthlyTotalAvecPv">-</td>
+          <td id="monthlyTotalRevente">-</td>
+          <td id="monthlyTotalEconomies">-</td>
+          <td id="monthlyTotalAutoProdPerc">-</td>
+          <td id="monthlyTotalAutoConsoPerc">-</td>
+          <td id="monthlyTotalRevPerc">-</td>
+        </tr>`;
+        var tfoot = document.createElement("tfoot");
+        tfoot.innerHTML = footRow;
+        table.appendChild(tfoot);
+        var sumSansPv = 0, sumAuto = 0, sumRev = 0, sumAvecPv = 0, sumEco = 0;
+        var sumKwhConso = 0, sumKwhAuto = 0, sumKwhRev = 0, sumProduction = 0;
+        var moisNoms = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+        var fractionClosed = getClosedDaysFraction();
+        var ratioD = parseFloat(document.getElementById("ratioDiurne").value) || 50;
+        var chartConso = [], chartAuto = [], chartRev = [];
+        for(var i = 0; i < 12; i++){
+          var eurosStr = document.getElementById("euros_" + i)?.value || "0";
+          var factureSansPv = parseFloat(eurosStr) || 0;
+          var consoKwh = parseFloat(document.getElementById("kwh_" + i)?.value) || 0;
+          var costText = document.getElementById("costPerKwh_" + i)?.textContent || "0";
+          var costUnit = parseFloat(costText) || 0;
+          if(!monthlyProductionData[i]) continue;
+          var E_m1kW = monthlyProductionData[i].E_m || 0;
+          var production = S * E_m1kW;
+          sumProduction += production;
+          var forcedSurplus = fractionClosed * production;
+          var leftover = production - forcedSurplus;
+          var consoKwhDiurne = consoKwh * (ratioD/100);
+          var autoCons = Math.min(leftover, consoKwhDiurne);
+          var leftoverAfter = leftover - autoCons;
+          var finalSurplus = forcedSurplus + Math.max(leftoverAfter, 0);
+          var economies = autoCons * costUnit;
+          var revente = finalSurplus * globalTarif;
+          var totalEco = economies + revente;
+          var factureAvecPv = factureSansPv - economies;
+          sumSansPv += factureSansPv;
+          sumAuto += economies;
+          sumRev += revente;
+          sumAvecPv += factureAvecPv;
+          sumEco += totalEco;
+          sumKwhConso += consoKwh;
+          sumKwhAuto += autoCons;
+          sumKwhRev += finalSurplus;
+          var autoprodPerc = 0;
+          if(consoKwh > 0) autoprodPerc = 100*(autoCons/consoKwh);
+          var totProd = production;
+          var percAutoConsoGlobal = 0, percReventeGlobal = 0;
+          if(totProd > 0){
+            percAutoConsoGlobal = 100*(autoCons/totProd);
+            percReventeGlobal = 100*(finalSurplus/totProd);
+          }
+          var row = document.createElement("tr");
+          var rowHTML = "<td>" + moisNoms[i] + "</td>";
+          if(showKwh) { rowHTML += "<td>" + consoKwh.toFixed(1) + "</td>"; }
+          if(showKwh) { rowHTML += "<td>" + production.toFixed(1) + "</td>"; }
+          if(showKwh) { rowHTML += "<td>" + autoCons.toFixed(1) + "</td>"; }
+          if(showKwh) { rowHTML += "<td>" + finalSurplus.toFixed(1) + "</td>"; }
+          rowHTML += "<td>" + factureSansPv.toFixed(2) + " €</td>";
+          rowHTML += "<td>" + economies.toFixed(2) + " €</td>";
+          rowHTML += "<td>" + factureAvecPv.toFixed(2) + " €</td>";
+          rowHTML += "<td>" + revente.toFixed(2) + " €</td>";
+          rowHTML += "<td>" + totalEco.toFixed(2) + " €</td>";
+          rowHTML += "<td>" + autoprodPerc.toFixed(1) + "%</td>";
+          rowHTML += "<td>" + percAutoConsoGlobal.toFixed(1) + "%</td>";
+          rowHTML += "<td>" + percReventeGlobal.toFixed(1) + "%</td>";
+          row.innerHTML = rowHTML;
+          tbody.appendChild(row);
+          chartConso.push(consoKwh);
+          chartAuto.push(autoCons);
+          chartRev.push(finalSurplus);
+        }
+        if(showKwh){
+          var el = document.getElementById("monthlySumKwhConso");
+          if(el) { el.textContent = sumKwhConso.toFixed(1); }
+          el = document.getElementById("monthlySumProduction");
+          if(el) { el.textContent = sumProduction.toFixed(1); }
+          el = document.getElementById("monthlySumKwhAuto");
+          if(el) { el.textContent = sumKwhAuto.toFixed(1); }
+          el = document.getElementById("monthlySumKwhRevente");
+          if(el) { el.textContent = sumKwhRev.toFixed(1); }
+        }
+        document.getElementById("monthlyTotalSansPv").textContent = sumSansPv.toFixed(2)+" €";
+        document.getElementById("monthlyTotalAuto").textContent = sumAuto.toFixed(2)+" €";
+        document.getElementById("monthlyTotalAvecPv").textContent = sumAvecPv.toFixed(2)+" €";
+        document.getElementById("monthlyTotalRevente").textContent = sumRev.toFixed(2)+" €";
+        document.getElementById("monthlyTotalEconomies").textContent = sumEco.toFixed(2)+" €";
+        var totProd = sumKwhAuto + sumKwhRev;
+        var finalAutoProdPerc = 0, finalAutoConsoPerc = 0, finalRevPerc = 0;
+        if(sumKwhConso > 0) finalAutoProdPerc = 100*(sumKwhAuto/sumKwhConso);
+        if(totProd > 0){
+          finalAutoConsoPerc = 100*(sumKwhAuto/totProd);
+          finalRevPerc = 100*(sumKwhRev/totProd);
+        }
+        document.getElementById("monthlyTotalAutoProdPerc").textContent = finalAutoProdPerc.toFixed(1)+"%";
+        document.getElementById("monthlyTotalAutoConsoPerc").textContent = finalAutoConsoPerc.toFixed(1)+"%";
+        document.getElementById("monthlyTotalRevPerc").textContent = finalRevPerc.toFixed(1)+"%";
+        createMonthlyBarChart(moisNoms, chartConso, chartAuto, chartRev);
+      }
+      function fill20YearsPreconisation(S, firstYearGain, territoryObj) {
+        var annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+        var baseYearStr = document.getElementById("monthlyTotalSansPv").textContent.replace("€","").trim();
+        var baseYearCost = parseFloat(baseYearStr) || 0;
+        var strEco = document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim();
+        var strRev = document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim();
+        var autoYear1 = parseFloat(strEco) || 0;
+        var surplusYear1 = parseFloat(strRev) || 0;
+        var primeByWc = territoryObj.primeByWc || 0;
+        var primeTotal = Math.round(primeByWc * (S * 1000));
+        var preconTableBody = document.querySelector("#preconisationTable tbody");
+        preconTableBody.innerHTML = "";
+        var totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+        var cumulativeEco = 0;
+        for(var year = 1; year <= 20; year++){
+          var factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+          var econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
+          var gainsRev = surplusYear1;
+          var primeYear = 0;
+          if(year === 2){ primeYear = primeTotal; }
+          var totalEcos = econAuto + gainsRev + primeYear;
+          var factureAvecPv = factureSansPv - econAuto;
+          totalSansPv += factureSansPv;
+          totalAuto += econAuto;
+          totalRev += gainsRev;
+          totalPrime += primeYear;
+          totalAvecPv += factureAvecPv;
+          totalEco += totalEcos;
+          cumulativeEco += totalEcos;
           var row = document.createElement("tr");
           row.innerHTML = `
             <td>${year}</td>
-            <td>${recettes.toFixed(2)} €</td>
-            <td>${maintenanceCost.toFixed(2)} €</td>
-            <td>${assurancePhoto.toFixed(2)} €</td>
-            <td>${totalCharges.toFixed(2)} €</td>
-            <td>${financementCost.toFixed(2)} €</td>
-            <td>${soldeNet.toFixed(2)} €</td>
+            <td>${factureSansPv.toFixed(2)} €</td>
+            <td>${econAuto.toFixed(2)} €</td>
+            <td>${factureAvecPv.toFixed(2)} €</td>
+            <td>${gainsRev.toFixed(2)} €</td>
+            <td>${primeYear.toFixed(2)} €</td>
+            <td>${totalEcos.toFixed(2)} €</td>
+            <td>${cumulativeEco.toFixed(2)} €</td>
           `;
-          tableBody.appendChild(row);
+          preconTableBody.appendChild(row);
         }
-        
-        var totauxRow = document.createElement("tr");
-        totauxRow.innerHTML = `
-          <th>Totaux</th>
-          <th>${totalRecettes.toFixed(2)} €</th>
-          <th>${totalChargesExploitation.toFixed(2)} €</th>
-          <th>${totalAssurance.toFixed(2)} €</th>
-          <th>${(totalChargesExploitation + totalAssurance).toFixed(2)} €</th>
-          <th>${totalFinancement.toFixed(2)} €</th>
-          <th>${totalSoldeNet.toFixed(2)} €</th>
-        `;
-        tableBody.appendChild(totauxRow);
+        document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
+        document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
+        document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
+        document.getElementById("totalPrime").textContent = primeTotal.toLocaleString('fr-FR');
+        document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
+        document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
+        document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
+        var territory = document.getElementById("territory").value || "France Metropolitaine";
+        var costInst = costInstallation(S, territory);
+        document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
+        document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
+        var remise = parseFloat(document.getElementById("remise").value) || 0;
+        var coutReel = costInst - primeTotal - remise;
+        if(coutReel < 0) coutReel = 0;
+        document.getElementById("coutReelInstallation").textContent = coutReel.toLocaleString('fr-FR');
+        document.getElementById("gainSansInv").textContent = totalEco.toFixed(2)+" €";
+        var gainAvecInvVal = totalEco - coutReel;
+        document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
+        var roiYears = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+        document.getElementById("roiResult").textContent = roiYears.toFixed(1);
+      }
+      function fill20YearsPreconisationForced(S, firstYearGain, territoryObj) {
+        var annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+        var baseYearStr = document.getElementById("monthlyTotalSansPvForced").textContent.replace("€","").trim();
+        var baseYearCost = parseFloat(baseYearStr) || 0;
+        var strEco = document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim();
+        var strRev = document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim();
+        var autoYear1 = parseFloat(strEco) || 0;
+        var surplusYear1 = parseFloat(strRev) || 0;
+        var primeByWc = territoryObj.primeByWc || 0;
+        var primeTotal = Math.round(primeByWc * (S * 1000));
+        var preconTableBody = document.querySelector("#preconisationTableForced tbody");
+        preconTableBody.innerHTML = "";
+        var totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+        var cumulativeEco = 0;
+        for(var year = 1; year <= 20; year++){
+          var factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+          var econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
+          var gainsRev = surplusYear1;
+          var primeYear = 0;
+          if(year === 2){ primeYear = primeTotal; }
+          var totalEcos = econAuto + gainsRev + primeYear;
+          var factureAvecPv = factureSansPv - econAuto;
+          totalSansPv += factureSansPv;
+          totalAuto += econAuto;
+          totalRev += gainsRev;
+          totalPrime += primeYear;
+          totalAvecPv += factureAvecPv;
+          totalEco += totalEcos;
+          cumulativeEco += totalEcos;
+          var row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${year}</td>
+            <td>${factureSansPv.toFixed(2)} €</td>
+            <td>${econAuto.toFixed(2)} €</td>
+            <td>${factureAvecPv.toFixed(2)} €</td>
+            <td>${gainsRev.toFixed(2)} €</td>
+            <td>${primeYear.toFixed(2)} €</td>
+            <td>${totalEcos.toFixed(2)} €</td>
+            <td>${cumulativeEco.toFixed(2)} €</td>
+          `;
+          preconTableBody.appendChild(row);
+        }
+        document.getElementById("totalSansPvForced").textContent = totalSansPv.toFixed(2)+" €";
+        document.getElementById("totalAutoForced").textContent = totalAuto.toFixed(2)+" €";
+        document.getElementById("totalReventeForced").textContent = totalRev.toFixed(2)+" €";
+        document.getElementById("totalPrimeForced").textContent = primeTotal.toFixed(2)+" €";
+        document.getElementById("totalAvecPvForced").textContent = totalAvecPv.toFixed(2)+" €";
+        document.getElementById("totalEconomiesForced").textContent = totalEco.toFixed(2)+" €";
+        document.getElementById("puissanceRecoForced").textContent = S.toLocaleString('fr-FR');
+        var territory = document.getElementById("territory").value || "France Metropolitaine";
+        var forcedCost = costInstallation(S, territory);
+        document.getElementById("coutInstallationForced").textContent = forcedCost.toLocaleString('fr-FR');
+        document.getElementById("primeValueForced").textContent = primeTotal.toLocaleString('fr-FR');
+        var remiseForced = parseFloat(document.getElementById("remiseForced").value) || 0;
+        var coutReel = forcedCost - primeTotal - remiseForced;
+        if(coutReel < 0) coutReel = 0;
+        document.getElementById("coutReelInstallationForced").textContent = coutReel.toLocaleString('fr-FR');
+        document.getElementById("gainSansInvForced").textContent = totalEco.toFixed(2)+" €";
+        var gainAvecInvVal = totalEco - coutReel;
+        document.getElementById("gainAvecInvForced").textContent = gainAvecInvVal.toFixed(2)+" €";
+        var roiYearsForced = calculateROI(forcedCost, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+        document.getElementById("roiResultForced").textContent = roiYearsForced.toFixed(1);
       }
 
-      // La fonction manquante pour l'onglet "Préconisation Sélection"
+      flatpickr("#rdvDate", { locale: "fr", dateFormat: "d/m/Y" });
+
+      /***************************************************
+       * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
+       ***************************************************/
+      function generatePdfReport() {
+        var jsPDF = window.jspdf.jsPDF;
+        var pdf = new jsPDF("p", "mm", "a4");
+        var pageWidth = pdf.internal.pageSize.getWidth();
+        var pageHeight = pdf.internal.pageSize.getHeight();
+        var scenarioPlan = document.getElementById("scenarioPlan").value;
+        var monthlyTableId, projectionTableId;
+        if (scenarioPlan === "selection") {
+          monthlyTableId = "preconisationMonthlyTableForced";
+          projectionTableId = "preconisationTableForced";
+        } else {
+          monthlyTableId = "preconisationMonthlyTable";
+          projectionTableId = "preconisationTable";
+        }
+        var tresorerieTableId = "planTresorerieTable";
+        pdf.setFontSize(16);
+        pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
+        if (mapCaptureDataURL) {
+          var imgWidth = pageWidth - 30;
+          var imgHeight = imgWidth * 0.6;
+          var imgX = (pageWidth - imgWidth) / 2;
+          pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", imgX, 25, imgWidth, imgHeight);
+        } else {
+          pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
+        }
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.text("Détails par mois (année 1)", pageWidth / 2, 15, { align: "center" });
+        var monthlyTableEl = document.getElementById(monthlyTableId);
+        if (monthlyTableEl) {
+          var tableWidth = 201;
+          var marginLeft = (pageWidth - tableWidth) / 2;
+          pdf.autoTable({
+            html: monthlyTableEl,
+            startY: 20,
+            margin: { left: marginLeft, right: marginLeft },
+            styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak', halign: 'center', valign: 'middle' },
+            headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 7, halign: 'center', valign: 'middle' },
+            columnStyles: {
+              0: { cellWidth: 15 },
+              1: { cellWidth: 15 },
+              2: { cellWidth: 15 },
+              3: { cellWidth: 15 },
+              4: { cellWidth: 15 },
+              5: { cellWidth: 20 },
+              6: { cellWidth: 20 },
+              7: { cellWidth: 20 },
+              8: { cellWidth: 15 },
+              9: { cellWidth: 15 },
+              10: { cellWidth: 12 },
+              11: { cellWidth: 12 },
+              12: { cellWidth: 12 },
+            },
+          });
+        } else { pdf.text("Tableau Détails par mois non disponible", 10, 30); }
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
+        if (monthlyBarChart) {
+          var chartWidth = pageWidth - 40;
+          var chartX = (pageWidth - chartWidth) / 2;
+          pdf.addImage(monthlyBarChart.toBase64Image(), "PNG", chartX, 20, chartWidth, 80);
+          var legendX = (pageWidth - 100) / 2;
+          pdf.setFontSize(10);
+          pdf.text("Légende :", legendX, 110);
+          pdf.setFillColor(255, 99, 132);
+          pdf.rect(legendX + 20, 105, 5, 5, "F");
+          pdf.text("Conso kWh", legendX + 30, 109);
+          pdf.setFillColor(75, 192, 75);
+          pdf.rect(legendX + 20, 115, 5, 5, "F");
+          pdf.text("Autoconso kWh", legendX + 30, 119);
+          pdf.setFillColor(54, 162, 235);
+          pdf.rect(legendX + 20, 125, 5, 5, "F");
+          pdf.text("Revente kWh", legendX + 30, 129);
+        } else { pdf.text("Graphique non disponible", 10, 30); }
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.text("Projection sur 20 ans", pageWidth / 2, 15, { align: "center" });
+        var projectionTableEl = document.getElementById(projectionTableId);
+        if (projectionTableEl) {
+          pdf.autoTable({
+            html: projectionTableEl,
+            startY: 20,
+            margin: { left: 10, right: 10 },
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
+          });
+        } else { pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30); }
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 15, { align: "center" });
+        var tresorerieTableEl = document.getElementById(tresorerieTableId);
+        if (tresorerieTableEl) {
+          pdf.autoTable({
+            html: tresorerieTableEl,
+            startY: 20,
+            margin: { left: 10, right: 10 },
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [200, 200, 200] }
+          });
+        } else { pdf.text("Tableau Plan de trésorerie non disponible", 10, 30); }
+        var companyName = document.getElementById("companyName")?.value || "";
+        var pdfFileName = "Rapport_Photovoltaïque.pdf";
+        if (companyName) { pdfFileName = "Rapport_" + companyName + ".pdf"; }
+        pdf.save(pdfFileName);
+      }
+
+      /***************************************************
+       * ACTIONS SUR LA PRÉCONISATION STANDARD
+       ***************************************************/
+      var calcPrecBtn_v134 = document.getElementById("calculatePreconisation");
+      calcPrecBtn_v134.addEventListener("click", function() {
+        updateProductionPotential();
+        var territory = document.getElementById("territory").value || "France Metropolitaine";
+        var maxPowerStr = (document.getElementById("puissanceMaxPV").value || "0").replace(/\s/g, "");
+        var maxPower = parseFloat(maxPowerStr) || 0;
+        if(maxPower <= 0){ alert("Puissance max PV non définie ou nulle."); return; }
+        var bestS = 1, bestTotalGain = 0;
+        var bestTerritoryObj = {tarif:0.0761, primeByWc:0};
+        for(var s = 1; s <= maxPower; s++){
+          var tObj = getTarifRachatAndPrime(s, territory);
+          var totalGain = computeAutoAndSurplusForPower(s, tObj.tarif);
+          if(totalGain > bestTotalGain){
+            bestTotalGain = totalGain;
+            bestS = s;
+            bestTerritoryObj = tObj;
+          }
+        }
+        calculatePreconisationWithPower(bestS, bestTotalGain, bestTerritoryObj);
+        document.getElementById("tarifRachat").value = bestTerritoryObj.tarif.toFixed(4);
+      });
+
+      /***************************************************
+       * ACTIONS SUR LA PRÉCONISATION SÉLECTION
+       ***************************************************/
+      var applyForcedPreconisationBtn_v134 = document.getElementById("applyForcedPreconisationBtn");
+      applyForcedPreconisationBtn_v134.addEventListener("click", function() {
+        updateProductionPotential();
+        var territory = document.getElementById("territory").value || "France Metropolitaine";
+        var forcedPowerStr = document.getElementById("forcedPower").value || "1";
+        var S = parseFloat(forcedPowerStr);
+        if(isNaN(S) || S <= 0){
+          alert("Veuillez saisir une valeur > 0 pour l'installation choisie (kWc).");
+          return;
+        }
+        var territoryObj = getTarifRachatAndPrime(S, territory);
+        // Appel de la fonction spécifique pour l'onglet Préconisation Sélection
+        fillMonthlyPreconisationForced(S, territoryObj.tarif);
+        var totalGain = computeAutoAndSurplusForPower(S, territoryObj.tarif);
+        fill20YearsPreconisationForced(S, totalGain, territoryObj);
+      });
+
+      // Fonction manquante pour l'onglet "Préconisation Sélection"
       function fillMonthlyPreconisationForced(S, globalTarif) {
         var showKwh = document.getElementById("showKwhColumns").checked;
         var table = document.getElementById("preconisationMonthlyTableForced");

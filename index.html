@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v306</title> 
+  <title>FRH PRO formulaire  - v307</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -48,7 +48,10 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       border-radius: 5px;
     }
-    .page-title { text-align: center; margin-bottom: 30px; }
+    .page-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
     /* ONGLET NAVIGATION */
     .tabNav {
@@ -180,6 +183,7 @@
 <body>
   <div class="container">
     <h1 class="page-title">Formulaire FRH PRO - Vue Onglets (Gestion Territoires + Primes)</h1>
+
     <div class="tabNav" id="topTabNav">
       <button type="button" class="tablinks" onclick="openTab(event, 'tab1')">1. Localisation / Données Irradiation</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab2')">2. Potentiel de Production</button>
@@ -194,12 +198,247 @@
       <button type="button" class="tablinks" onclick="openTab(event, 'tab11')">11. Paramètres</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab12')">12. Plan de trésorerie</button>
     </div>
+
     <!-- Formulaire global -->
     <form id="userForm">
-      <!-- (Les différents onglets restent inchangés) -->
-      <!-- ... onglets 1 à 7 identiques ... -->
-
-      <!-- TAB 8 : Préconisation -->
+      <!-- Onglet 1 : Localisation & Données Irradiation -->
+      <div id="tab1" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Localisation & Données Irradiation</h2>
+        </div>
+        <label for="address">Adresse :</label>
+        <input type="text" id="address" name="address" placeholder="Entrez une adresse" required />
+        <button type="button" id="addressSearchBtn">Rechercher</button>
+        <button type="button" id="toggleDrawingButton">Activer le dessin (main levée)</button>
+        <button type="button" id="toggleMeasureButton">Mesurer une surface</button>
+        <div id="map-container">
+          <div id="map"></div>
+          <canvas id="drawingCanvas"></canvas>
+        </div>
+        <div class="form-section">
+          <h3>Données irradiation</h3>
+          <label for="latitudeIrr">Latitude :</label>
+          <input type="text" id="latitudeIrr" name="latitudeIrr" readonly />
+          <label for="longitudeIrr">Longitude :</label>
+          <input type="text" id="longitudeIrr" name="longitudeIrr" readonly />
+          <label for="orientationIrr">Orientation :</label>
+          <select id="orientationIrr" name="orientationIrr">
+            <option value="0">SUD (0°)</option>
+            <option value="-90">EST (-90°)</option>
+            <option value="90">OUEST (90°)</option>
+            <option value="-45">SUD-EST (-45°)</option>
+            <option value="45">SUD-OUEST (45°)</option>
+          </select>
+          <label for="orientation">Orientation (vrai angle °) :</label>
+          <input type="text" id="orientation" name="orientation" readonly />
+          <label for="angleIrr">Angle (°) :</label>
+          <input type="number" id="angleIrr" name="angleIrr" value="35" />
+          <label for="productible">Productible :</label>
+          <input type="text" id="productible" name="productible" placeholder="kWh/kWc/an" readonly/>
+          <label for="territory">Territoire détecté :</label>
+          <input type="text" id="territory" name="territory" disabled />
+          <button type="button" id="calculateIrrButton">Calculer le productible</button>
+        </div>
+      </div>
+      <!-- Onglet 2 : Potentiel de production -->
+      <div id="tab2" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Potentiel de Production</h2>
+        </div>
+        <div class="form-section">
+          <h3>Potentiel de production</h3>
+          <label for="exclusionPercent">% surface exclusion :</label>
+          <input type="number" id="exclusionPercent" name="exclusionPercent" value="0" />
+          <label for="puissancePanneau">Puissance du panneau :</label>
+          <select id="puissancePanneau" name="puissancePanneau">
+            <option value="420" selected>420 Wc</option>
+            <option value="440">440 Wc</option>
+            <option value="500">500 Wc</option>
+          </select>
+          <label for="nombrePVMax">Nombre de PV max :</label>
+          <input type="text" id="nombrePVMax" name="nombrePVMax" readonly />
+          <label for="puissanceMaxPV">Puissance max PV (kWc) :</label>
+          <input type="text" id="puissanceMaxPV" name="puissanceMaxPV" readonly />
+          <label for="productionInstall">Production en kWh de l'installation :</label>
+          <input type="text" id="productionInstall" name="productionInstall" readonly />
+        </div>
+      </div>
+      <!-- Onglet 3 : Production mensuel -->
+      <div id="tab3" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Production mensuel</h2>
+        </div>
+        <div class="form-section">
+          <h3>Production mensuel</h3>
+          <table id="monthlyProductionTable">
+            <thead>
+              <tr>
+                <th>Mois</th>
+                <th>Production mensuelle (kWh)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rempli dynamiquement via fillMonthlyProductionTable -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Onglet 4 : Infos société -->
+      <div id="tab4" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Informations sur la société</h2>
+        </div>
+        <div class="form-section">
+          <h3>Informations sur la société</h3>
+          <label for="Adresse">Adresse entrée :</label>
+          <input type="text" id="Adresse" name="Adresse" readonly />
+          <label for="companyName">Société :</label>
+          <input type="text" id="companyName" name="companyName"/>
+          <label for="activity">Activité :</label>
+          <input type="text" id="activity" name="activity"/>
+          <label for="Nom">Nom :</label>
+          <input type="text" id="Nom" name="Nom"/>
+          <label for="Prénom">Prénom :</label>
+          <input type="text" id="Prénom" name="Prénom"/>
+          <label for="Statut">Statut :</label>
+          <input type="text" id="Statut" name="Statut"/>
+          <label for="Propietaire/Locataire">Propietaire/Locataire :</label>
+          <select id="Propietaire/Locataire" name="Propietaire/Locataire">
+            <option value="" disabled selected>indiquer si propietaire ou locataire</option>
+            <option value="Proprietaire">Proprietaire</option>
+            <option value="Locataire">Locataire</option>
+          </select>
+          <label for="Annees presence">Annees presence :</label>
+          <input type="text" id="Annees presence" name="Annees presence" placeholder="Entrez le nombre d'Annees de presence" />
+        </div>
+      </div>
+      <!-- Onglet 5 : Infos toiture -->
+      <div id="tab5" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Informations sur la toiture</h2>
+        </div>
+        <div class="form-section">
+          <h3>Informations sur la toiture</h3>
+          <label for="Surface toiture">Surface toiture (m²) :</label>
+          <input type="number" id="Surface toiture" name="Surface toiture" />
+          <label for="Partage sa toiture">Partage sa toiture? :</label>
+          <select id="Partage sa toiture" name="Partage sa toiture">
+            <option value="" disabled selected>indiquer si la toiture est partagee</option>
+            <option value="Oui">Oui</option>
+            <option value="Non">Non</option>
+          </select>
+          <label for="Type de toiture">Type de toiture :</label>
+          <select id="Type de toiture" name="Type de toiture">
+            <option value="" disabled selected>Choisissez un Type de toiture</option>
+            <option value="2 pentes">2 pentes</option>
+            <option value="1 pente">1 pente</option>
+            <option value="Toit plat">Toit plat</option>
+          </select>
+          <label for="Pente toiture">Pente toiture (°) :</label>
+          <input type="number" id="Pente toiture" name="Pente toiture" />
+          <label for="Type de couverture">Type de couverture :</label>
+          <select id="Type de couverture" name="Type de couverture">
+            <option value="" disabled selected>Choisissez un type de couverture</option>
+            <option value="Bacs acier">Bacs acier</option>
+            <option value="Fibro ciment">Fibro ciment</option>
+            <option value="Tuiles">Tuiles</option>
+            <option value="Béton">Béton</option>
+          </select>
+          <label for="Type de charpente">Type de charpente :</label>
+          <select id="Type de charpente" name="Type de charpente">
+            <option value="" disabled selected>Choisissez un type de charpente</option>
+            <option value="Metallique">Métallique</option>
+            <option value="Bois">Bois</option>
+          </select>
+          <label for="Translucides">Présence de translucides :</label>
+          <select id="Translucides" name="Translucides">
+            <option value="" disabled selected>Presence de translucides</option>
+            <option value="Oui">Oui</option>
+            <option value="Non">Non</option>
+          </select>
+          <label for="Couvrir Translucides">Couvrir Translucides :</label>
+          <select id="Couvrir Translucides" name="Couvrir Translucides">
+            <option value="" disabled selected>Couvrir Translucides</option>
+            <option value="Oui">Oui</option>
+            <option value="Non">Non</option>
+          </select>
+        </div>
+      </div>
+      <!-- Onglet 6 : Périodes d'utilisation -->
+      <div id="tab6" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Périodes d'utilisation</h2>
+        </div>
+        <div class="form-section">
+          <h3>Periodes d'utilisation</h3>
+          <h4>Mois de congés</h4>
+          <div class="checkbox-grid">
+            <label><input type="checkbox" name="moisConges[]" value="Janvier" />Janvier</label>
+            <label><input type="checkbox" name="moisConges[]" value="Février" />Février</label>
+            <label><input type="checkbox" name="moisConges[]" value="Mars" />Mars</label>
+            <label><input type="checkbox" name="moisConges[]" value="Avril" />Avril</label>
+            <label><input type="checkbox" name="moisConges[]" value="Mai" />Mai</label>
+            <label><input type="checkbox" name="moisConges[]" value="Juin" />Juin</label>
+            <label><input type="checkbox" name="moisConges[]" value="Juillet" />Juillet</label>
+            <label><input type="checkbox" name="moisConges[]" value="Août" />Août</label>
+            <label><input type="checkbox" name="moisConges[]" value="Septembre" />Septembre</label>
+            <label><input type="checkbox" name="moisConges[]" value="Octobre" />Octobre</label>
+            <label><input type="checkbox" name="moisConges[]" value="Novembre" />Novembre</label>
+            <label><input type="checkbox" name="moisConges[]" value="Décembre" />Décembre</label>
+          </div>
+          <h4>Jours de congés</h4>
+          <div class="checkbox-grid">
+            <label><input type="checkbox" name="joursConges[]" value="Lundi" />Lundi</label>
+            <label><input type="checkbox" name="joursConges[]" value="Mardi" />Mardi</label>
+            <label><input type="checkbox" name="joursConges[]" value="Mercredi" />Mercredi</label>
+            <label><input type="checkbox" name="joursConges[]" value="Jeudi" />Jeudi</label>
+            <label><input type="checkbox" name="joursConges[]" value="Vendredi" />Vendredi</label>
+            <label><input type="checkbox" name="joursConges[]" value="Samedi" />Samedi</label>
+            <label><input type="checkbox" name="joursConges[]" value="Dimanche" />Dimanche</label>
+          </div>
+          <label for="heureDebut">Heure début travail :</label>
+          <input type="time" id="heureDebut" name="heureDebut" />
+          <label for="heureFin">Heure fin :</label>
+          <input type="time" id="heureFin" name="heureFin" />
+          <label for="Puissance compteur">Puissance compteur (Kva) :</label>
+          <input type="number" id="Puissance compteur" name="Puissance compteur" />
+        </div>
+      </div>
+      <!-- Onglet 7 : Conso mensuelle -->
+      <div id="tab7" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Consommation mensuelle</h2>
+        </div>
+        <div id="consumptionTableContainer" class="form-section">
+          <h3>Consommation mensuelle</h3>
+          <table id="consumptionTable">
+            <thead>
+              <tr>
+                <th style="width: 20%;">Mois</th>
+                <th style="width: 25%;">Consommation (€)</th>
+                <th style="width: 25%;">Consommation (kWh)</th>
+                <th style="width: 30%;">Coût par kWh (€)</th>
+              </tr>
+            </thead>
+            <tbody id="consumptionTableBody">
+              <tr>
+                <td><strong>Total annuel</strong></td>
+                <td id="totalEuros">-</td>
+                <td id="totalKwh">-</td>
+                <td id="totalCostPerKwh">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Onglet 8 : Préconisation -->
       <div id="tab8" class="tabContent">
         <div class="tabLogo">
           <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
@@ -264,9 +503,8 @@
             </tfoot>
           </table>
         </div>
-      </div><!-- fin tab8 -->
-
-      <!-- TAB 9 : Préconisation Sélection -->
+      </div>
+      <!-- Onglet 9 : Préconisation Sélection -->
       <div id="tab9" class="tabContent">
         <div class="tabLogo">
           <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
@@ -323,13 +561,117 @@
             </tfoot>
           </table>
         </div>
-      </div><!-- fin tab9 -->
-
-      <!-- (Onglets 10, 11 et 12 restent inchangés) -->
-      <!-- ... onglets 10, 11, 12 identiques ... -->
-
-    </form><!-- fin userForm -->
-  </div><!-- fin container -->
+      </div>
+      <!-- Onglet 10 : Commentaires -->
+      <div id="tab10" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Commentaires</h2>
+        </div>
+        <div class="form-section">
+          <h3>RDV</h3>
+          <label for="rdvDate">Date du RDV :</label>
+          <input type="text" id="rdvDate" name="rdvDate" placeholder="Choisissez une date" />
+          <label for="rdvTime">Heure du RDV :</label>
+          <input type="time" id="rdvTime" name="rdvTime" />
+        </div>
+        <div class="form-section">
+          <h3>Commentaires</h3>
+          <label for="comments">Commentaires :</label>
+          <textarea id="comments" name="comments" placeholder="Entrez vos commentaires"></textarea>
+        </div>
+        <input type="file" id="mapCaptureFile" accept="image/png, image/jpeg" style="display:none;" />
+        <label for="mapCaptureFile" style="cursor:pointer; color:blue; text-decoration:underline;">Sélectionner la capture</label>
+        <br/><br/>
+        <div style="margin-bottom:15px;">
+          <button type="button" id="exportPDFBtn" onclick="generatePdfReport()">Générer Rapport PDF</button>
+          <button type="button" id="saveToFile">Télécharger les données</button>
+          <input type="file" id="loadFromFile" style="display: none;" />
+          <button type="button" id="uploadFile">Charger un fichier</button>
+        </div>
+      </div>
+      <!-- Onglet 11 : Paramètres -->
+      <div id="tab11" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Paramètres</h2>
+        </div>
+        <div class="form-section">
+          <h3>Charges photovoltaïques courantes</h3>
+          <label for="assurance_dommages">Assurance dommages et RCP % :</label>
+          <input type="text" id="assurance_dommages" name="assurance_dommages" value="0.20" />
+          <label for="assurance_perte">Assurance perte d'exploitation % :</label>
+          <input type="text" id="assurance_perte" name="assurance_perte" value="0.30" />
+          <label for="cout_maintenance">Coût maintenance préventive/curative/nettoyage (€/kWc) :</label>
+          <input type="text" id="cout_maintenance" name="cout_maintenance" value="5.97" />
+        </div>
+        <div class="form-section">
+          <h3>Evolution liée au vieillissement de la centrale</h3>
+          <label for="cout_reparations">Coût réparations courantes % :</label>
+          <input type="text" id="cout_reparations" name="cout_reparations" value="0.19" />
+          <label for="cout_changement_onduleurs">Coût changement onduleurs :</label>
+          <input type="text" id="cout_changement_onduleurs" name="cout_changement_onduleurs" value="" placeholder="Saisir valeur" />
+          <label for="perte_puissance">Perte puissance annuelle des panneaux % :</label>
+          <input type="text" id="perte_puissance" name="perte_puissance" value="0.60" />
+        </div>
+        <div class="form-section">
+          <h3>Paramètres financiers généraux</h3>
+          <label for="inflation_estimee">Inflation estimée (%/an) :</label>
+          <input type="text" id="inflation_estimee" name="inflation_estimee" value="2.00" />
+          <label for="taux_emprunt">Taux emprunt % :</label>
+          <input type="text" id="taux_emprunt" name="taux_emprunt" value="2.00" />
+          <label for="duree_pret">Durée prêt en années :</label>
+          <input type="number" id="duree_pret" name="duree_pret" value="" placeholder="Saisir durée" />
+          <label for="taux_autofinancement">Taux autofinancement :</label>
+          <input type="text" id="taux_autofinancement" name="taux_autofinancement" value="" placeholder="Saisir taux" />
+          <label for="index_leasing">Index du leasing :</label>
+          <input type="text" id="index_leasing" name="index_leasing" value="1.837" />
+          <label for="duree_leasing">Durée du leasing (mois) :</label>
+          <input type="number" id="duree_leasing" name="duree_leasing" value="72" />
+        </div>
+      </div>
+      <!-- Onglet 12 : Plan de trésorerie -->
+      <div id="tab12" class="tabContent">
+        <div class="tabLogo">
+          <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
+          <h2>Plan de trésorerie</h2>
+        </div>
+        <div class="form-section">
+          <h3>Choix du mode de financement et du scénario</h3>
+          <label for="financementMode">Mode de financement :</label>
+          <select id="financementMode" name="financementMode">
+            <option value="banque">Financement bancaire</option>
+            <option value="leasing">Leasing</option>
+          </select>
+          <label for="scenarioPlan">Scénario de préconisation :</label>
+          <select id="scenarioPlan" name="scenarioPlan">
+            <option value="standard">Préconisation standard</option>
+            <option value="selection">Préconisation Sélection</option>
+          </select>
+          <button type="button" id="calculateTresorerieBtn">Calculer le plan de trésorerie</button>
+        </div>
+        <div class="form-section">
+          <h3>Plan de trésorerie (Annuel)</h3>
+          <table id="planTresorerieTable">
+            <thead id="planTresorerieHeader">
+              <tr>
+                <th>Année</th>
+                <th>Recettes d'exploitation<br/>(économies + revente)<br/>Prime</th>
+                <th>Charges d'exploitation<br/>(maintenance, nettoyage,<br/> remp. onduleur(s))</th>
+                <th>Assurance photovoltaïque<br/>(dommages, RC)</th>
+                <th>Total Charges</th>
+                <th>Remboursement <br/> du prêt</th>
+                <th>Solde net annuel</th>
+              </tr>
+            </thead>
+            <tbody id="planTresorerieBody">
+              <!-- Lignes générées dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </form>
+  </div>
 
   <script>
   (function() {
@@ -743,18 +1085,21 @@
         surplus_val = parseFloat(document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim());
       }
       const recettesAnnee1 = autoYear1_val + surplus_val;
+      
       let installationCostHT = 0;
       if(scenarioPlan === "standard"){
         installationCostHT = parseFloat(document.getElementById("coutInstallation").textContent.replace(/[^0-9.]/g,"")) || 0;
       } else {
         installationCostHT = parseFloat(document.getElementById("coutInstallationForced").textContent.replace(/[^0-9.]/g,"")) || 0;
       }
+      
       let preconisePower = 0;
       if(scenarioPlan === "standard"){
         preconisePower = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
       } else {
         preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
       }
+      
       const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
       const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
       const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
@@ -764,17 +1109,21 @@
       const duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
       const index_leasing = parseFloat(document.getElementById("index_leasing").value) || 0;
       const duree_leasing = parseFloat(document.getElementById("duree_leasing").value) || 0;
+      
       let annualRepayment = 0;
       if(financementMode === "banque" && duree_pret > 0){
         const n = duree_pret * 12;
         const i = taux_emprunt / 100 / 12;
         let primeVal = 0;
+        let remiseVal = 0;
         if(scenarioPlan === "standard"){
           primeVal = parseFloat(document.getElementById("primeValue").textContent.replace(/[^0-9.]/g,"")) || 0;
+          remiseVal = parseFloat(document.getElementById("remise").value) || 0;
         } else {
           primeVal = parseFloat(document.getElementById("primeValueForced").textContent.replace(/[^0-9.]/g,"")) || 0;
+          remiseVal = parseFloat(document.getElementById("remiseForced").value) || 0;
         }
-        const adjustedCost = installationCostHT - primeVal;
+        const adjustedCost = installationCostHT - primeVal - remiseVal;
         const monthlyPayment = adjustedCost * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
         annualRepayment = monthlyPayment * 12;
       }
@@ -782,13 +1131,16 @@
       if(financementMode === "leasing" && duree_leasing > 0){
         annualLeasing = installationCostHT * (index_leasing/100) * 12;
       }
+      
       let totalRecettes = 0;
       let totalChargesExploitation = 0;
       let totalAssurance = 0;
       let totalFinancement = 0;
       let totalSoldeNet = 0;
+      
       const tableBody = document.getElementById("planTresorerieBody");
       tableBody.innerHTML = "";
+      
       for(let year = 1; year <= 20; year++){
         const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
         let recettes;
@@ -823,6 +1175,7 @@
             recettes = recettesAnnee1;
           }
         }
+        
         let maintenanceCost = preconisePower * cout_maintenance;
         if(year > 1){ maintenanceCost = maintenanceCost * factor; }
         if(year === 11){ maintenanceCost += cout_changement_onduleurs; }
@@ -841,6 +1194,7 @@
         totalAssurance += assurancePhoto;
         totalFinancement += financementCost;
         totalSoldeNet += soldeNet;
+        
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${year}</td>
@@ -853,6 +1207,7 @@
         `;
         tableBody.appendChild(row);
       }
+      
       const totauxRow = document.createElement("tr");
       totauxRow.innerHTML = `
         <th>Totaux</th>
@@ -1202,20 +1557,20 @@
         chartRev.push(finalSurplus);
       }
       if(showKwh){
-        let el = document.getElementById("monthlySumKwhConsoForced");
+        let el = document.getElementById("monthlySumKwhConso");
         if(el) { el.textContent = sumKwhConso.toFixed(1); }
-        el = document.getElementById("monthlySumProductionForced");
+        el = document.getElementById("monthlySumProduction");
         if(el) { el.textContent = sumProduction.toFixed(1); }
-        el = document.getElementById("monthlySumKwhAutoForced");
+        el = document.getElementById("monthlySumKwhAuto");
         if(el) { el.textContent = sumKwhAuto.toFixed(1); }
-        el = document.getElementById("monthlySumKwhReventeForced");
+        el = document.getElementById("monthlySumKwhRevente");
         if(el) { el.textContent = sumKwhRev.toFixed(1); }
       }
-      document.getElementById("monthlyTotalSansPvForced").textContent = sumSansPv.toFixed(2)+" €";
-      document.getElementById("monthlyTotalAutoForced").textContent = sumAuto.toFixed(2)+" €";
-      document.getElementById("monthlyTotalAvecPvForced").textContent = sumAvecPv.toFixed(2)+" €";
-      document.getElementById("monthlyTotalReventeForced").textContent = sumRev.toFixed(2)+" €";
-      document.getElementById("monthlyTotalEconomiesForced").textContent = sumEco.toFixed(2)+" €";
+      document.getElementById("monthlyTotalSansPv").textContent = sumSansPv.toFixed(2)+" €";
+      document.getElementById("monthlyTotalAuto").textContent = sumAuto.toFixed(2)+" €";
+      document.getElementById("monthlyTotalAvecPv").textContent = sumAvecPv.toFixed(2)+" €";
+      document.getElementById("monthlyTotalRevente").textContent = sumRev.toFixed(2)+" €";
+      document.getElementById("monthlyTotalEconomies").textContent = sumEco.toFixed(2)+" €";
       let totProd = sumKwhAuto + sumKwhRev;
       let finalAutoProdPerc = 0, finalAutoConsoPerc = 0, finalRevPerc = 0;
       if(sumKwhConso > 0) finalAutoProdPerc = 100*(sumKwhAuto/sumKwhConso);
@@ -1223,10 +1578,138 @@
         finalAutoConsoPerc = 100*(sumKwhAuto/totProd);
         finalRevPerc = 100*(sumKwhRev/totProd);
       }
-      document.getElementById("monthlyTotalAutoProdPercForced").textContent = finalAutoProdPerc.toFixed(1)+"%";
-      document.getElementById("monthlyTotalAutoConsoPercForced").textContent = finalAutoConsoPerc.toFixed(1)+"%";
-      document.getElementById("monthlyTotalRevPercForced").textContent = finalRevPerc.toFixed(1)+"%";
-      createMonthlyBarChartForced(moisNoms, chartConso, chartAuto, chartRev);
+      document.getElementById("monthlyTotalAutoProdPerc").textContent = finalAutoProdPerc.toFixed(1)+"%";
+      document.getElementById("monthlyTotalAutoConsoPerc").textContent = finalAutoConsoPerc.toFixed(1)+"%";
+      document.getElementById("monthlyTotalRevPerc").textContent = finalRevPerc.toFixed(1)+"%";
+      createMonthlyBarChart(moisNoms, chartConso, chartAuto, chartRev);
+    }
+
+    function fill20YearsPreconisation(S, firstYearGain, territoryObj){
+      const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+      let baseYearStr = document.getElementById("monthlyTotalSansPv").textContent.replace("€","").trim();
+      let baseYearCost = parseFloat(baseYearStr) || 0;
+      let strEco = document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim();
+      let strRev = document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim();
+      let autoYear1 = parseFloat(strEco) || 0;
+      let surplusYear1 = parseFloat(strRev) || 0;
+      const primeByWc = territoryObj.primeByWc || 0;
+      const primeTotal = Math.round(primeByWc * (S * 1000));
+      const preconTableBody = document.querySelector("#preconisationTable tbody");
+      preconTableBody.innerHTML = "";
+      let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+      let cumulativeEco = 0;
+      for(let year = 1; year <= 20; year++){
+        const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const gainsRev = surplusYear1;
+        let primeYear = 0;
+        if(year === 2){ primeYear = primeTotal; }
+        const totalEcos = econAuto + gainsRev + primeYear;
+        const factureAvecPv = factureSansPv - econAuto;
+        totalSansPv += factureSansPv;
+        totalAuto += econAuto;
+        totalRev += gainsRev;
+        totalPrime += primeYear;
+        totalAvecPv += factureAvecPv;
+        totalEco += totalEcos;
+        cumulativeEco += totalEcos;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${year}</td>
+          <td>${factureSansPv.toFixed(2)} €</td>
+          <td>${econAuto.toFixed(2)} €</td>
+          <td>${factureAvecPv.toFixed(2)} €</td>
+          <td>${gainsRev.toFixed(2)} €</td>
+          <td>${primeYear.toFixed(2)} €</td>
+          <td>${totalEcos.toFixed(2)} €</td>
+          <td>${cumulativeEco.toFixed(2)} €</td>
+        `;
+        preconTableBody.appendChild(row);
+      }
+      document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
+      document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
+      document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
+      document.getElementById("totalPrime").textContent = primeTotal.toLocaleString('fr-FR');
+      document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
+      document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
+      document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      const costInst = costInstallation(S, territory);
+      document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
+      document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
+      let remise = parseFloat(document.getElementById("remise").value) || 0;
+      let coutReel = costInst - primeTotal - remise;
+      if(coutReel < 0) coutReel = 0;
+      document.getElementById("coutReelInstallation").textContent = coutReel.toLocaleString('fr-FR');
+      document.getElementById("gainSansInv").textContent = totalEco.toFixed(2)+" €";
+      let gainAvecInvVal = totalEco - coutReel;
+      document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
+      let roiYears = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+      document.getElementById("roiResult").textContent = roiYears.toFixed(1);
+    }
+    function fill20YearsPreconisationForced(S, firstYearGain, territoryObj){
+      const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+      let baseYearStr = document.getElementById("monthlyTotalSansPvForced").textContent.replace("€","").trim();
+      let baseYearCost = parseFloat(baseYearStr) || 0;
+      let strEco = document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim();
+      let strRev = document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim();
+      let autoYear1 = parseFloat(strEco) || 0;
+      let surplusYear1 = parseFloat(strRev) || 0;
+      const primeByWc = territoryObj.primeByWc || 0;
+      const primeTotal = Math.round(primeByWc * (S * 1000));
+      const preconTableBody = document.querySelector("#preconisationTableForced tbody");
+      preconTableBody.innerHTML = "";
+      let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+      let cumulativeEco = 0;
+      for(let year = 1; year <= 20; year++){
+        const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const gainsRev = surplusYear1;
+        let primeYear = 0;
+        if(year === 2){ primeYear = primeTotal; }
+        const totalEcos = econAuto + gainsRev + primeYear;
+        const factureAvecPv = factureSansPv - econAuto;
+        totalSansPv += factureSansPv;
+        totalAuto += econAuto;
+        totalRev += gainsRev;
+        totalPrime += primeYear;
+        totalAvecPv += factureAvecPv;
+        totalEco += totalEcos;
+        cumulativeEco += totalEcos;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${year}</td>
+          <td>${factureSansPv.toFixed(2)} €</td>
+          <td>${econAuto.toFixed(2)} €</td>
+          <td>${factureAvecPv.toFixed(2)} €</td>
+          <td>${gainsRev.toFixed(2)} €</td>
+          <td>${primeYear.toFixed(2)} €</td>
+          <td>${totalEcos.toFixed(2)} €</td>
+          <td>${cumulativeEco.toFixed(2)} €</td>
+        `;
+        preconTableBody.appendChild(row);
+      }
+      document.getElementById("totalSansPvForced").textContent = totalSansPv.toFixed(2)+" €";
+      document.getElementById("totalAutoForced").textContent = totalAuto.toFixed(2)+" €";
+      document.getElementById("totalReventeForced").textContent = totalRev.toFixed(2)+" €";
+      document.getElementById("totalPrimeForced").textContent = primeTotal.toFixed(2)+" €";
+      document.getElementById("totalAvecPvForced").textContent = totalAvecPv.toFixed(2)+" €";
+      document.getElementById("totalEconomiesForced").textContent = totalEco.toFixed(2)+" €";
+      document.getElementById("puissanceRecoForced").textContent = S.toLocaleString('fr-FR');
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      const forcedCost = costInstallation(S, territory);
+      document.getElementById("coutInstallationForced").textContent = forcedCost.toLocaleString('fr-FR');
+      document.getElementById("primeValueForced").textContent = primeTotal.toLocaleString('fr-FR');
+      let remiseForced = parseFloat(document.getElementById("remiseForced").value) || 0;
+      let coutReel = forcedCost - primeTotal - remiseForced;
+      if(coutReel < 0) coutReel = 0;
+      document.getElementById("coutReelInstallationForced").textContent = coutReel.toLocaleString('fr-FR');
+      let gainSansInvVal = totalEco;
+      document.getElementById("gainSansInvForced").textContent = gainSansInvVal.toFixed(2)+" €";
+      let gainAvecInvVal = totalEco - coutReel;
+      document.getElementById("gainAvecInvForced").textContent = gainAvecInvVal.toFixed(2)+" €";
+      let roiYearsForced = calculateROI(forcedCost, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+      document.getElementById("roiResultForced").textContent = roiYearsForced.toFixed(1);
     }
 
     flatpickr("#rdvDate", { locale: "fr", dateFormat: "d/m/Y" });
@@ -1404,69 +1887,6 @@
           scales: { y: { beginAtZero: true, title: { display: true, text: "kWh" } } }
         }
       });
-    }
-    function fill20YearsPreconisation(S, firstYearGain, territoryObj){
-      const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
-      let baseYearStr = document.getElementById("monthlyTotalSansPv").textContent.replace("€","").trim();
-      let baseYearCost = parseFloat(baseYearStr) || 0;
-      let strEco = document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim();
-      let strRev = document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim();
-      let autoYear1 = parseFloat(strEco) || 0;
-      let surplusYear1 = parseFloat(strRev) || 0;
-      const primeByWc = territoryObj.primeByWc || 0;
-      const primeTotal = Math.round(primeByWc * (S * 1000));
-      const preconTableBody = document.querySelector("#preconisationTable tbody");
-      preconTableBody.innerHTML = "";
-      let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
-      let cumulativeEco = 0;
-      for(let year = 1; year <= 20; year++){
-        const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
-        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
-        const gainsRev = surplusYear1;
-        let primeYear = 0;
-        if(year === 2){ primeYear = primeTotal; }
-        const totalEcos = econAuto + gainsRev + primeYear;
-        const factureAvecPv = factureSansPv - econAuto;
-        totalSansPv += factureSansPv;
-        totalAuto += econAuto;
-        totalRev += gainsRev;
-        totalPrime += primeYear;
-        totalAvecPv += factureAvecPv;
-        totalEco += totalEcos;
-        cumulativeEco += totalEcos;
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${year}</td>
-          <td>${factureSansPv.toFixed(2)} €</td>
-          <td>${econAuto.toFixed(2)} €</td>
-          <td>${factureAvecPv.toFixed(2)} €</td>
-          <td>${gainsRev.toFixed(2)} €</td>
-          <td>${primeYear.toFixed(2)} €</td>
-          <td>${totalEcos.toFixed(2)} €</td>
-          <td>${cumulativeEco.toFixed(2)} €</td>
-        `;
-        preconTableBody.appendChild(row);
-      }
-      document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
-      document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
-      document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
-      document.getElementById("totalPrime").textContent = primeTotal.toLocaleString('fr-FR');
-      document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
-      document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
-      document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
-      const territory = document.getElementById("territory").value || "France Metropolitaine";
-      const costInst = costInstallation(S, territory);
-      document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
-      document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
-      let remise = parseFloat(document.getElementById("remise").value) || 0;
-      let coutReel = costInst - primeTotal - remise;
-      if(coutReel < 0) coutReel = 0;
-      document.getElementById("coutReelInstallation").textContent = coutReel.toLocaleString('fr-FR');
-      document.getElementById("gainSansInv").textContent = totalEco.toFixed(2)+" €";
-      let gainAvecInvVal = totalEco - coutReel;
-      document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
-      let roiYears = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
-      document.getElementById("roiResult").textContent = roiYears.toFixed(1);
     }
     function fill20YearsPreconisationForced(S, firstYearGain, territoryObj){
       const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;

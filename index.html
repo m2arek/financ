@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v143</title> 
+  <title>FRH PRO formulaire  - v200</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -71,7 +70,7 @@
       padding: 8px 10px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 12px;      /* Réduction de la taille de la police */
+      font-size: 12px;
       transition: background-color 0.3s ease, color 0.3s ease;
       border-right: 1px solid #ccc;
     }
@@ -732,12 +731,9 @@
             <thead id="planTresorerieHeader">
               <tr>
                 <th>Année</th>
-                <th>Recettes d'exploitation<br/>(économies + revente)<br/>Prime</th>
-                <th>Charges d'exploitation<br/>(maintenance, nettoyage,<br/> remp. onduleur(s))</th>
-                <th>Assurance photovoltaïque<br/>(dommages, RC)</th>
-                <th>Total Charges</th>
-                <th>Remboursement <br/> du prêt</th>
-                <th>Solde net annuel</th>
+                <th>Recettes d'exploitation<br/>(économies + revente + Prime)</th>
+                <th>Remboursement du prêt<br/>(ou Loyer)</th>
+                <th>Solde net actuel</th>
               </tr>
             </thead>
             <tbody id="planTresorerieBody">
@@ -1163,6 +1159,14 @@
       const financementMode = document.getElementById("financementMode").value;
       const scenarioPlan = document.getElementById("scenarioPlan").value;
       
+      // Mise à jour dynamique de l'en-tête : le 3ème titre passe à "Loyer" si leasing
+      const headerRow = document.getElementById("planTresorerieHeader").querySelector("tr");
+      if(financementMode === "leasing") {
+        headerRow.cells[2].innerHTML = "Loyer";
+      } else {
+        headerRow.cells[2].innerHTML = "Remboursement du prêt";
+      }
+      
       let autoYear1_val, surplus_val;
       if(scenarioPlan === "standard"){
         autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
@@ -1187,10 +1191,6 @@
           preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
       }
       
-      const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
-      const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
-      const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
-      const cout_changement_onduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value) || 0;
       const inflation = parseFloat(document.getElementById("inflation_estimee").value) || 0;
       const taux_emprunt = parseFloat(document.getElementById("taux_emprunt").value) || 0;
       const duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
@@ -1210,8 +1210,6 @@
       }
       
       let totalRecettes = 0;
-      let totalChargesExploitation = 0;
-      let totalAssurance = 0;
       let totalFinancement = 0;
       let totalSoldeNet = 0;
       
@@ -1221,7 +1219,7 @@
       for(let year = 1; year <= 20; year++){
         const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
         
-              let recettes;
+        let recettes;
         if(year === 1){
           recettes = recettesAnnee1;
         } else {
@@ -1234,12 +1232,10 @@
           const rows = projTable.querySelectorAll("tbody tr");
           if(rows.length >= year){
             const row = rows[year - 1];
-            // Dans le tableau, la colonne 2 ("Économies Autoconso") et la colonne 4 ("Gains Revente")
             const econ = parseFloat(row.cells[2].textContent.replace(/[^0-9.-]+/g,"")) || 0;
             const revente = parseFloat(row.cells[4].textContent.replace(/[^0-9.-]+/g,"")) || 0;
             recettes = econ + revente;
             if(year === 2) {
-              // Récupération de la puissance préconisée (selon le scénario)
               let S = 0;
               if(scenarioPlan === "standard"){
                 S = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
@@ -1249,29 +1245,13 @@
               const territory = document.getElementById("territory").value || "France Metropolitaine";
               const tObj = getTarifRachatAndPrime(S, territory);
               const primeTotal = Math.round(tObj.primeByWc * (S * 1000));
-              recettes += primeTotal; // Ajout de la prime (sans inflation)
+              recettes += primeTotal;
             }
           } else {
             recettes = recettesAnnee1;
           }
         }
-
-        
-        let maintenanceCost = preconisePower * cout_maintenance;
-        if(year > 1){
-          maintenanceCost = maintenanceCost * factor;
-        }
-        if(year === 11){
-          maintenanceCost += cout_changement_onduleurs;
-        }
-        
-        let assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
-        if(year > 1){
-          assurancePhoto = assurancePhoto * factor;
-        }
-        
-        const totalCharges = maintenanceCost + assurancePhoto;
-        
+      
         let financementCost = 0;
         if(financementMode === "banque"){
           financementCost = (year <= duree_pret) ? annualRepayment : 0;
@@ -1279,11 +1259,9 @@
           financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
         }
         
-        const soldeNet = recettes - (totalCharges + financementCost);
+        const soldeNet = recettes - financementCost;
         
         totalRecettes += recettes;
-        totalChargesExploitation += maintenanceCost;
-        totalAssurance += assurancePhoto;
         totalFinancement += financementCost;
         totalSoldeNet += soldeNet;
         
@@ -1291,9 +1269,6 @@
         row.innerHTML = `
           <td>${year}</td>
           <td>${recettes.toFixed(2)} €</td>
-          <td>${maintenanceCost.toFixed(2)} €</td>
-          <td>${assurancePhoto.toFixed(2)} €</td>
-          <td>${totalCharges.toFixed(2)} €</td>
           <td>${financementCost.toFixed(2)} €</td>
           <td>${soldeNet.toFixed(2)} €</td>
         `;
@@ -1304,9 +1279,6 @@
       totauxRow.innerHTML = `
         <th>Totaux</th>
         <th>${totalRecettes.toFixed(2)} €</th>
-        <th>${totalChargesExploitation.toFixed(2)} €</th>
-        <th>${totalAssurance.toFixed(2)} €</th>
-        <th>${(totalChargesExploitation + totalAssurance).toFixed(2)} €</th>
         <th>${totalFinancement.toFixed(2)} €</th>
         <th>${totalSoldeNet.toFixed(2)} €</th>
       `;
@@ -1687,7 +1659,7 @@
       let cumulativeEco = 0;
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
-        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
         if(year === 2){ primeYear = primeTotal; }
@@ -2046,28 +2018,27 @@ function generatePdfReport() {
         valign: "middle",
       },
       columnStyles: {
-        0: { cellWidth: 15 },  // "Mois"
-        1: { cellWidth: 15 },  // "Conso kWh" (si visible)
-        2: { cellWidth: 15 },  // "Production kWh" (si visible)
-        3: { cellWidth: 15 },  // "Autoconso kWh"
-        4: { cellWidth: 15 },  // "Revente kWh"
-        5: { cellWidth: 18 },  // "Facture Sans Centrale"
-        6: { cellWidth: 18 },  // "Économies Autoconso"
-        7: { cellWidth: 18 },  // "Facture Avec Centrale"
-        8: { cellWidth: 15 },  // "Gains Revente"
-        9: { cellWidth: 15 },  // "Total Économies"
-        10: { cellWidth: 12 }, // "% Auto prod"
-        11: { cellWidth: 12 }, // "% Auto conso"
-        12: { cellWidth: 12 }, // "% Revente"
+        0: { cellWidth: 15 },
+        1: { cellWidth: 15 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 15 },
+        4: { cellWidth: 15 },
+        5: { cellWidth: 18 },
+        6: { cellWidth: 18 },
+        7: { cellWidth: 18 },
+        8: { cellWidth: 15 },
+        9: { cellWidth: 15 },
+        10: { cellWidth: 12 },
+        11: { cellWidth: 12 },
+        12: { cellWidth: 12 },
       },
     });
     const tableHeight = tempPdf.lastAutoTable.finalY;
     const newStartY = (pageHeight - tableHeight) / 2;
-    // Génération du tableau dans le PDF principal
     pdf.autoTable({
       html: monthlyTableEl,
       startY: newStartY,
-      margin: { left: 5 }, // Décale le tableau de 5 mm vers la gauche
+      margin: { left: 5 },
       styles: {
         fontSize: 7,
         cellPadding: 2,
@@ -2103,23 +2074,22 @@ function generatePdfReport() {
   }
   
   // -------------------------------
-// PAGE 3 : Graphique sans légende
-// -------------------------------
-pdf.addPage();
-pdf.setFontSize(14);
-pdf.text("Graphique des productions", pageWidth / 2, 60, { align: "center" });
-if (monthlyBarChart) {
-  const chartImage = monthlyBarChart.toBase64Image();
-  const chartCanvas = document.getElementById("monthlyBarChart");
-  const chartHeightPx = chartCanvas.height;
-  // Conversion approximative : 1px ≈ 0.264583 mm (à 72 DPI)
-  const chartHeight = chartHeightPx * 0.264583;
-  const chartWidth = pageWidth - 30;
-  const yPosChart = (pageHeight - chartHeight) / 2;
-  pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
-} else {
-  pdf.text("Graphique non disponible", 10, 30);
-}
+  // PAGE 3 : Graphique sans légende
+  // -------------------------------
+  pdf.addPage();
+  pdf.setFontSize(14);
+  pdf.text("Graphique des productions", pageWidth / 2, 60, { align: "center" });
+  if (monthlyBarChart) {
+    const chartImage = monthlyBarChart.toBase64Image();
+    const chartCanvas = document.getElementById("monthlyBarChart");
+    const chartHeightPx = chartCanvas.height;
+    const chartHeight = chartHeightPx * 0.264583;
+    const chartWidth = pageWidth - 30;
+    const yPosChart = (pageHeight - chartHeight) / 2;
+    pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
+  } else {
+    pdf.text("Graphique non disponible", 10, 30);
+  }
 
   
   // -------------------------------
@@ -2176,15 +2146,11 @@ if (monthlyBarChart) {
     pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
   }
   
-  // Nom du fichier
   let companyName = document.getElementById("companyName")?.value || "";
   let pdfFileName = "Rapport_Photovoltaïque.pdf";
   if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
   pdf.save(pdfFileName);
 }
-
-
-
 
   </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v307</title> 
+  <title>FRH PRO formulaire  - v308</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -693,6 +693,8 @@
         setTimeout(() => { map.invalidateSize(); }, 300);
       }
     }
+    // Expose openTab au scope global pour les onclick dans le HTML
+    window.openTab = openTab;
 
     /***************************************************
      * VARIABLES GLOBALES & DONNÉES PRIMES INTÉGRÉES
@@ -1887,6 +1889,373 @@
           scales: { y: { beginAtZero: true, title: { display: true, text: "kWh" } } }
         }
       });
+    }
+    function fill20YearsPreconisation(S, firstYearGain, territoryObj){
+      const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+      let baseYearStr = document.getElementById("monthlyTotalSansPv").textContent.replace("€","").trim();
+      let baseYearCost = parseFloat(baseYearStr) || 0;
+      let strEco = document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim();
+      let strRev = document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim();
+      let autoYear1 = parseFloat(strEco) || 0;
+      let surplusYear1 = parseFloat(strRev) || 0;
+      const primeByWc = territoryObj.primeByWc || 0;
+      const primeTotal = Math.round(primeByWc * (S * 1000));
+      const preconTableBody = document.querySelector("#preconisationTable tbody");
+      preconTableBody.innerHTML = "";
+      let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+      let cumulativeEco = 0;
+      for(let year = 1; year <= 20; year++){
+        const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const gainsRev = surplusYear1;
+        let primeYear = 0;
+        if(year === 2){ primeYear = primeTotal; }
+        const totalEcos = econAuto + gainsRev + primeYear;
+        const factureAvecPv = factureSansPv - econAuto;
+        totalSansPv += factureSansPv;
+        totalAuto += econAuto;
+        totalRev += gainsRev;
+        totalPrime += primeYear;
+        totalAvecPv += factureAvecPv;
+        totalEco += totalEcos;
+        cumulativeEco += totalEcos;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${year}</td>
+          <td>${factureSansPv.toFixed(2)} €</td>
+          <td>${econAuto.toFixed(2)} €</td>
+          <td>${factureAvecPv.toFixed(2)} €</td>
+          <td>${gainsRev.toFixed(2)} €</td>
+          <td>${primeYear.toFixed(2)} €</td>
+          <td>${totalEcos.toFixed(2)} €</td>
+          <td>${cumulativeEco.toFixed(2)} €</td>
+        `;
+        preconTableBody.appendChild(row);
+      }
+      document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
+      document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
+      document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
+      document.getElementById("totalPrime").textContent = primeTotal.toLocaleString('fr-FR');
+      document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
+      document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
+      document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      const costInst = costInstallation(S, territory);
+      document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
+      document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
+      let remise = parseFloat(document.getElementById("remise").value) || 0;
+      let coutReel = costInst - primeTotal - remise;
+      if(coutReel < 0) coutReel = 0;
+      document.getElementById("coutReelInstallation").textContent = coutReel.toLocaleString('fr-FR');
+      document.getElementById("gainSansInv").textContent = totalEco.toFixed(2)+" €";
+      let gainAvecInvVal = totalEco - coutReel;
+      document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
+      let roiYears = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+      document.getElementById("roiResult").textContent = roiYears.toFixed(1);
+    }
+    function fill20YearsPreconisationForced(S, firstYearGain, territoryObj){
+      const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+      let baseYearStr = document.getElementById("monthlyTotalSansPvForced").textContent.replace("€","").trim();
+      let baseYearCost = parseFloat(baseYearStr) || 0;
+      let strEco = document.getElementById("monthlyTotalAutoForced").textContent.replace("€","").trim();
+      let strRev = document.getElementById("monthlyTotalReventeForced").textContent.replace("€","").trim();
+      let autoYear1 = parseFloat(strEco) || 0;
+      let surplusYear1 = parseFloat(strRev) || 0;
+      const primeByWc = territoryObj.primeByWc || 0;
+      const primeTotal = Math.round(primeByWc * (S * 1000));
+      const preconTableBody = document.querySelector("#preconisationTableForced tbody");
+      preconTableBody.innerHTML = "";
+      let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+      let cumulativeEco = 0;
+      for(let year = 1; year <= 20; year++){
+        const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const gainsRev = surplusYear1;
+        let primeYear = 0;
+        if(year === 2){ primeYear = primeTotal; }
+        const totalEcos = econAuto + gainsRev + primeYear;
+        const factureAvecPv = factureSansPv - econAuto;
+        totalSansPv += factureSansPv;
+        totalAuto += econAuto;
+        totalRev += gainsRev;
+        totalPrime += primeYear;
+        totalAvecPv += factureAvecPv;
+        totalEco += totalEcos;
+        cumulativeEco += totalEcos;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${year}</td>
+          <td>${factureSansPv.toFixed(2)} €</td>
+          <td>${econAuto.toFixed(2)} €</td>
+          <td>${factureAvecPv.toFixed(2)} €</td>
+          <td>${gainsRev.toFixed(2)} €</td>
+          <td>${primeYear.toFixed(2)} €</td>
+          <td>${totalEcos.toFixed(2)} €</td>
+          <td>${cumulativeEco.toFixed(2)} €</td>
+        `;
+        preconTableBody.appendChild(row);
+      }
+      document.getElementById("totalSansPvForced").textContent = totalSansPv.toFixed(2)+" €";
+      document.getElementById("totalAutoForced").textContent = totalAuto.toFixed(2)+" €";
+      document.getElementById("totalReventeForced").textContent = totalRev.toFixed(2)+" €";
+      document.getElementById("totalPrimeForced").textContent = primeTotal.toFixed(2)+" €";
+      document.getElementById("totalAvecPvForced").textContent = totalAvecPv.toFixed(2)+" €";
+      document.getElementById("totalEconomiesForced").textContent = totalEco.toFixed(2)+" €";
+      document.getElementById("puissanceRecoForced").textContent = S.toLocaleString('fr-FR');
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      const forcedCost = costInstallation(S, territory);
+      document.getElementById("coutInstallationForced").textContent = forcedCost.toLocaleString('fr-FR');
+      document.getElementById("primeValueForced").textContent = primeTotal.toLocaleString('fr-FR');
+      let remiseForced = parseFloat(document.getElementById("remiseForced").value) || 0;
+      let coutReel = forcedCost - primeTotal - remiseForced;
+      if(coutReel < 0) coutReel = 0;
+      document.getElementById("coutReelInstallationForced").textContent = coutReel.toLocaleString('fr-FR');
+      let gainSansInvVal = totalEco;
+      document.getElementById("gainSansInvForced").textContent = gainSansInvVal.toFixed(2)+" €";
+      let gainAvecInvVal = totalEco - coutReel;
+      document.getElementById("gainAvecInvForced").textContent = gainAvecInvVal.toFixed(2)+" €";
+      let roiYearsForced = calculateROI(forcedCost, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+      document.getElementById("roiResultForced").textContent = roiYearsForced.toFixed(1);
+    }
+
+    flatpickr("#rdvDate", { locale: "fr", dateFormat: "d/m/Y" });
+
+    /***************************************************
+     * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
+     ***************************************************/
+    function generatePdfReport() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const scenarioPlan = document.getElementById("scenarioPlan").value;
+      let monthlyTableId, projectionTableId;
+      if (scenarioPlan === "selection") {
+        monthlyTableId = "preconisationMonthlyTableForced";
+        projectionTableId = "preconisationTableForced";
+      } else {
+        monthlyTableId = "preconisationMonthlyTable";
+        projectionTableId = "preconisationTable";
+      }
+      const tresorerieTableId = "planTresorerieTable";
+      pdf.setFontSize(16);
+      pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
+      if (mapCaptureDataURL) {
+        const imgWidth = pageWidth - 30;
+        const imgHeight = imgWidth * 0.6;
+        const imgX = (pageWidth - imgWidth) / 2;
+        pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", imgX, 25, imgWidth, imgHeight);
+      } else {
+        pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
+      }
+      pdf.addPage();
+      pdf.setFontSize(14);
+      pdf.text("Détails par mois (année 1)", pageWidth / 2, 15, { align: "center" });
+      const monthlyTableEl = document.getElementById(monthlyTableId);
+      if (monthlyTableEl) {
+        const tableWidth = 201;
+        const marginLeft = (pageWidth - tableWidth) / 2;
+        pdf.autoTable({
+          html: monthlyTableEl,
+          startY: 20,
+          margin: { left: marginLeft, right: marginLeft },
+          styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak', halign: 'center', valign: 'middle' },
+          headStyles: { fillColor: [0, 92, 160], textColor: 255, fontSize: 7, halign: 'center', valign: 'middle' },
+          columnStyles: {
+            0: { cellWidth: 15 },
+            1: { cellWidth: 15 },
+            2: { cellWidth: 15 },
+            3: { cellWidth: 15 },
+            4: { cellWidth: 15 },
+            5: { cellWidth: 20 },
+            6: { cellWidth: 20 },
+            7: { cellWidth: 20 },
+            8: { cellWidth: 15 },
+            9: { cellWidth: 15 },
+            10: { cellWidth: 12 },
+            11: { cellWidth: 12 },
+            12: { cellWidth: 12 },
+          },
+        });
+      } else { pdf.text("Tableau Détails par mois non disponible", 10, 30); }
+      pdf.addPage();
+      pdf.setFontSize(14);
+      pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
+      if (monthlyBarChart) {
+        const chartWidth = pageWidth - 40;
+        const chartX = (pageWidth - chartWidth) / 2;
+        pdf.addImage(monthlyBarChart.toBase64Image(), "PNG", chartX, 20, chartWidth, 80);
+        const legendX = (pageWidth - 100) / 2;
+        pdf.setFontSize(10);
+        pdf.text("Légende :", legendX, 110);
+        pdf.setFillColor(255, 99, 132);
+        pdf.rect(legendX + 20, 105, 5, 5, "F");
+        pdf.text("Conso kWh", legendX + 30, 109);
+        pdf.setFillColor(75, 192, 75);
+        pdf.rect(legendX + 20, 115, 5, 5, "F");
+        pdf.text("Autoconso kWh", legendX + 30, 119);
+        pdf.setFillColor(54, 162, 235);
+        pdf.rect(legendX + 20, 125, 5, 5, "F");
+        pdf.text("Revente kWh", legendX + 30, 129);
+      } else { pdf.text("Graphique non disponible", 10, 30); }
+      pdf.addPage();
+      pdf.setFontSize(14);
+      pdf.text("Projection sur 20 ans", pageWidth / 2, 15, { align: "center" });
+      const projectionTableEl = document.getElementById(projectionTableId);
+      if (projectionTableEl) {
+        pdf.autoTable({
+          html: projectionTableEl,
+          startY: 20,
+          margin: { left: 10, right: 10 },
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
+        });
+      } else { pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30); }
+      pdf.addPage();
+      pdf.setFontSize(14);
+      pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 15, { align: "center" });
+      const tresorerieTableEl = document.getElementById(tresorerieTableId);
+      if (tresorerieTableEl) {
+        pdf.autoTable({
+          html: tresorerieTableEl,
+          startY: 20,
+          margin: { left: 10, right: 10 },
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [200, 200, 200] }
+        });
+      } else { pdf.text("Tableau Plan de trésorerie non disponible", 10, 30); }
+      let companyName = document.getElementById("companyName")?.value || "";
+      let pdfFileName = "Rapport_Photovoltaïque.pdf";
+      if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
+      pdf.save(pdfFileName);
+    }
+    
+    /***************************************************
+     * ACTIONS SUR LA PRÉCONISATION STANDARD
+     ***************************************************/
+    const calcPrecBtn_v134 = document.getElementById("calculatePreconisation");
+    calcPrecBtn_v134.addEventListener("click", () => {
+      updateProductionPotential();
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      let maxPowerStr = (document.getElementById("puissanceMaxPV").value || "0").replace(/\s/g, "");
+      const maxPower = parseFloat(maxPowerStr) || 0;
+      if(maxPower <= 0){ alert("Puissance max PV non définie ou nulle."); return; }
+      let bestS = 1, bestTotalGain = 0;
+      let bestTerritoryObj = {tarif:0.0761, primeByWc:0};
+      for(let s = 1; s <= maxPower; s++){
+        const tObj = getTarifRachatAndPrime(s, territory);
+        const totalGain = computeAutoAndSurplusForPower(s, tObj.tarif);
+        if(totalGain > bestTotalGain){
+          bestTotalGain = totalGain;
+          bestS = s;
+          bestTerritoryObj = tObj;
+        }
+      }
+      calculatePreconisationWithPower(bestS, bestTotalGain, bestTerritoryObj);
+      document.getElementById("tarifRachat").value = bestTerritoryObj.tarif.toFixed(4);
+    });
+
+    /***************************************************
+     * ACTIONS SUR LA PRÉCONISATION SÉLECTION
+     ***************************************************/
+    const applyForcedPreconisationBtn_v134 = document.getElementById("applyForcedPreconisationBtn");
+    applyForcedPreconisationBtn_v134.addEventListener("click", () => {
+      updateProductionPotential();
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      const forcedPowerStr = document.getElementById("forcedPower").value || "1";
+      let S = parseFloat(forcedPowerStr);
+      if(isNaN(S) || S <= 0){
+        alert("Veuillez saisir une valeur > 0 pour l'installation choisie (kWc).");
+        return;
+      }
+      const territoryObj = getTarifRachatAndPrime(S, territory);
+      fillMonthlyPreconisationForced(S, territoryObj.tarif);
+      const totalGain = computeAutoAndSurplusForPower(S, territoryObj.tarif);
+      fill20YearsPreconisationForced(S, totalGain, territoryObj);
+    });
+
+    let monthlyBarChartForced = null;
+    function createMonthlyBarChartForced(monthLabels, consoData, autoData, revData){
+      const ctx = document.getElementById("monthlyBarChartForced").getContext("2d");
+      if(monthlyBarChartForced){ monthlyBarChartForced.destroy(); }
+      monthlyBarChartForced = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: monthLabels,
+          datasets: [
+            { label: "Conso kWh", data: consoData, backgroundColor: "rgba(255,99,132,0.6)" },
+            { label: "Autoconso kWh", data: autoData, backgroundColor: "rgba(75,192,75,0.6)" },
+            { label: "Revente kWh", data: revData, backgroundColor: "rgba(54,162,235,0.6)" }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true, title: { display: true, text: "kWh" } } }
+        }
+      });
+    }
+    function fill20YearsPreconisation(S, firstYearGain, territoryObj){
+      const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;
+      let baseYearStr = document.getElementById("monthlyTotalSansPv").textContent.replace("€","").trim();
+      let baseYearCost = parseFloat(baseYearStr) || 0;
+      let strEco = document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim();
+      let strRev = document.getElementById("monthlyTotalRevente").textContent.replace("€","").trim();
+      let autoYear1 = parseFloat(strEco) || 0;
+      let surplusYear1 = parseFloat(strRev) || 0;
+      const primeByWc = territoryObj.primeByWc || 0;
+      const primeTotal = Math.round(primeByWc * (S * 1000));
+      const preconTableBody = document.querySelector("#preconisationTable tbody");
+      preconTableBody.innerHTML = "";
+      let totalSansPv = 0, totalAuto = 0, totalRev = 0, totalPrime = 0, totalAvecPv = 0, totalEco = 0;
+      let cumulativeEco = 0;
+      for(let year = 1; year <= 20; year++){
+        const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const gainsRev = surplusYear1;
+        let primeYear = 0;
+        if(year === 2){ primeYear = primeTotal; }
+        const totalEcos = econAuto + gainsRev + primeYear;
+        const factureAvecPv = factureSansPv - econAuto;
+        totalSansPv += factureSansPv;
+        totalAuto += econAuto;
+        totalRev += gainsRev;
+        totalPrime += primeYear;
+        totalAvecPv += factureAvecPv;
+        totalEco += totalEcos;
+        cumulativeEco += totalEcos;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${year}</td>
+          <td>${factureSansPv.toFixed(2)} €</td>
+          <td>${econAuto.toFixed(2)} €</td>
+          <td>${factureAvecPv.toFixed(2)} €</td>
+          <td>${gainsRev.toFixed(2)} €</td>
+          <td>${primeYear.toFixed(2)} €</td>
+          <td>${totalEcos.toFixed(2)} €</td>
+          <td>${cumulativeEco.toFixed(2)} €</td>
+        `;
+        preconTableBody.appendChild(row);
+      }
+      document.getElementById("totalSansPv").textContent = totalSansPv.toFixed(2)+" €";
+      document.getElementById("totalAuto").textContent = totalAuto.toFixed(2)+" €";
+      document.getElementById("totalRevente").textContent = totalRev.toFixed(2)+" €";
+      document.getElementById("totalPrime").textContent = primeTotal.toLocaleString('fr-FR');
+      document.getElementById("totalAvecPv").textContent = totalAvecPv.toFixed(2)+" €";
+      document.getElementById("totalEconomies").textContent = totalEco.toFixed(2)+" €";
+      document.getElementById("puissanceReco").textContent = S.toLocaleString('fr-FR');
+      const territory = document.getElementById("territory").value || "France Metropolitaine";
+      const costInst = costInstallation(S, territory);
+      document.getElementById("coutInstallation").textContent = costInst.toLocaleString('fr-FR');
+      document.getElementById("primeValue").textContent = primeTotal.toLocaleString('fr-FR');
+      let remise = parseFloat(document.getElementById("remise").value) || 0;
+      let coutReel = costInst - primeTotal - remise;
+      if(coutReel < 0) coutReel = 0;
+      document.getElementById("coutReelInstallation").textContent = coutReel.toLocaleString('fr-FR');
+      document.getElementById("gainSansInv").textContent = totalEco.toFixed(2)+" €";
+      let gainAvecInvVal = totalEco - coutReel;
+      document.getElementById("gainAvecInv").textContent = gainAvecInvVal.toFixed(2)+" €";
+      let roiYears = calculateROI(coutReel, autoYear1, surplusYear1, primeTotal, annualPriceIncrease);
+      document.getElementById("roiResult").textContent = roiYears.toFixed(1);
     }
     function fill20YearsPreconisationForced(S, firstYearGain, territoryObj){
       const annualPriceIncrease = parseFloat(document.getElementById("annualPriceIncrease").value) || 5;

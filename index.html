@@ -1,11 +1,9 @@
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v140</title> 
+  <title>FRH PRO formulaire  - v400</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -72,7 +70,7 @@
       padding: 8px 10px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 12px;      /* Réduction de la taille de la police */
+      font-size: 12px;
       transition: background-color 0.3s ease, color 0.3s ease;
       border-right: 1px solid #ccc;
     }
@@ -733,12 +731,9 @@
             <thead id="planTresorerieHeader">
               <tr>
                 <th>Année</th>
-                <th>Recettes d'exploitation<br/>(économies + revente)<br/>Prime</th>
-                <th>Charges d'exploitation<br/>(maintenance, nettoyage,<br/> remp. onduleur(s))</th>
-                <th>Assurance photovoltaïque<br/>(dommages, RC)</th>
-                <th>Total Charges</th>
-                <th>Remboursement <br/> du prêt</th>
-                <th>Solde net annuel</th>
+                <th>Recettes d'exploitation<br/>(économies + revente + Prime)</th>
+                <th>Remboursement du prêt<br/>(ou Loyer)</th>
+                <th>Solde net actuel</th>
               </tr>
             </thead>
             <tbody id="planTresorerieBody">
@@ -1164,6 +1159,14 @@
       const financementMode = document.getElementById("financementMode").value;
       const scenarioPlan = document.getElementById("scenarioPlan").value;
       
+      // Mise à jour dynamique de l'en-tête : le 3ème titre passe à "Loyer" si leasing
+      const headerRow = document.getElementById("planTresorerieHeader").querySelector("tr");
+      if(financementMode === "leasing") {
+        headerRow.cells[2].innerHTML = "Loyer";
+      } else {
+        headerRow.cells[2].innerHTML = "Remboursement du prêt";
+      }
+      
       let autoYear1_val, surplus_val;
       if(scenarioPlan === "standard"){
         autoYear1_val = parseFloat(document.getElementById("monthlyTotalAuto").textContent.replace("€","").trim());
@@ -1188,10 +1191,6 @@
           preconisePower = parseFloat(document.getElementById("puissanceRecoForced").textContent) || 0;
       }
       
-      const assurance_dommages = parseFloat(document.getElementById("assurance_dommages").value) || 0;
-      const assurance_perte = parseFloat(document.getElementById("assurance_perte").value) || 0;
-      const cout_maintenance = parseFloat(document.getElementById("cout_maintenance").value) || 0;
-      const cout_changement_onduleurs = parseFloat(document.getElementById("cout_changement_onduleurs").value) || 0;
       const inflation = parseFloat(document.getElementById("inflation_estimee").value) || 0;
       const taux_emprunt = parseFloat(document.getElementById("taux_emprunt").value) || 0;
       const duree_pret = parseFloat(document.getElementById("duree_pret").value) || 0;
@@ -1211,8 +1210,6 @@
       }
       
       let totalRecettes = 0;
-      let totalChargesExploitation = 0;
-      let totalAssurance = 0;
       let totalFinancement = 0;
       let totalSoldeNet = 0;
       
@@ -1222,7 +1219,7 @@
       for(let year = 1; year <= 20; year++){
         const factor = (year === 1) ? 1 : Math.pow(1 + inflation/100, year-1);
         
-              let recettes;
+        let recettes;
         if(year === 1){
           recettes = recettesAnnee1;
         } else {
@@ -1235,12 +1232,10 @@
           const rows = projTable.querySelectorAll("tbody tr");
           if(rows.length >= year){
             const row = rows[year - 1];
-            // Dans le tableau, la colonne 2 ("Économies Autoconso") et la colonne 4 ("Gains Revente")
             const econ = parseFloat(row.cells[2].textContent.replace(/[^0-9.-]+/g,"")) || 0;
             const revente = parseFloat(row.cells[4].textContent.replace(/[^0-9.-]+/g,"")) || 0;
             recettes = econ + revente;
             if(year === 2) {
-              // Récupération de la puissance préconisée (selon le scénario)
               let S = 0;
               if(scenarioPlan === "standard"){
                 S = parseFloat(document.getElementById("puissanceReco").textContent) || 0;
@@ -1250,29 +1245,13 @@
               const territory = document.getElementById("territory").value || "France Metropolitaine";
               const tObj = getTarifRachatAndPrime(S, territory);
               const primeTotal = Math.round(tObj.primeByWc * (S * 1000));
-              recettes += primeTotal; // Ajout de la prime (sans inflation)
+              recettes += primeTotal;
             }
           } else {
             recettes = recettesAnnee1;
           }
         }
-
-        
-        let maintenanceCost = preconisePower * cout_maintenance;
-        if(year > 1){
-          maintenanceCost = maintenanceCost * factor;
-        }
-        if(year === 11){
-          maintenanceCost += cout_changement_onduleurs;
-        }
-        
-        let assurancePhoto = installationCostHT * ((assurance_dommages + assurance_perte)/100);
-        if(year > 1){
-          assurancePhoto = assurancePhoto * factor;
-        }
-        
-        const totalCharges = maintenanceCost + assurancePhoto;
-        
+      
         let financementCost = 0;
         if(financementMode === "banque"){
           financementCost = (year <= duree_pret) ? annualRepayment : 0;
@@ -1280,11 +1259,9 @@
           financementCost = (year <= (duree_leasing/12)) ? annualLeasing : 0;
         }
         
-        const soldeNet = recettes - (totalCharges + financementCost);
+        const soldeNet = recettes - financementCost;
         
         totalRecettes += recettes;
-        totalChargesExploitation += maintenanceCost;
-        totalAssurance += assurancePhoto;
         totalFinancement += financementCost;
         totalSoldeNet += soldeNet;
         
@@ -1292,9 +1269,6 @@
         row.innerHTML = `
           <td>${year}</td>
           <td>${recettes.toFixed(2)} €</td>
-          <td>${maintenanceCost.toFixed(2)} €</td>
-          <td>${assurancePhoto.toFixed(2)} €</td>
-          <td>${totalCharges.toFixed(2)} €</td>
           <td>${financementCost.toFixed(2)} €</td>
           <td>${soldeNet.toFixed(2)} €</td>
         `;
@@ -1305,9 +1279,6 @@
       totauxRow.innerHTML = `
         <th>Totaux</th>
         <th>${totalRecettes.toFixed(2)} €</th>
-        <th>${totalChargesExploitation.toFixed(2)} €</th>
-        <th>${totalAssurance.toFixed(2)} €</th>
-        <th>${(totalChargesExploitation + totalAssurance).toFixed(2)} €</th>
         <th>${totalFinancement.toFixed(2)} €</th>
         <th>${totalSoldeNet.toFixed(2)} €</th>
       `;
@@ -1688,7 +1659,7 @@
       let cumulativeEco = 0;
       for(let year = 1; year <= 20; year++){
         const factureSansPv = baseYearCost * Math.pow(1+annualPriceIncrease/100, (year-1));
-        const econAuto = autoYear1 * Math.pow(1 - 0.006, (year-1)) * Math.pow(1+annualPriceIncrease/100, (year-1));
+        const econAuto = autoYear1 * Math.pow(1+annualPriceIncrease/100, (year-1));
         const gainsRev = surplusYear1;
         let primeYear = 0;
         if(year === 2){ primeYear = primeTotal; }
@@ -1982,6 +1953,7 @@
       locale: "fr",
       dateFormat: "d/m/Y"
     });
+
 /***************************************************
  * FONCTION DE GÉNÉRATION DU RAPPORT PDF (5 pages)
  ***************************************************/
@@ -1991,7 +1963,7 @@ function generatePdfReport() {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Utilisation directe du scénario sélectionné dans le select "scenarioPlan"
+  // Détermine le scénario via l'onglet Plan de trésorerie (sans prompt)
   const scenarioPlan = document.getElementById("scenarioPlan").value; // "standard" ou "selection"
   let monthlyTableId, projectionTableId;
   if (scenarioPlan === "selection") {
@@ -2002,134 +1974,183 @@ function generatePdfReport() {
     projectionTableId = "preconisationTable";
   }
   const tresorerieTableId = "planTresorerieTable";
-
-  // PAGE 1 : Capture de carte (centrée)
+  
+  // -------------------------------
+  // PAGE 1 : Capture de carte
+  // -------------------------------
   pdf.setFontSize(16);
-  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Rapport Photovoltaïque", pageWidth / 2, 60, { align: "center" });
   if (mapCaptureDataURL) {
     const imgWidth = pageWidth - 30;
     const imgHeight = imgWidth * 0.6;
-    const imgX = (pageWidth - imgWidth) / 2;
-    pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", imgX, 25, imgWidth, imgHeight);
+    // Centre verticalement l'image
+    const yPos = (pageHeight - imgHeight) / 2;
+    pdf.addImage(mapCaptureDataURL, mapCaptureFormat || "PNG", 15, yPos, imgWidth, imgHeight);
   } else {
     pdf.text("Aucune capture de carte disponible", pageWidth / 2, pageHeight / 2, { align: "center" });
   }
-
-  // PAGE 2 : Tableau "Détails par mois (année 1)" (centré et avec colonnes resserrées)
+  
+  // -------------------------------
+  // PAGE 2 : Tableau "Détails par mois (année 1)"
+  // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Détails par mois (année 1)", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Détails par mois (année 1)", pageWidth / 2, 60, { align: "center" });
   const monthlyTableEl = document.getElementById(monthlyTableId);
   if (monthlyTableEl) {
-    // Définition d'une largeur totale du tableau (en mm) adaptée à une page A4
-    // Ici, on fixe la largeur totale à environ 201 mm pour laisser des marges
-    const tableWidth = 201;
-    const marginLeft = (pageWidth - tableWidth) / 2;
-    pdf.autoTable({
+    // Utilisation d'un PDF temporaire pour mesurer la hauteur du tableau
+    const tempPdf = new jsPDF("p", "mm", "a4");
+    tempPdf.autoTable({
       html: monthlyTableEl,
-      startY: 20,
-      margin: { left: marginLeft, right: marginLeft },
+      startY: 0,
       styles: {
         fontSize: 7,
         cellPadding: 2,
-        overflow: 'linebreak',
-        halign: 'center',
-        valign: 'middle',
+        overflow: "linebreak",
+        halign: "center",
+        valign: "middle",
       },
       headStyles: {
         fillColor: [0, 92, 160],
         textColor: 255,
         fontSize: 7,
-        halign: 'center',
-        valign: 'middle',
+        halign: "center",
+        valign: "middle",
       },
-      // Colonnes resserrées pour éviter le tronquage (la somme des largeurs ≃ 201 mm)
       columnStyles: {
-        0: { cellWidth: 15 }, // "Mois"
-        1: { cellWidth: 15 }, // "Conso kWh" (si visible)
-        2: { cellWidth: 15 }, // "Production kWh" (si visible)
-        3: { cellWidth: 15 }, // "Autoconso kWh"
-        4: { cellWidth: 15 }, // "Revente kWh"
-        5: { cellWidth: 20 }, // "Facture Sans Centrale"
-        6: { cellWidth: 20 }, // "Économies Autoconso"
-        7: { cellWidth: 20 }, // "Facture Avec Centrale"
-        8: { cellWidth: 15 }, // "Gains Revente"
-        9: { cellWidth: 15 }, // "Total Économies"
-        10: { cellWidth: 12 }, // "% Auto prod"
-        11: { cellWidth: 12 }, // "% Auto conso"
-        12: { cellWidth: 12 }, // "% Revente"
+        0: { cellWidth: 15 },
+        1: { cellWidth: 15 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 15 },
+        4: { cellWidth: 15 },
+        5: { cellWidth: 18 },
+        6: { cellWidth: 18 },
+        7: { cellWidth: 18 },
+        8: { cellWidth: 15 },
+        9: { cellWidth: 15 },
+        10: { cellWidth: 12 },
+        11: { cellWidth: 12 },
+        12: { cellWidth: 12 },
+      },
+    });
+    const tableHeight = tempPdf.lastAutoTable.finalY;
+    const newStartY = (pageHeight - tableHeight) / 2;
+    pdf.autoTable({
+      html: monthlyTableEl,
+      startY: newStartY,
+      margin: { left: 5 },
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        overflow: "linebreak",
+        halign: "center",
+        valign: "middle",
+      },
+      headStyles: {
+        fillColor: [0, 92, 160],
+        textColor: 255,
+        fontSize: 7,
+        halign: "center",
+        valign: "middle",
+      },
+      columnStyles: {
+        0: { cellWidth: 15 },
+        1: { cellWidth: 15 },
+        2: { cellWidth: 15 },
+        3: { cellWidth: 15 },
+        4: { cellWidth: 15 },
+        5: { cellWidth: 18 },
+        6: { cellWidth: 18 },
+        7: { cellWidth: 18 },
+        8: { cellWidth: 15 },
+        9: { cellWidth: 15 },
+        10: { cellWidth: 12 },
+        11: { cellWidth: 12 },
+        12: { cellWidth: 12 },
       },
     });
   } else {
     pdf.text("Tableau Détails par mois non disponible", 10, 30);
   }
-
-  // PAGE 3 : Graphique et légende (centré)
+  
+  // -------------------------------
+  // PAGE 3 : Graphique sans légende
+  // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Graphique des productions", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Graphique des productions", pageWidth / 2, 60, { align: "center" });
   if (monthlyBarChart) {
-    const chartWidth = pageWidth - 40; // Laisser une marge de 20 mm de chaque côté
-    const chartX = (pageWidth - chartWidth) / 2;
-    pdf.addImage(monthlyBarChart.toBase64Image(), "PNG", chartX, 20, chartWidth, 80);
-    // Légende centrée
-    const legendX = (pageWidth - 100) / 2; // Bloc de légende de 100 mm de large
-    pdf.setFontSize(10);
-    pdf.text("Légende :", legendX, 110);
-    pdf.setFillColor(255, 99, 132);
-    pdf.rect(legendX + 20, 105, 5, 5, "F");
-    pdf.text("Conso kWh", legendX + 30, 109);
-    pdf.setFillColor(75, 192, 75);
-    pdf.rect(legendX + 20, 115, 5, 5, "F");
-    pdf.text("Autoconso kWh", legendX + 30, 119);
-    pdf.setFillColor(54, 162, 235);
-    pdf.rect(legendX + 20, 125, 5, 5, "F");
-    pdf.text("Revente kWh", legendX + 30, 129);
+    const chartImage = monthlyBarChart.toBase64Image();
+    const chartCanvas = document.getElementById("monthlyBarChart");
+    const chartHeightPx = chartCanvas.height;
+    const chartHeight = chartHeightPx * 0.264583;
+    const chartWidth = pageWidth - 30;
+    const yPosChart = (pageHeight - chartHeight) / 2;
+    pdf.addImage(chartImage, "PNG", 15, yPosChart, chartWidth, chartHeight);
   } else {
     pdf.text("Graphique non disponible", 10, 30);
   }
 
-  // PAGE 4 : Tableau "Projection sur 20 ans" (centré)
+  
+  // -------------------------------
+  // PAGE 4 : Tableau "Projection sur 20 ans"
+  // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Projection sur 20 ans", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Projection sur 20 ans", pageWidth / 2, 40, { align: "center" });
   const projectionTableEl = document.getElementById(projectionTableId);
   if (projectionTableEl) {
+    const tempPdf2 = new jsPDF("p", "mm", "a4");
+    tempPdf2.autoTable({
+      html: projectionTableEl,
+      startY: 0,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
+    });
+    const projTableHeight = tempPdf2.lastAutoTable.finalY;
+    const newStartY2 = (pageHeight - projTableHeight) / 2;
     pdf.autoTable({
       html: projectionTableEl,
-      startY: 20,
-      margin: { left: 10, right: 10 },
+      startY: newStartY2,
       styles: { fontSize: 8, cellPadding: 2 },
       headStyles: { fillColor: [22, 160, 133], textColor: 255, fontSize: 9 }
     });
   } else {
     pdf.text("Tableau Projection sur 20 ans non disponible", 10, 30);
   }
-
-  // PAGE 5 : Tableau "Plan de trésorerie (Annuel)" (centré)
+  
+  // -------------------------------
+  // PAGE 5 : Tableau "Plan de trésorerie (Annuel)"
+  // -------------------------------
   pdf.addPage();
   pdf.setFontSize(14);
-  pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 15, { align: "center" });
+  pdf.text("Plan de trésorerie (Annuel)", pageWidth / 2, 40, { align: "center" });
   const tresorerieTableEl = document.getElementById(tresorerieTableId);
   if (tresorerieTableEl) {
+    const tempPdf3 = new jsPDF("p", "mm", "a4");
+    tempPdf3.autoTable({
+      html: tresorerieTableEl,
+      startY: 0,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [200, 200, 200] }
+    });
+    const tresoTableHeight = tempPdf3.lastAutoTable.finalY;
+    const newStartY3 = (pageHeight - tresoTableHeight) / 2;
     pdf.autoTable({
       html: tresorerieTableEl,
-      startY: 20,
-      margin: { left: 10, right: 10 },
+      startY: newStartY3,
       styles: { fontSize: 8, cellPadding: 2 },
       headStyles: { fillColor: [200, 200, 200] }
     });
   } else {
     pdf.text("Tableau Plan de trésorerie non disponible", 10, 30);
   }
-
+  
   let companyName = document.getElementById("companyName")?.value || "";
   let pdfFileName = "Rapport_Photovoltaïque.pdf";
   if (companyName) { pdfFileName = `Rapport_${companyName}.pdf`; }
   pdf.save(pdfFileName);
 }
-
-
 
   </script>
 </body>

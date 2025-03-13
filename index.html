@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v405</title> 
+  <title>FRH PRO formulaire  - v406</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -326,7 +326,8 @@
           <input type="number" id="exclusionPercent" name="exclusionPercent" value="0" />
           <label for="puissancePanneau">Puissance du panneau :</label>
           <select id="puissancePanneau" name="puissancePanneau">
-            <option value="420" selected>420 Wc</option>
+            <option value="375" selected>375 Wc</option>
+            <option value="420">420 Wc</option>
             <option value="440">440 Wc</option>
             <option value="500">500 Wc</option>
           </select>
@@ -792,33 +793,33 @@
       },
       "Corse": {
         "tarif_rachat": [
-          { "min": 0, "max": 3, "tarif": 0.1645 },
-          { "min": 4, "max": 9, "tarif": 0.1645 },
-          { "min": 10, "max": 36, "tarif": 0.0893 },
-          { "min": 37, "max": 100, "tarif": 0.0893 },
-          { "min": 101, "max": 500, "tarif": 0.1319 }
+          { "min": 0, "max": 3, "tarif": 0.1641 },
+          { "min": 4, "max": 9, "tarif": 0.1641 },
+          { "min": 10, "max": 36, "tarif": 0.0891 },
+          { "min": 37, "max": 100, "tarif": 0.0891 },
+          { "min": 101, "max": 500, "tarif": 0.1335 }
         ],
         "primes": [
-          { "min": 0, "max": 3, "montant_euros_par_wc": 1.27 },
-          { "min": 4, "max": 9, "montant_euros_par_wc": 0.72 },
-          { "min": 10, "max": 36, "montant_euros_par_wc": 0.37 },
+          { "min": 0, "max": 3, "montant_euros_par_wc": 1.26 },
+          { "min": 4, "max": 9, "montant_euros_par_wc": 0.71 },
+          { "min": 10, "max": 36, "montant_euros_par_wc": 0.36 },
           { "min": 37, "max": 100, "montant_euros_par_wc": 0.48 },
           { "min": 101, "max": 500, "montant_euros_par_wc": 0.00 }
         ]
       },
       "Reunion": {
         "tarif_rachat": [
-          { "min": 0, "max": 3, "tarif": 0.1739 },
-          { "min": 4, "max": 9, "tarif": 0.1739 },
-          { "min": 10, "max": 36, "tarif": 0.0893 },
-          { "min": 37, "max": 100, "tarif": 0.0893 },
-          { "min": 101, "max": 500, "tarif": 0.1465 }
+          { "min": 0, "max": 3, "tarif": 0.1735 },
+          { "min": 4, "max": 9, "tarif": 0.1735 },
+          { "min": 10, "max": 36, "tarif": 0.0891 },
+          { "min": 37, "max": 100, "tarif": 0.0891 },
+          { "min": 101, "max": 500, "tarif": 0.1483 }
         ],
         "primes": [
-          { "min": 0, "max": 3, "montant_euros_par_wc": 1.64 },
-          { "min": 4, "max": 9, "montant_euros_par_wc": 0.98 },
-          { "min": 10, "max": 36, "montant_euros_par_wc": 0.58 },
-          { "min": 37, "max": 100, "montant_euros_par_wc": 0.40 },
+          { "min": 0, "max": 3, "montant_euros_par_wc": 1.62 },
+          { "min": 4, "max": 9, "montant_euros_par_wc": 0.97 },
+          { "min": 10, "max": 36, "montant_euros_par_wc": 0.51 },
+          { "min": 37, "max": 100, "montant_euros_par_wc": 0.39 },
           { "min": 101, "max": 500, "montant_euros_par_wc": 0.00 }
         ]
       }

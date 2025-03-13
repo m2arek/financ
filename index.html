@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v408</title> 
+  <title>FRH PRO formulaire  - v409</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -50,9 +50,25 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       border-radius: 5px;
     }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
     .page-title {
-      text-align: center;
-      margin-bottom: 30px;
+      margin: 0;
+      font-size: 24px;
+    }
+    /* Boutons du haut */
+    #topButtons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #topButtons label {
+      cursor: pointer;
+      color: blue;
+      text-decoration: underline;
     }
 
     /****************************************************
@@ -249,7 +265,18 @@
 
 <body>
   <div class="container">
-    <h1 class="page-title">Formulaire FRH PRO </h1>
+    <!-- En-tête avec titre et boutons en ligne -->
+    <div class="header">
+      <h1 class="page-title">Formulaire FRH PRO</h1>
+      <div id="topButtons">
+        <input type="file" id="mapCaptureFile" accept="image/png, image/jpeg" style="display:none;" />
+        <label for="mapCaptureFile">Sélectionner la capture</label>
+        <button type="button" id="exportPDFBtn" onclick="generatePdfReport()">Générer Rapport PDF</button>
+        <button type="button" id="saveToFile">Télécharger les données</button>
+        <input type="file" id="loadFromFile" style="display: none;" />
+        <button type="button" id="uploadFile">Charger un fichier</button>
+      </div>
+    </div>
 
     <div class="tabNav" id="topTabNav">
       <button type="button" class="tablinks" onclick="openTab(event, 'tab1')">1. Localisation / Données Irradiation</button>
@@ -263,7 +290,6 @@
       <button type="button" class="tablinks" onclick="openTab(event, 'tab9')">9. Préconisation Sélection</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab10')">10. Commentaires</button>
       <button type="button" class="tablinks" onclick="openTab(event, 'tab11')">11. Paramètres</button>
-      <!-- Onglet 12 ajouté -->
       <button type="button" class="tablinks" onclick="openTab(event, 'tab12')">12. Plan de trésorerie</button>
     </div>
 
@@ -275,19 +301,15 @@
           <img src="https://raw.githubusercontent.com/m2arek/parallele/main/frh_pro_logo.png" alt="FRH Pro Logo"/>
           <h2>Localisation & Données Irradiation</h2>
         </div>
-
         <label for="address">Adresse :</label>
         <input type="text" id="address" name="address" placeholder="Entrez une adresse" required />
         <button type="button" id="addressSearchBtn">Rechercher</button>
-
         <button type="button" id="toggleDrawingButton">Activer le dessin (main levée)</button>
         <button type="button" id="toggleMeasureButton">Mesurer une surface</button>
-
         <div id="map-container">
           <div id="map"></div>
           <canvas id="drawingCanvas"></canvas>
         </div>
-
         <div class="form-section">
           <h3>Données irradiation</h3>
           <label for="latitudeIrr">Latitude :</label>
@@ -526,7 +548,7 @@
         </div>
         <div class="form-section">
           <h3>Préconisation</h3>
-          <!-- Bloc récapitulatif déplacé avant le bouton -->
+          <!-- Bloc récapitulatif (déjà déplacé dans le topButtons, le garder ici uniquement pour l'affichage de la préconisation) -->
           <div id="preconisationSummary" style="margin-top:10px;">
             <p><strong>Puissance préconisée :</strong> <span id="puissanceReco">-</span> kWc</p>
             <p><strong>Coût de l'installation :</strong> <span id="coutInstallation">-</span> €</p>
@@ -590,7 +612,7 @@
         </div>
         <div class="form-section">
           <h3>Préconisation Sélection</h3>
-          <!-- Bloc récapitulatif déplacé avant le bouton -->
+          <!-- Bloc récapitulatif -->
           <div id="preconisationSummaryForced" style="margin-top:10px;">
             <p><strong>Puissance préconisée (Sélection) :</strong> <span id="puissanceRecoForced">-</span> kWc</p>
             <p><strong>Coût de l'installation (Sélection) :</strong> <span id="coutInstallationForced">-</span> €</p>
@@ -656,15 +678,7 @@
           <label for="comments">Commentaires :</label>
           <textarea id="comments" name="comments" placeholder="Entrez vos commentaires"></textarea>
         </div>
-        <input type="file" id="mapCaptureFile" accept="image/png, image/jpeg" style="display:none;" />
-        <label for="mapCaptureFile" style="cursor:pointer; color:blue; text-decoration:underline;">Sélectionner la capture</label>
-        <br/><br/>
-        <div style="margin-bottom:15px;">
-          <button type="button" id="exportPDFBtn" onclick="generatePdfReport()">Générer Rapport PDF</button>
-          <button type="button" id="saveToFile">Télécharger les données</button>
-          <input type="file" id="loadFromFile" style="display: none;" />
-          <button type="button" id="uploadFile">Charger un fichier</button>
-        </div>
+        <!-- Ces éléments ont été déplacés dans le bloc #topButtons en haut -->
       </div><!-- fin tab10 -->
 
       <!-- TAB 11 : Paramètres -->

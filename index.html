@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v404</title> 
+  <title>FRH PRO formulaire  - v405</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -28,7 +28,7 @@
   <!-- Chart.js pour le diagramme en barres -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- jspdf-autotable (note : vérifiez bien cette URL si nécessaire) -->
+  <!-- jspdf-autotable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
   <style>
@@ -525,6 +525,17 @@
         </div>
         <div class="form-section">
           <h3>Préconisation</h3>
+          <!-- Bloc récapitulatif déplacé avant le bouton -->
+          <div id="preconisationSummary" style="margin-top:10px;">
+            <p><strong>Puissance préconisée :</strong> <span id="puissanceReco">-</span> kWc</p>
+            <p><strong>Coût de l'installation :</strong> <span id="coutInstallation">-</span> €</p>
+            <p><strong>Prime :</strong> <span id="primeValue">-</span> €</p>
+            <p><strong>Remise :</strong> <input type="number" id="remise" name="remise" value="0" style="width: 100px;" /> €</p>
+            <p><strong>Coût réel de l'installation :</strong> <span id="coutReelInstallation">-</span> €</p>
+            <p><strong>Gain total (sans inv.) :</strong> <span id="gainSansInv">-</span></p>
+            <p><strong>Gain total (avec inv.) :</strong> <span id="gainAvecInv">-</span></p>
+            <p><strong>ROI (années) :</strong> <span id="roiResult">-</span></p>
+          </div>
           <label for="annualPriceIncrease">Augmentation annuelle du prix de l'électricité (%):</label>
           <input type="number" step="0.1" id="annualPriceIncrease" name="annualPriceIncrease" value="5" />
           <label for="tarifRachat">Tarif de rachat du surplus (€/kWh) :</label>
@@ -567,17 +578,6 @@
               </tr>
             </tfoot>
           </table>
-          <div id="preconisationSummary" style="margin-top:10px;">
-            <p><strong>Puissance préconisée :</strong> <span id="puissanceReco">-</span> kWc</p>
-            <p><strong>Coût de l'installation :</strong> <span id="coutInstallation">-</span> €</p>
-            <p><strong>Prime :</strong> <span id="primeValue">-</span> €</p>
-            <!-- Champ Remise ajouté -->
-            <p><strong>Remise :</strong> <input type="number" id="remise" name="remise" value="0" style="width: 100px;" /> €</p>
-            <p><strong>Coût réel de l'installation :</strong> <span id="coutReelInstallation">-</span> €</p>
-            <p><strong>Gain total (sans inv.) :</strong> <span id="gainSansInv">-</span></p>
-            <p><strong>Gain total (avec inv.) :</strong> <span id="gainAvecInv">-</span></p>
-            <p><strong>ROI (années) :</strong> <span id="roiResult">-</span></p>
-          </div>
         </div>
       </div><!-- fin tab8 -->
 
@@ -589,6 +589,17 @@
         </div>
         <div class="form-section">
           <h3>Préconisation Sélection</h3>
+          <!-- Bloc récapitulatif déplacé avant le bouton -->
+          <div id="preconisationSummaryForced" style="margin-top:10px;">
+            <p><strong>Puissance préconisée (Sélection) :</strong> <span id="puissanceRecoForced">-</span> kWc</p>
+            <p><strong>Coût de l'installation (Sélection) :</strong> <span id="coutInstallationForced">-</span> €</p>
+            <p><strong>Prime :</strong> <span id="primeValueForced">-</span> €</p>
+            <p><strong>Remise :</strong> <input type="number" id="remiseForced" name="remiseForced" value="0" style="width: 100px;" /> €</p>
+            <p><strong>Coût réel de l'installation :</strong> <span id="coutReelInstallationForced">-</span> €</p>
+            <p><strong>Gain total (sans inv.) :</strong> <span id="gainSansInvForced">-</span></p>
+            <p><strong>Gain total (avec inv.) :</strong> <span id="gainAvecInvForced">-</span></p>
+            <p><strong>ROI (années) :</strong> <span id="roiResultForced">-</span></p>
+          </div>
           <label for="forcedPower">Installation choisie (kWc) :</label>
           <input type="number" id="forcedPower" name="forcedPower" value="10" min="1" />
           <button type="button" id="applyForcedPreconisationBtn">Calculer la préconisation choisie</button>
@@ -623,17 +634,6 @@
               </tr>
             </tfoot>
           </table>
-          <div id="preconisationSummaryForced" style="margin-top:10px;">
-            <p><strong>Puissance préconisée (Sélection) :</strong> <span id="puissanceRecoForced">-</span> kWc</p>
-            <p><strong>Coût de l'installation (Sélection) :</strong> <span id="coutInstallationForced">-</span> €</p>
-            <p><strong>Prime :</strong> <span id="primeValueForced">-</span> €</p>
-            <!-- Champ Remise ajouté -->
-            <p><strong>Remise :</strong> <input type="number" id="remiseForced" name="remiseForced" value="0" style="width: 100px;" /> €</p>
-            <p><strong>Coût réel de l'installation :</strong> <span id="coutReelInstallationForced">-</span> €</p>
-            <p><strong>Gain total (sans inv.) :</strong> <span id="gainSansInvForced">-</span></p>
-            <p><strong>Gain total (avec inv.) :</strong> <span id="gainAvecInvForced">-</span></p>
-            <p><strong>ROI (années) :</strong> <span id="roiResultForced">-</span></p>
-          </div>
         </div>
       </div><!-- fin tab9 -->
 
@@ -659,7 +659,6 @@
         <label for="mapCaptureFile" style="cursor:pointer; color:blue; text-decoration:underline;">Sélectionner la capture</label>
         <br/><br/>
         <div style="margin-bottom:15px;">
-          <!-- Bouton pour générer le rapport PDF sur 5 pages -->
           <button type="button" id="exportPDFBtn" onclick="generatePdfReport()">Générer Rapport PDF</button>
           <button type="button" id="saveToFile">Télécharger les données</button>
           <input type="file" id="loadFromFile" style="display: none;" />
@@ -750,9 +749,9 @@
   </div><!-- fin container -->
 
   <script>
-    /******************************************************
+    /***************************************************
      * GESTION DES ONGLETS + AJUSTEMENT CARTE
-     ******************************************************/
+     ***************************************************/
     function openTab(evt, tabId) {
       const tabContents = document.getElementsByClassName("tabContent");
       for (let i = 0; i < tabContents.length; i++) {

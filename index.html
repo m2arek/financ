@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FRH PRO formulaire  - v410</title> 
+  <title>FRH PRO formulaire  - v411</title> 
 
   <!-- (1) Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
@@ -105,26 +105,27 @@
      * ONGLET NAVIGATION
      ****************************************************/
     .tabNav button {
-      background: #c0ddff;
-      border: none;
-      outline: none;
-      padding: 8px 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 12px;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      border-right: 1px solid #ccc;
-    }
-    .tabNav button:last-child {
-      border-right: none;
-    }
-    .tabNav button:hover {
-      background-color: #a8d8ff;
-    }
-    .tabNav button.activeTab {
-      background-color: #3498db;
-      color: #fff;
-    }
+  background: #004080; /* Bleu plus foncé */
+  border: none;
+  outline: none;
+  padding: 12px 20px; /* Onglets plus larges */
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-right: 1px solid #ccc;
+}
+.tabNav button:last-child {
+  border-right: none;
+}
+.tabNav button:hover {
+  background-color: #0059b3;
+}
+.tabNav button.activeTab {
+  background-color: #ff4136; /* Fond rouge quand l'onglet est sélectionné */
+  color: #fff;
+}
+
 
     /****************************************************
      * CONTENU D'ONGLET
